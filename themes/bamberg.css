@@ -1,0 +1,42 @@
+/* ==========================================================================
+   Theme: Bamberg — the original University of Bamberg blue/yellow palette.
+   Load AFTER framework/browserslides.css. A theme is only token overrides.
+
+   Fonts: this theme asks for Copse (display) + Open Sans (body). Those are
+   open-licensed (OFL / Apache). Either embed them with tools/embed-fonts.mjs
+   for a fully self-contained file, or let the stack fall back to serif/sans.
+   ========================================================================== */
+:root {
+  --accent:      #00457D;
+  --accent-80:   #336A97;
+  --accent-60:   #6690B1;
+  --accent-40:   #99B5CB;
+  --accent-20:   #CCDAE5;
+  --accent-ink:  #ffffff;
+
+  --highlight:      #FFD300;
+  --highlight-soft: #FFF6CC;
+  --danger:         #E6444F;
+  --danger-soft:    #FADADC;
+  --positive:       #1a7a4c;
+  --positive-soft:  #EAF2CF;
+
+  --paper:      #ffffff;
+  --ink:        #1a1a1a;
+  --ink-soft:   #4a4a48;
+  --muted:      #878783;
+  --muted-soft: #E7E7E6;
+  --rule:       #CFCFCE;
+
+  --stage:     #c3d1dd;
+  --stage-ink: #33506b;
+
+  --font-display: "Copse", Georgia, "Times New Roman", serif;
+  --font-body:    "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root { --stage: #0d1a26; --stage-ink: #8aa5bd; }
+}
+:root[data-theme="dark"]  { --stage: #0d1a26; --stage-ink: #8aa5bd; }
+:root[data-theme="light"] { --stage: #c3d1dd; --stage-ink: #33506b; }

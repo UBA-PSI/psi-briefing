@@ -1,0 +1,511 @@
+/* ==========================================================================
+   browserslides — core stylesheet
+   A dependency-free framework for 16:9 presentation decks that live in a
+   single, self-contained HTML file and scale pixel-perfectly to any screen.
+
+   Licensed CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+   --------------------------------------------------------------------------
+   HOW SCALING WORKS
+   Every slide is a 16:9 box with `container-type:size`. Everything inside a
+   slide is measured in container-query units — `cqw` (1% of slide width) and
+   `cqh` (1% of slide height) — never px/rem. So the whole layout, including
+   the type scale, scales proportionally with the slide, whether it is shown
+   on a 13" laptop, a 4K projector, or a phone in landscape. This is what
+   makes the alignment feel "pixel-perfect": it is proportion-perfect.
+
+   HOW THEMING WORKS
+   Colours and fonts are semantic CSS custom properties (design tokens)
+   declared in `:root` below as a neutral default theme. A theme file (see
+   themes/) is nothing but a `:root { ... }` block that overrides these
+   tokens. Load core first, then a theme:
+     <link rel="stylesheet" href="framework/browserslides.css">
+     <link rel="stylesheet" href="themes/bamberg.css">
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   DESIGN TOKENS — the default ("slate") theme. Override in a theme file.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Brand accent + a tint ramp (100 → 20). Charts, headings, rules use these. */
+  --accent:      #234e70;
+  --accent-80:   #4f7291;
+  --accent-60:   #7b96ad;
+  --accent-40:   #a7b9c8;
+  --accent-20:   #d3dce4;
+  --accent-ink:  #ffffff;   /* text/icons placed on top of --accent */
+
+  /* Secondary signal colours */
+  --highlight:      #e8b500; /* call-outs, "punch" boxes */
+  --highlight-soft: #fbf1cc;
+  --danger:         #d64550; /* annotations, alerts, milestones */
+  --danger-soft:    #f8dadd;
+  --positive:       #1a7a4c; /* badges, "public" markers */
+  --positive-soft:  #e4f1e9;
+
+  /* Neutrals */
+  --paper:     #ffffff;      /* the slide surface */
+  --ink:       #1a1a1a;      /* primary text */
+  --ink-soft:  #4a4a48;      /* secondary text */
+  --muted:     #7c7c78;      /* captions, footers */
+  --muted-soft:#ececeb;      /* subtle fills / row separators */
+  --rule:      #cfcfce;      /* borders, hairlines */
+
+  /* The "stage" — the area behind the slides */
+  --stage:     #cbd5dd;
+  --stage-ink: #3a4d5c;
+
+  /* Typography. Two roles: a display face (headings) and a body face.
+     Defaults are system fonts so a deck works offline with zero bytes.
+     Swap these in a theme, or embed real fonts (see tools/embed-fonts.mjs). */
+  --font-display: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-body:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:    ui-monospace, Menlo, "Cascadia Code", monospace;
+
+  /* Shape */
+  --slide-radius: 0.4vh;
+  --slide-shadow: 0 1.2vh 4vh rgba(0, 25, 45, .28);
+}
+
+/* Dark stage in dark mode (the slides themselves stay light unless a theme
+   says otherwise — a deck is usually a light document on a dark desk). */
+@media (prefers-color-scheme: dark) {
+  :root { --stage: #0d1a26; --stage-ink: #8aa5bd; }
+}
+:root[data-theme="dark"]  { --stage: #0d1a26; --stage-ink: #8aa5bd; }
+:root[data-theme="light"] { --stage: #cbd5dd; --stage-ink: #3a4d5c; }
+
+/* --------------------------------------------------------------------------
+   STAGE + SLIDE ENGINE
+   -------------------------------------------------------------------------- */
+html { scroll-snap-type: y mandatory; }
+body {
+  background: var(--stage);
+  font-family: var(--font-body);
+  color: var(--ink);
+  margin: 0;
+}
+
+/* German hyphenation off by default (calmer justified edges); opt back in
+   per-component with .bs-hyphenate. Balance short headings and list items. */
+p, li, figcaption, .msg, .punch, .change-strip, .gallery-note,
+.fact span, .phases div { hyphens: none; text-wrap: balance; }
+.bs-hyphenate { hyphens: auto; -webkit-hyphens: auto; }
+
+/* One full-viewport panel per slide; scroll-snaps to centre. */
+.frame {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  scroll-snap-align: center;
+  padding: 2.2vh 0;
+  box-sizing: border-box;
+}
+
+/* The 16:9 slide. container-type:size turns cqw/cqh into "% of this slide". */
+.slide {
+  width: min(94vw, calc(90vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  background: var(--paper);
+  container-type: size;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--slide-shadow);
+  border-radius: var(--slide-radius);
+}
+.slide-inner {
+  position: absolute;
+  inset: 0;
+  padding: 5.5cqh 6cqw 9cqh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --------------------------------------------------------------------------
+   TYPE SCALE — all in cqw so it tracks the slide exactly
+   -------------------------------------------------------------------------- */
+.eyebrow {
+  font-size: 1.35cqw; font-weight: 700; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--accent-60); margin: 0 0 1.4cqh;
+}
+h1 {
+  font-family: var(--font-display); font-weight: 400; font-size: 5.6cqw;
+  line-height: 1.08; margin: 0; text-wrap: balance;
+}
+h2 {
+  font-family: var(--font-display); font-weight: 400; font-size: 3.4cqw;
+  line-height: 1.15; margin: 0 0 1cqh; color: var(--accent); text-wrap: balance;
+}
+.lede {
+  font-size: 1.55cqw; line-height: 1.55; color: var(--ink-soft); max-width: 58cqw;
+}
+.pagefoot {
+  position: absolute; left: 6cqw; right: 6cqw; bottom: 3.2cqh;
+  display: flex; justify-content: space-between;
+  font-size: 1.05cqw; color: var(--muted); letter-spacing: 0.01em;
+}
+
+/* --------------------------------------------------------------------------
+   TITLE SLIDE  (.slide--title)
+   -------------------------------------------------------------------------- */
+.slide--title { background: var(--accent); color: var(--accent-ink); }
+.slide--title .slide-inner { justify-content: center; }
+.slide--title .eyebrow { color: var(--accent-40); margin-bottom: 4.5cqh; white-space: nowrap; }
+.slide--title h1 { font-size: 4.3cqw; color: var(--accent-ink); max-width: 52cqw; }
+.slide--title .pagefoot { color: var(--accent-60); }
+
+.title-grid {
+  display: grid; grid-template-columns: 1.4fr 1fr; column-gap: 9cqw;
+  flex: 1; min-height: 0; align-items: center;
+}
+.title-left { margin-top: 4cqh; }
+.title-days {
+  font-family: var(--font-body); font-weight: 300; font-size: 16cqw;
+  line-height: 1; letter-spacing: -0.02em; color: var(--accent-ink);
+}
+.title-days small { font-family: var(--font-display); font-size: 4.6cqw; letter-spacing: 0; margin-left: 1.5cqw; }
+.title-sub { font-size: 1.6cqw; color: var(--accent-20); margin-top: 3.5cqh; }
+.title-strip { display: flex; gap: 6cqw; margin-top: 9cqh; }
+.title-strip div { border-top: 0.35cqh solid var(--accent-80); padding-top: 1.6cqh; }
+.title-strip b { display: block; font-size: 2cqw; font-weight: 700; }
+.title-strip span { font-size: 1.25cqw; color: var(--accent-40); text-transform: uppercase; letter-spacing: 0.14em; }
+
+/* Table of contents block (right column of a title slide) */
+.toc { display: flex; flex-direction: column; align-self: center; margin-top: 2cqh; }
+.toc div { display: flex; align-items: baseline; gap: 1.8cqw; padding: 2.4cqh 0; border-top: 1px solid var(--accent-80); }
+.toc div:last-child { border-bottom: 1px solid var(--accent-80); }
+.toc b { font-family: var(--font-body); font-weight: 300; font-size: 2.4cqw; color: var(--accent-40); min-width: 2.6cqw; }
+.toc span { font-size: 1.2cqw; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-20); }
+.toc--wide b { min-width: 7cqw; }
+
+/* Takeaway card (a light panel on a dark title slide) */
+.takeaway { background: var(--paper); color: var(--ink); border-radius: 0.8cqh; padding: 2.6cqh 2cqw; align-self: center; }
+.takeaway-kicker { font-size: 0.95cqw; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 0 0 1.2cqh; }
+.takeaway-these { font-family: var(--font-display); font-size: 1.42cqw; line-height: 1.45; color: var(--ink); margin: 0 0 1.6cqh; }
+.takeaway-these b { color: var(--accent); font-weight: 400; }
+.takeaway-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1cqh 1.6cqw; }
+.takeaway-facts div { border-top: 1px solid var(--rule); padding-top: 0.8cqh; }
+.takeaway-facts b { display: block; font-family: var(--font-body); font-weight: 300; font-size: 1.75cqw; color: var(--accent); }
+.takeaway-facts span { display: block; font-size: 0.92cqw; line-height: 1.35; color: var(--ink-soft); }
+.takeaway-note { font-size: 0.85cqw; color: var(--muted); margin: 1.5cqh 0 0; }
+
+/* --------------------------------------------------------------------------
+   SECTION DIVIDER  (.slide--divider) — dark panel, giant number
+   -------------------------------------------------------------------------- */
+.slide--divider { background: var(--accent); color: var(--accent-ink); }
+.slide--divider .slide-inner { justify-content: center; }
+.slide--divider .pagefoot { color: var(--accent-60); }
+.divider-grid { display: flex; align-items: center; gap: 5cqw; }
+.divider-num { font-family: var(--font-display); font-weight: 400; font-size: 23cqw; line-height: .78; color: var(--accent-80); }
+.divider-kicker { font-size: 1.25cqw; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-40); margin: 0 0 1.6cqh; }
+.divider-title { font-family: var(--font-display); font-weight: 400; font-size: 4.6cqw; line-height: 1.05; color: var(--accent-ink); margin: 0; max-width: 44cqw; text-wrap: balance; }
+.divider-lead { font-size: 1.5cqw; line-height: 1.5; color: var(--accent-20); margin: 2.2cqh 0 0; max-width: 38cqw; }
+
+/* --------------------------------------------------------------------------
+   TWO-COLUMN + TIMELINE LIST
+   -------------------------------------------------------------------------- */
+.twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 5cqw; flex: 1; min-height: 0; margin-top: 3.5cqh; }
+.tl-head { font-size: 1.3cqw; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); border-bottom: 0.35cqh solid var(--accent); padding-bottom: 1cqh; margin-bottom: 1.6cqh; }
+.tl { list-style: none; margin: 0; padding: 0; }
+.tl li { display: grid; grid-template-columns: 7cqw 1fr; gap: 1.4cqw; padding: 0.6cqh 0; border-bottom: 1px solid var(--muted-soft); font-size: 1.42cqw; line-height: 1.38; }
+.tl li:last-child { border-bottom: none; }
+.tl time { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.tl .sub { display: block; font-size: 1.08cqw; color: var(--muted); margin-top: 0.25cqh; line-height: 1.32; }
+
+/* Highlighted call-out strip */
+.punch { background: var(--highlight-soft); padding: 2.2cqh 2.2cqw; font-size: 1.5cqw; line-height: 1.5; margin-top: 2.4cqh; border-radius: 0.5cqh; }
+.punch b { color: var(--accent); }
+.punch small { display: block; font-size: 1.02cqw; line-height: 1.4; color: var(--ink-soft); margin-top: 0.9cqh; }
+
+/* --------------------------------------------------------------------------
+   CHARTS  (SVG generated by browserslides.js into .chartbox)
+   -------------------------------------------------------------------------- */
+.chartbox { flex: 1; min-height: 0; position: relative; margin-top: 2.5cqh; }
+.chartbox svg { width: 100%; height: 100%; display: block; }
+.phases { display: flex; gap: 0; margin-top: 1.4cqh; font-size: 1.15cqw; }
+.phases div { padding: 1cqh 1.4cqw; border-top: 0.5cqh solid; }
+.phases b { display: block; font-size: 1.5cqw; }
+.phase-band { position: relative; height: 0.55cqh; margin-top: 1.4cqh; }
+.phase-band i { position: absolute; top: 0; bottom: 0; border-radius: 2px; }
+.phase-band + .phases { margin-top: 0.6cqh; }
+.phase-band + .phases div { border-top: none; padding-top: 0.4cqh; }
+.tooltip { position: absolute; pointer-events: none; background: var(--accent); color: var(--accent-ink); font-size: 1.15cqw; padding: 0.8cqh 1cqw; border-radius: 0.4cqh; opacity: 0; transition: opacity .12s; white-space: nowrap; z-index: 5; }
+@media (prefers-reduced-motion: reduce) { .tooltip { transition: none; } }
+
+/* --------------------------------------------------------------------------
+   FACTS GRID — big numbers
+   -------------------------------------------------------------------------- */
+.facts { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 1fr; gap: 1.6cqw; flex: 1; min-height: 0; margin-top: 3cqh; }
+.fact { background: var(--accent-20); border-radius: 0.5cqh; padding: 2cqh 1.6cqw; display: flex; flex-direction: column; justify-content: flex-end; }
+.fact b { font-family: var(--font-body); font-weight: 300; font-size: 4.2cqw; line-height: 1; color: var(--accent); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.fact b sup { font-size: 1.6cqw; font-weight: 400; }
+.fact span { font-size: 1.15cqw; line-height: 1.4; color: var(--ink-soft); margin-top: 1cqh; }
+.fact--hero { background: var(--accent); }
+.fact--hero b { color: var(--accent-ink); }
+.fact--hero span { color: var(--accent-20); }
+
+/* --------------------------------------------------------------------------
+   TWO-PANE "RHYTHM" (text + chart cell)
+   -------------------------------------------------------------------------- */
+.rhythm { display: grid; grid-template-columns: 3fr 2fr; gap: 4cqw; flex: 1; min-height: 0; margin-top: 3cqh; }
+.rhythm h3 { font-family: var(--font-display); font-weight: 400; font-size: 2cqw; margin: 0 0 0.6cqh; color: var(--accent); }
+.rhythm .note { font-size: 1.2cqw; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1cqh; }
+.rhythm .cell { display: flex; flex-direction: column; min-height: 0; }
+.rhythm .chartbox { margin-top: 0.5cqh; }
+
+/* --------------------------------------------------------------------------
+   METHOD / BAR-COMPARISON + FUN FACT
+   -------------------------------------------------------------------------- */
+.method { display: grid; grid-template-columns: 1.15fr 1fr; gap: 5cqw; flex: 1; min-height: 0; margin-top: 3cqh; align-items: center; }
+.method p { font-size: 1.4cqw; line-height: 1.6; color: var(--ink-soft); margin: 0 0 1.8cqh; }
+.karenz { list-style: none; margin: 0 0 2.6cqh; padding: 0; }
+.karenz li { display: grid; grid-template-columns: 13cqw 1fr 6cqw; align-items: center; gap: 1.2cqw; padding: 0.9cqh 0; font-size: 1.3cqw; font-variant-numeric: tabular-nums; }
+.karenz .bar { height: 1.6cqh; background: var(--accent-60); border-radius: 0.3cqh; }
+.karenz li.pick .bar { background: var(--accent); }
+.karenz li.pick { font-weight: 700; color: var(--accent); }
+.fun { background: var(--muted-soft); border-radius: 0.5cqh; padding: 1.7cqh 1.8cqw; }
+.fun h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.9cqw; margin: 0 0 1cqh; color: var(--accent); }
+.fun p { font-size: 1.3cqw; }
+.fun p:last-child { margin-bottom: 0; }
+
+/* --------------------------------------------------------------------------
+   IMAGE GALLERIES + ANNOTATED SCREENSHOT
+   -------------------------------------------------------------------------- */
+.shots { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 1.6cqw; flex: 1; min-height: 0; margin-top: 3cqh; }
+.shots figure { margin: 0; display: flex; flex-direction: column; min-height: 0; }
+.shots .imgwrap { flex: 1; min-height: 0; overflow: hidden; border-radius: 0.5cqh; border: 1px solid var(--rule); background: var(--muted-soft); }
+.shots img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.shots figcaption { font-size: 1.05cqw; color: var(--ink-soft); padding-top: 0.7cqh; line-height: 1.35; }
+.shots figcaption b { color: var(--accent); }
+.shots--single { grid-template-columns: 1fr; }
+.shots--single .imgwrap { border: none; background: none; display: flex; overflow: visible; width: 76%; min-height: 0; margin: 0 auto; }
+.shots--single img { width: 100%; height: auto; max-height: 100%; object-fit: contain; margin: 0 auto; border: 1px solid var(--rule); border-radius: 0.4cqh; }
+.shots--single figcaption { text-align: center; text-wrap: balance; }
+.shots.shots--fit .imgwrap { border: none; background: none; }
+.shots.shots--fit img { height: 100%; width: auto; max-width: 100%; object-fit: contain; display: block; margin: 0 auto; border: 1px solid var(--rule); border-radius: 0.4cqh; box-sizing: border-box; }
+.shots.shots--fit figcaption { text-align: center; text-wrap: balance; }
+.gallery-note { font-size: 1.1cqw; color: var(--muted); margin-top: 1.6cqh; text-wrap: balance; }
+.gallery-note a { color: var(--accent); white-space: nowrap; hyphens: none; }
+
+.anno-stage { flex: 1; min-height: 0; display: flex; justify-content: center; margin-top: 2.5cqh; }
+.anno-stage + .gallery-note { text-align: center; }
+.anno-wrap { position: relative; height: 100%; max-width: 100%; }
+.anno-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; border: 1px solid var(--rule); border-radius: 0.4cqh; }
+.anno { position: absolute; transform: translate(-50%, -50%); background: rgba(255,255,255,.94); border: 2px solid var(--danger); color: var(--ink); font-size: 1.05cqw; font-weight: 700; padding: 0.45cqh 1cqw; border-radius: 999px; box-shadow: 0 0.3cqh 1cqh rgba(0,0,0,.22); white-space: nowrap; }
+
+/* Change strip / statement callout under a gallery */
+.change-strip { background: var(--accent-20); border-radius: 0.5cqh; padding: 1.2cqh 1.6cqw; font-size: 1.2cqw; line-height: 1.5; margin-top: 1.6cqh; }
+.change-strip b { color: var(--accent); }
+.change-strip--statement { font-size: 1.5cqw; line-height: 1.45; text-wrap: balance; padding-left: 2.4cqw; padding-right: 2.4cqw; }
+.change-panel { background: var(--accent-20); border-radius: 0.5cqh; padding: 2.4cqh 2.4cqw; display: flex; flex-direction: column; }
+.change-panel h3 { font-family: var(--font-display); font-weight: 400; font-size: 2cqw; color: var(--accent); margin: 0 0 0.8cqh; }
+.change-panel ul { list-style: none; margin: 0; padding: 0; }
+.change-panel li { font-size: 1.22cqw; line-height: 1.45; padding: 0.9cqh 0; border-bottom: 1px solid var(--accent-20); }
+.change-panel li:last-child { border-bottom: none; }
+.change-panel b { color: var(--accent); }
+
+/* --------------------------------------------------------------------------
+   DOCUMENT OBJECT (render a spec / PRD as a paper document)
+   -------------------------------------------------------------------------- */
+.doc { border: 1px solid var(--rule); border-radius: 0.4cqh; background: var(--paper); box-shadow: 0.5cqw 1cqh 0 var(--accent-20); align-self: center; }
+.doc-head { font-family: var(--font-mono); font-size: 1.1cqw; color: var(--ink-soft); background: var(--muted-soft); padding: 1.1cqh 1.6cqw; border-bottom: 1px solid var(--rule); border-radius: 0.4cqh 0.4cqh 0 0; }
+.doc-meta { display: block; margin-top: 0.4cqh; font-size: 0.95cqw; color: var(--muted); }
+.doc-body { padding: 1.8cqh 1.8cqw; }
+.doc-body p { font-size: 1.28cqw; line-height: 1.55; color: var(--ink-soft); margin: 0 0 1.4cqh; }
+.doc-body .doc-ellipsis { color: var(--muted); margin: 0.6cqh 0 0.2cqh; letter-spacing: 0.08em; }
+.doc-sect { font-weight: 700; color: var(--ink); margin-bottom: 0.8cqh; }
+.doc-body ol { margin: 0; padding-left: 2cqw; }
+.doc-body li { font-size: 1.28cqw; line-height: 1.55; padding: 0.35cqh 0; }
+.doc-body li::marker { color: var(--accent); font-weight: 700; }
+.doc-head, .doc-meta, time { hyphens: none; }
+
+/* --------------------------------------------------------------------------
+   FLOW STEPS (numbered vertical process) + SAFETY NET grid
+   -------------------------------------------------------------------------- */
+.flow { display: grid; grid-template-columns: 1fr 1fr; column-gap: 6cqw; flex: 1; min-height: 0; margin-top: 3cqh; align-content: start; }
+.fcol { display: flex; flex-direction: column; }
+.fstep { position: relative; padding: 0 0 3.4cqh 4.6cqw; }
+.fstep::before { content: ''; position: absolute; left: 1.45cqw; top: 3.6cqh; bottom: 0.5cqh; width: 2px; background: var(--accent-20); }
+.fstep:last-child { padding-bottom: 0; }
+.fstep:last-child::before { display: none; }
+.step-num { position: absolute; left: 0; top: 0; width: 3cqw; height: 3cqw; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 700; font-size: 1.4cqw; }
+.fstep h3 { font-size: 1.5cqw; font-weight: 700; color: var(--accent); margin: 0.4cqh 0 0.7cqh; }
+.fstep p { font-size: 1.25cqw; line-height: 1.5; color: var(--ink-soft); margin: 0; text-wrap: balance; }
+.fstep h3, .fstep p, .net h3, .net p, .cardcol h3, .cardcol p, .fact span { hyphens: none; }
+
+.net { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; gap: 1.6cqw; flex: 1; min-height: 0; margin-top: 3cqh; }
+.net > div { border: 1px solid var(--rule); border-radius: 0.5cqh; padding: 2.2cqh 2cqw; }
+.net h3 { font-family: var(--font-display); font-weight: 400; font-size: 2cqw; color: var(--accent); margin: 0 0 1cqh; text-wrap: balance; }
+.net p { font-size: 1.3cqw; line-height: 1.55; color: var(--ink-soft); margin: 0; text-wrap: balance; }
+.lv-num { font-family: var(--font-display); font-weight: 400; line-height: 1; color: var(--accent-60); }
+
+/* --------------------------------------------------------------------------
+   EDITORIAL LAYOUT (magazine hero + stacked items) + PRINCIPLE COLUMNS
+   -------------------------------------------------------------------------- */
+.editorial-layout { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 3.2cqw; margin-top: auto; margin-bottom: auto; align-items: stretch; }
+.editorial-hero { background: var(--accent-20); padding: 3cqh 2.4cqw; display: flex; flex-direction: column; justify-content: flex-end; border-radius: 0.5cqh; }
+.editorial-hero .editorial-kicker { color: var(--accent); font-size: 1.05cqw; line-height: 1; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.8cqh; }
+.editorial-hero h3 { font-family: var(--font-display); font-weight: 400; font-size: 2.65cqw; line-height: 1.2; color: var(--accent); margin: 0 0 1.8cqh; }
+.editorial-hero p { font-size: 1.48cqw; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+.editorial-stack { display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; }
+.editorial-item { padding: 1.5cqh 0; }
+.editorial-item + .editorial-item { border-top: 1px solid var(--rule); }
+.editorial-item h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.75cqw; line-height: 1.25; color: var(--accent); margin: 0 0 0.7cqh; }
+.editorial-item p { font-size: 1.22cqw; line-height: 1.45; color: var(--ink-soft); margin: 0; text-wrap: balance; }
+.editorial-layout--lessons { grid-template-columns: 0.95fr 1.05fr; }
+.editorial-layout--lessons .editorial-hero h3 { font-size: 2.45cqw; }
+
+.principle-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 4cqw; margin-top: auto; margin-bottom: auto; align-items: stretch; }
+.principle-group { padding: 2.5cqh 2.2cqw; background: var(--accent-20); border-radius: 0.5cqh; }
+.principle-group .tl-head { margin-bottom: 1.2cqh; }
+.principle-group h3 { font-family: var(--font-display); font-weight: 400; font-size: 2.2cqw; color: var(--accent); margin: 0 0 1.2cqh; }
+.principle-list { list-style: none; padding: 0; margin: 0; }
+.principle-list li { font-size: 1.22cqw; line-height: 1.45; color: var(--ink-soft); padding: 1cqh 0; text-wrap: balance; }
+.principle-list li + li { border-top: 1px solid var(--rule); }
+.principle-list b { color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   CHAT / PROMPT BUBBLES
+   -------------------------------------------------------------------------- */
+.chat { display: flex; flex-direction: column; gap: 1.3cqh; }
+.msg { background: var(--accent-20); border-radius: 0.8cqh 0.8cqh 0.8cqh 0.15cqh; padding: 1.1cqh 1.5cqw; font-size: 1.2cqw; line-height: 1.5; }
+.msg time { display: block; font-weight: 700; font-size: 0.95cqw; color: var(--accent-80); letter-spacing: 0.06em; margin-bottom: 0.4cqh; }
+.msg--ai { background: var(--muted-soft); border-radius: 0.8cqh 0.8cqh 0.15cqh 0.8cqh; }
+.msg--final { background: var(--paper); color: var(--ink); max-width: 44cqw; margin-top: 3cqh; font-size: 1.3cqw; }
+
+/* --------------------------------------------------------------------------
+   BEFORE / AFTER DELTA
+   -------------------------------------------------------------------------- */
+.delta { display: flex; flex-direction: column; justify-content: center; flex: 1; min-height: 0; margin-top: 2cqh; }
+.delta > div { display: grid; grid-template-columns: 1fr 3cqw 1.5fr; gap: 1.5cqw; align-items: baseline; padding: 1.1cqh 0; border-top: 1px solid var(--muted-soft); }
+.delta > div:first-child { border-top: none; }
+.d-old { font-size: 1.3cqw; color: var(--muted); text-align: right; text-wrap: balance; }
+.d-arrow { color: var(--accent-40); font-size: 1.5cqw; text-align: center; }
+.d-new { font-size: 1.3cqw; color: var(--ink); text-wrap: balance; }
+.d-new b { color: var(--accent); }
+.d-new small { display: block; font-size: 1.05cqw; line-height: 1.4; color: var(--ink-soft); margin-top: 0.3cqh; text-wrap: balance; }
+
+/* --------------------------------------------------------------------------
+   PIPELINE INFOGRAPHIC + CARD COLUMNS
+   -------------------------------------------------------------------------- */
+.pipe { display: grid; grid-template-columns: 1.15fr auto 1fr auto 1fr; align-items: center; gap: 1.4cqw; flex: 1; min-height: 0; margin-top: 3cqh; }
+.pipe-col { display: flex; flex-direction: column; gap: 1.3cqh; }
+.pcard { border: 1px solid var(--rule); border-radius: 0.5cqh; padding: 1.5cqh 1.5cqw; }
+.pcard h3 { font-size: 1.35cqw; font-weight: 700; color: var(--accent); margin: 0 0 0.5cqh; text-wrap: balance; }
+.pcard p { font-size: 1.12cqw; line-height: 1.45; color: var(--ink-soft); margin: 0; text-wrap: balance; hyphens: auto; -webkit-hyphens: auto; }
+.pcard--build { background: var(--accent); border-color: var(--accent); }
+.pcard--build h3 { color: var(--accent-ink); font-family: var(--font-mono); }
+.pcard--build p { color: var(--accent-20); }
+.pcard--out { background: var(--accent-20); border-color: var(--accent-40); }
+.pipe-arrow { font-size: 2.4cqw; color: var(--accent-40); }
+.pcard-group { display: flex; flex-direction: column; gap: 0.5cqh; }
+.pcard-src { border: 1px solid var(--rule); border-radius: 0.5cqh; overflow: hidden; }
+.pcard-src-half { padding: 0.85cqh 1.1cqw; font-size: 0.98cqw; line-height: 1.32; color: var(--ink-soft); text-wrap: pretty; }
+.pcard-src-half + .pcard-src-half { border-top: 1px solid var(--rule); }
+.pcard-src-half b { color: var(--accent); font-weight: 700; }
+.pcard-src-arrow { text-align: center; color: var(--accent-40); font-size: 1.5cqw; line-height: 1; }
+.pipe--offset > :not(.pipe-col) { transform: translateY(10.7cqh); }
+
+.cardcol { display: flex; flex-direction: column; gap: 1.5cqh; }
+.cardcol > div { border: 1px solid var(--rule); border-radius: 0.5cqh; padding: 1.6cqh 1.6cqw; }
+.cardcol h3 { font-size: 1.45cqw; font-weight: 700; color: var(--accent); margin: 0 0 0.6cqh; }
+.cardcol p { font-size: 1.22cqw; line-height: 1.5; color: var(--ink-soft); margin: 0; }
+
+/* --------------------------------------------------------------------------
+   PLAIN "SCENERY" LISTS (dense / medium / roles variants)
+   -------------------------------------------------------------------------- */
+.kulissen { list-style: none; margin: 0; padding: 0; }
+.kulissen li { font-size: 1.32cqw; line-height: 1.5; padding: 1.3cqh 0; border-bottom: 1px solid var(--muted-soft); text-wrap: pretty; }
+.kulissen li:last-child { border-bottom: none; }
+.kulissen b { color: var(--accent); }
+.kulissen--dicht li { font-size: 1.15cqw; line-height: 1.45; padding: 0.95cqh 0; }
+.kulissen--mittel li { font-size: 1.22cqw; line-height: 1.48; padding: 1.05cqh 0; }
+.kulissen--rollen li { hyphens: auto; -webkit-hyphens: auto; }
+.kulissen--rollen li b { display: block; margin-bottom: 0.2cqh; }
+
+/* --------------------------------------------------------------------------
+   IMAGE STACK (fanned polaroids; click pins one to front)
+   -------------------------------------------------------------------------- */
+.stack-stage { position: relative; flex: 1; min-height: 0; margin-top: 1.4cqh; }
+.stack-card { position: absolute; width: 40cqw; box-sizing: border-box; margin: 0; background: #fff; padding: 0.85cqh 0.85cqw; border: 1px solid var(--rule); border-radius: 0.35cqh; box-shadow: 0 1.6cqh 3.2cqh rgba(0,25,45,.22), 0 0.4cqh 1cqh rgba(0,25,45,.14); cursor: pointer; transform: rotate(var(--rot)); transition: transform .2s ease, box-shadow .2s ease; }
+.stack-shot { display: block; border-radius: 0.2cqh; overflow: hidden; border: 1px solid var(--rule); background: var(--muted-soft); }
+.stack-card img { display: block; width: 100%; height: 35cqh; object-fit: cover; object-position: top center; }
+.stack-cap { position: absolute; left: 0.85cqw; right: 0.85cqw; bottom: 0.85cqh; background: linear-gradient(0deg, rgba(255,255,255,.97) 62%, rgba(255,255,255,0)); color: var(--accent); font-size: 0.9cqw; line-height: 1.28; font-weight: 600; padding: 2.2cqh 0.7cqw 0.6cqh; text-align: left; border-radius: 0 0 0.2cqh 0.2cqh; }
+.stack-cap b { color: var(--accent); }
+.stack-p1 { --rot: -3.2deg; left: 2cqw;    top: 0cqh;    z-index: 6; }
+.stack-p2 { --rot: 3deg;    left: 44cqw;   top: 1.6cqh;  z-index: 5; }
+.stack-p3 { --rot: 2.6deg;  left: 4.5cqw;  top: 20cqh;   z-index: 4; }
+.stack-p4 { --rot: -3deg;   left: 46.5cqw; top: 21.5cqh; z-index: 3; }
+.stack-card.pinned { z-index: 30; }
+.stack-card:hover, .stack-card:focus-within, .stack-card.pinned { transform: rotate(0deg) translateY(-1.2cqh) scale(1.06); box-shadow: 0 2.8cqh 5.4cqh rgba(0,25,45,.32), 0 0.7cqh 1.6cqh rgba(0,25,45,.2); }
+.stack-card:hover, .stack-card:focus-within { z-index: 40; }
+
+/* --------------------------------------------------------------------------
+   CROSS-REFERENCE LINKS (a.goto) + HOVER PREVIEW
+   -------------------------------------------------------------------------- */
+a.goto { color: inherit; text-decoration: underline dotted var(--accent-60); text-decoration-thickness: 0.12em; text-underline-offset: 0.22em; cursor: pointer; }
+a.goto:hover { color: var(--accent); }
+.slide-preview { position: fixed; z-index: 999; width: 34vw; aspect-ratio: 16/9; border-radius: 0.4vh; overflow: hidden; box-shadow: 0 1vh 4vh rgba(0,25,45,.45); pointer-events: none; background: var(--paper); }
+.slide-preview .slide { width: 100%; height: 100%; box-shadow: none; border-radius: 0; }
+
+/* --------------------------------------------------------------------------
+   BOTTOM-LINE + DETAIL LAYER (click a strip to open a deep-dive over the slide)
+   -------------------------------------------------------------------------- */
+.bottomline { margin-top: 1.6cqh; border: 1px solid var(--accent-40); border-radius: 0.5cqh; padding: 1.1cqh 1.6cqw; font-size: 1.25cqw; color: var(--ink); cursor: pointer; display: flex; align-items: center; width: fit-content; max-width: 100%; gap: 1.8cqw; }
+.bottomline:hover { background: var(--accent-20); }
+.bottomline b { color: var(--accent); }
+.bottomline span { hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty; }
+.bottomline .more { color: var(--accent); font-weight: 700; white-space: nowrap; border-left: 1px solid var(--rule); padding-left: 1.8cqw; align-self: stretch; display: flex; align-items: center; }
+.detail-layer { position: absolute; inset: 0; background: var(--paper); padding: 5.5cqh 6cqw 9cqh; display: none; flex-direction: column; z-index: 6; }
+.detail-layer.open { display: flex; }
+.layer-close { position: absolute; top: 4cqh; right: 6cqw; font: inherit; font-size: 1.15cqw; font-weight: 700; color: var(--accent); background: none; border: 1px solid var(--accent-40); border-radius: 999px; padding: 0.6cqh 1.3cqw; cursor: pointer; }
+.layer-close:hover { background: var(--accent-20); }
+
+/* --------------------------------------------------------------------------
+   IN-SLIDE LIGHTBOXES: .shot-link opens .shot-layer; img.zoomable zooms
+   -------------------------------------------------------------------------- */
+.shot-link { display: inline-flex; align-items: center; gap: 0.4cqw; margin-top: auto; padding: 0.45cqh 0.9cqw; align-self: flex-start; font: inherit; font-size: 0.95cqw; font-weight: 700; color: var(--accent); background: none; border: 1px solid var(--accent-40); border-radius: 999px; cursor: pointer; }
+.shot-link:hover { background: var(--accent-20); }
+.shot-layer { position: absolute; inset: 0; z-index: 7; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.6cqh; padding: 4cqh 4cqw; background: rgba(8,24,44,.82); cursor: zoom-out; }
+.shot-layer.open { display: flex; }
+.shot-layer .shot-imgs { display: flex; align-items: center; justify-content: center; gap: 1.5cqw; max-width: 100%; min-height: 0; }
+.shot-layer img { max-width: 78cqw; max-height: 72cqh; object-fit: contain; background: #fff; border-radius: 0.5cqh; box-shadow: 0 1cqh 4cqh rgba(0,0,0,.5); }
+.shot-layer .shot-imgs--pair img { max-width: 42cqw; }
+.shot-caption { margin: 0; font-size: 1.05cqw; line-height: 1.5; color: #fff; text-align: center; max-width: 72cqw; text-wrap: pretty; }
+.zoomable { cursor: zoom-in; }
+.zoom-ov { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 4vh 4vw; background: rgba(8,24,44,.85); cursor: zoom-out; }
+.zoom-ov img { max-width: 92vw; max-height: 92vh; object-fit: contain; border-radius: 6px; box-shadow: 0 8px 40px rgba(0,0,0,.5); background: #fff; }
+
+/* --------------------------------------------------------------------------
+   VERSION BADGE (e.g. a "public / internal" marker in the footer)
+   -------------------------------------------------------------------------- */
+.fassung-mark { display: inline-block; font-family: var(--font-body); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.95cqw; padding: 0.35cqh 0.9cqw; border-radius: 0.3cqh; vertical-align: middle; background: var(--positive); color: #fff; }
+.fassung-foot { font-weight: 400; letter-spacing: normal; color: inherit; }
+
+/* --------------------------------------------------------------------------
+   DECK CHROME: nav dots, hint, variant switch
+   -------------------------------------------------------------------------- */
+.dots { position: fixed; right: 1.2vw; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 1.4vh; z-index: 10; }
+.dots a { width: 1.15vh; height: 1.15vh; min-width: 8px; min-height: 8px; border-radius: 50%; background: var(--stage-ink); opacity: .42; }
+.dots a.active { opacity: 1; }
+.dots a:focus-visible { outline: 2px solid var(--danger); outline-offset: 2px; }
+.hint { position: fixed; left: 50%; transform: translateX(-50%); bottom: 1.4vh; font-size: min(1.5vh, 12px); color: var(--stage-ink); letter-spacing: 0.1em; z-index: 10; }
+.variant { position: fixed; top: 1.6vh; right: 1.2vw; display: flex; gap: 0.8vh; z-index: 10; }
+.variant button { font: inherit; font-size: min(1.7vh, 13px); padding: 0.7vh 1.6vh; border-radius: 999px; border: 1px solid var(--stage-ink); background: transparent; color: var(--stage-ink); cursor: pointer; letter-spacing: 0.04em; }
+.variant button.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.variant button:focus-visible { outline: 2px solid var(--danger); outline-offset: 2px; }
+
+/* --------------------------------------------------------------------------
+   MOBILE PORTRAIT HINT: suggest landscape (dismissible)
+   -------------------------------------------------------------------------- */
+#rotate-hint { display: none; }
+@media (orientation: portrait) and (max-width: 820px) {
+  #rotate-hint { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vh; padding: 10vw; text-align: center; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  #rotate-hint.rh-off { display: none; }
+}
+#rotate-hint .rh-icon { font-size: 19vw; line-height: 1; animation: rh-tilt 2.6s ease-in-out infinite; }
+@keyframes rh-tilt { 0%,60%,100% { transform: rotate(0); } 28%,48% { transform: rotate(-90deg); } }
+#rotate-hint h2 { font-family: var(--font-display); font-weight: 400; font-size: 7vw; color: var(--accent-ink); margin: 0; }
+#rotate-hint p { font-size: 4.4vw; line-height: 1.5; max-width: 82vw; margin: 0; color: var(--accent-20); }
+#rotate-hint .rh-btn { margin-top: 2vh; padding: 3vw 8vw; font: inherit; font-size: 4.4vw; font-weight: 700; color: var(--accent); background: #fff; border: none; border-radius: 999px; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { #rotate-hint .rh-icon { animation: none; } }

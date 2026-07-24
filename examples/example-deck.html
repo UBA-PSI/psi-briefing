@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Aurora — a browserslides example deck</title>
+
+<!-- 1) the framework, 2) a theme (only token overrides). Swap the theme line
+     to themes/midnight.css to see the same deck go dark. For distribution you
+     would inline these three files into the HTML to get one self-contained
+     document — see docs/tutorial.en.md. -->
+<link rel="stylesheet" href="../framework/browserslides.css">
+<link rel="stylesheet" href="../themes/bamberg.css">
+
+<style>
+  /* Placeholder "screenshots" as data-URIs so the example needs no assets.
+     In a real deck you would embed real images (base64) or link them. */
+  :root {
+    --shot-a: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="800" height="500" fill="%23e9eef4"/><rect x="0" y="0" width="800" height="70" fill="%2300457D"/><rect x="40" y="120" width="360" height="26" rx="6" fill="%23b9c8d8"/><rect x="40" y="170" width="520" height="16" rx="6" fill="%23cdd8e4"/><rect x="40" y="200" width="480" height="16" rx="6" fill="%23cdd8e4"/><rect x="40" y="300" width="220" height="90" rx="10" fill="%2300457D"/><rect x="300" y="300" width="220" height="90" rx="10" fill="%23FFD300"/></svg>');
+    --shot-b: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="800" height="500" fill="%23f4f0e9"/><circle cx="400" cy="250" r="150" fill="%23FFD300"/><circle cx="400" cy="250" r="90" fill="%2300457D"/><rect x="60" y="60" width="300" height="20" rx="6" fill="%23c9c2b4"/></svg>');
+    --shot-c: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><rect width="800" height="500" fill="%23eef2ee"/><rect x="60" y="80" width="680" height="60" rx="10" fill="%231a7a4c" opacity="0.25"/><rect x="60" y="180" width="680" height="60" rx="10" fill="%231a7a4c" opacity="0.45"/><rect x="60" y="280" width="680" height="60" rx="10" fill="%231a7a4c" opacity="0.7"/></svg>');
+  }
+  .ph { background-size: cover; background-position: top center; }
+  .ph--a { background-image: var(--shot-a); }
+  .ph--b { background-image: var(--shot-b); }
+  .ph--c { background-image: var(--shot-c); }
+</style>
+</head>
+<body>
+
+<!-- ============================ SLIDE 1: TITLE ============================ -->
+<section class="frame">
+  <div class="slide slide--title"><div class="slide-inner">
+    <p class="eyebrow">Retrospective · Example deck</p>
+    <div class="title-grid">
+      <div class="title-left">
+        <h1>Project&nbsp;Aurora: shipping a portal in eleven weeks</h1>
+        <p class="title-sub">A worked example of the browserslides framework</p>
+        <div class="title-strip">
+          <div><b>11</b><span>Weeks</span></div>
+          <div><b>1&nbsp;280</b><span>Commits</span></div>
+          <div><b>1</b><span>HTML file</span></div>
+        </div>
+      </div>
+      <div class="takeaway">
+        <p class="takeaway-kicker">In one sentence</p>
+        <p class="takeaway-these">A small team can ship a <b>polished product</b> fast when the tooling gets out of the way.</p>
+        <div class="takeaway-facts">
+          <div><b>3</b><span>People on the core team</span></div>
+          <div><b>34%</b><span>Work done before 10&nbsp;a.m.</span></div>
+          <div><b>0</b><span>Build steps</span></div>
+          <div><b>100%</b><span>Offline-capable</span></div>
+        </div>
+        <p class="takeaway-note">Everything on these slides is placeholder content.</p>
+      </div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora · browserslides example</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ============================ SLIDE 2: DIVIDER ========================== -->
+<section class="frame">
+  <div class="slide slide--divider"><div class="slide-inner">
+    <div class="divider-grid">
+      <div class="divider-num">1</div>
+      <div>
+        <p class="divider-kicker">Part one</p>
+        <h2 class="divider-title">How the timeline actually went</h2>
+        <p class="divider-lead">Context, cadence, and the numbers behind the eleven weeks.</p>
+      </div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ==================== SLIDE 3: TWO-COLUMN TIMELINE ===================== -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 1 · Two-column timeline</p>
+    <h2>Plan versus reality</h2>
+    <div class="twocol">
+      <div>
+        <div class="tl-head">Planned</div>
+        <ul class="tl">
+          <li><time>Wk 1</time><span>Kickoff &amp; scope<span class="sub">One page, agreed in a room</span></span></li>
+          <li><time>Wk 3</time><span>First prototype</span></li>
+          <li><time>Wk 7</time><span>Feature freeze</span></li>
+          <li><time>Wk 11</time><span>Launch</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="tl-head">Reality</div>
+        <ul class="tl">
+          <li><time>Wk 1</time><span>Kickoff, on time</span></li>
+          <li><time>Wk 2</time><span>Prototype early<span class="sub">Momentum from a good first day</span></span></li>
+          <li><time>Wk 6</time><span>Scope grew, then shrank</span></li>
+          <li><time>Wk 11</time><span>Launch, on time</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="punch">The plan was roughly right. <b>The order changed, not the destination.</b>
+      <small>See the activity chart on <a class="goto" href="#slide-chart">the next data slide</a>.</small></div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ========================= SLIDE 4: FACTS GRID ========================= -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 1 · Facts</p>
+    <h2>The eleven weeks in numbers</h2>
+    <div class="facts">
+      <div class="fact fact--hero"><b>1&nbsp;280</b><span>Commits across the whole project</span></div>
+      <div class="fact"><b>117</b><span>Working days of elapsed time</span></div>
+      <div class="fact"><b>34<sup>%</sup></b><span>Of commits before 10&nbsp;a.m.</span></div>
+      <div class="fact"><b>3</b><span>People on the core team</span></div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ========================== SLIDE 5: BAR CHART ========================= -->
+<section class="frame" id="slide-chart">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 1 · Generated chart</p>
+    <h2>Commits per week, with milestones</h2>
+    <div class="chartbox" id="chart-weeks"></div>
+    <div class="phases">
+      <div style="border-color:var(--accent-60)"><b>Explore</b>Weeks 1–3</div>
+      <div style="border-color:var(--muted)"><b>Lull</b>Weeks 4–5</div>
+      <div style="border-color:var(--accent)"><b>Push</b>Weeks 6–11</div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ============================ SLIDE 6: DIVIDER ========================= -->
+<section class="frame">
+  <div class="slide slide--divider"><div class="slide-inner">
+    <div class="divider-grid">
+      <div class="divider-num">2</div>
+      <div>
+        <p class="divider-kicker">Part two</p>
+        <h2 class="divider-title">How the thing was built</h2>
+        <p class="divider-lead">Process, pipeline, and the decisions that mattered.</p>
+      </div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ========================== SLIDE 7: FLOW STEPS ======================== -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 2 · Process</p>
+    <h2>The weekly loop</h2>
+    <div class="flow">
+      <div class="fcol">
+        <div class="fstep"><div class="step-num">1</div><h3>Frame the week</h3><p>One outcome, written down Monday morning before anything else.</p></div>
+        <div class="fstep"><div class="step-num">2</div><h3>Build in the open</h3><p>Small commits, deployed continuously, visible to the whole team.</p></div>
+      </div>
+      <div class="fcol">
+        <div class="fstep"><div class="step-num">3</div><h3>Review Friday</h3><p>Look at the real thing, not a status doc. Cut what did not earn its place.</p></div>
+        <div class="fstep"><div class="step-num">4</div><h3>Write it down</h3><p>A short note per week — the source of this retrospective.</p></div>
+      </div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ======================= SLIDE 8: PIPELINE INFOGRAPHIC ================= -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 2 · Pipeline</p>
+    <h2>From source to a single file</h2>
+    <div class="pipe">
+      <div class="pipe-col">
+        <div class="pcard-group">
+          <div class="pcard-src"><div class="pcard-src-half"><b>Content</b> — Markdown notes per week</div><div class="pcard-src-half"><b>Assets</b> — screenshots, fonts</div></div>
+        </div>
+      </div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-col"><div class="pcard pcard--build"><h3>embed-fonts.mjs</h3><p>Inlines fonts and images as base64</p></div></div>
+      <div class="pipe-arrow">&rarr;</div>
+      <div class="pipe-col"><div class="pcard pcard--out"><h3>deck.html</h3><p>One self-contained file. No server, no build, works offline.</p></div></div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ====================== SLIDE 9: EDITORIAL / LESSONS =================== -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 2 · Lessons</p>
+    <h2>What we would keep</h2>
+    <div class="editorial-layout editorial-layout--lessons">
+      <div class="editorial-hero">
+        <p class="editorial-kicker">The big one</p>
+        <h3>Ship something real every single week.</h3>
+        <p>Nothing aligned the team like a working artifact you could click through on a Friday.</p>
+      </div>
+      <div class="editorial-stack">
+        <div class="editorial-item"><h3>One page of scope</h3><p>If it did not fit on a page, we did not understand it yet.</p></div>
+        <div class="editorial-item"><h3>Mornings for the hard part</h3><p>A third of the work happened before 10&nbsp;a.m. We protected that.</p></div>
+        <div class="editorial-item"><h3>Cut, don't defer</h3><p>"Later" is a graveyard. We removed features outright.</p></div>
+      </div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ======================= SLIDE 10: BEFORE / AFTER DELTA =============== -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 2 · Before / after</p>
+    <h2>What changed for users</h2>
+    <div class="delta">
+      <div><div class="d-old">Seven separate pages to enrol</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>One guided flow</b><small>Same information, a quarter of the clicks</small></div></div>
+      <div><div class="d-old">PDF forms, printed and scanned</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>Fill in the browser</b></div></div>
+      <div><div class="d-old">"Where do I even start?"</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>A single obvious entry point</b><small>The most requested change, shipped first</small></div></div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ========================= SLIDE 11: CHAT BUBBLES ===================== -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 2 · A moment</p>
+    <h2>How one feature actually started</h2>
+    <div class="chat">
+      <div class="msg"><time>Team member</time>Users keep asking where to begin. Can we just… give them one button?</div>
+      <div class="msg msg--ai"><time>Reply</time>What if the button knows who you are and takes you straight to your next step?</div>
+      <div class="msg msg--final"><time>Result</time>That "one button" became the most-used screen in the whole portal.</div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- =================== SLIDE 12: IMAGE STACK + DETAIL LAYER ============= -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 2 · Gallery</p>
+    <h2>A few screens along the way</h2>
+    <div class="stack-stage">
+      <figure class="stack-card stack-p1"><span class="stack-shot"><img class="ph ph--a" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Early prototype"></span><figcaption class="stack-cap"><b>Week 2</b> — the first clickable prototype</figcaption></figure>
+      <figure class="stack-card stack-p2"><span class="stack-shot"><img class="ph ph--b" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Mid build"></span><figcaption class="stack-cap"><b>Week 6</b> — the guided flow takes shape</figcaption></figure>
+      <figure class="stack-card stack-p3"><span class="stack-shot"><img class="ph ph--c" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="Launch"></span><figcaption class="stack-cap"><b>Week 11</b> — launch build</figcaption></figure>
+      <figure class="stack-card stack-p4"><span class="stack-shot"><img class="ph ph--a" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="After launch"></span><figcaption class="stack-cap"><b>Week 12</b> — the first metrics come in</figcaption></figure>
+    </div>
+    <div class="bottomline"><span>The team logged <b>1&nbsp;280 commits</b> — click for the breakdown</span><span class="more">Details &rarr;</span></div>
+    <div class="detail-layer">
+      <button class="layer-close">Close &times;</button>
+      <p class="eyebrow">Deep dive</p>
+      <h2>Where the 1&nbsp;280 commits went</h2>
+      <div class="net" style="margin-top:2cqh">
+        <div><h3>Frontend</h3><p>620 commits — the guided flow and the component library that powers these slides.</p></div>
+        <div><h3>Backend</h3><p>410 commits — the enrolment logic and the data model behind it.</p></div>
+        <div><h3>Content</h3><p>180 commits — copy, translations, and the weekly retro notes.</p></div>
+        <div><h3>Infra</h3><p>70 commits — deploy scripts and the font-embedding pipeline.</p></div>
+      </div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ======================= SLIDE 13: PRINCIPLE COLUMNS ================== -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter 2 · Principles</p>
+    <h2>Two lists we kept on the wall</h2>
+    <div class="principle-columns">
+      <div class="principle-group">
+        <div class="tl-head">Do</div>
+        <ul class="principle-list">
+          <li><b>Decide in the room.</b> Async is for reporting, not deciding.</li>
+          <li><b>Prefer the boring tool.</b> One HTML file beats a toolchain.</li>
+          <li><b>Show, don't tell.</b> A demo settles most arguments.</li>
+        </ul>
+      </div>
+      <div class="principle-group">
+        <div class="tl-head">Avoid</div>
+        <ul class="principle-list">
+          <li><b>Silent scope creep.</b> New work needs old work removed.</li>
+          <li><b>Status theatre.</b> If it isn't running, it isn't done.</li>
+          <li><b>Premature abstraction.</b> Wait for the third copy.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ============================ SLIDE 14: CLOSING ======================= -->
+<section class="frame">
+  <div class="slide slide--title"><div class="slide-inner">
+    <p class="eyebrow">Thank you</p>
+    <h1>That's the deck — now go build your own.</h1>
+    <p class="title-sub">This whole presentation is one HTML file, a stylesheet, and 400 lines of dependency-free JavaScript. Read the cookbook in <b>docs/cookbook.md</b>.</p>
+    <div class="title-strip">
+      <div><b>CC&nbsp;BY&nbsp;4.0</b><span>Use it anywhere</span></div>
+      <div><b>0</b><span>Dependencies</span></div>
+      <div><b>16:9</b><span>Any screen</span></div>
+    </div>
+    <div class="pagefoot"><span>browserslides · CC BY 4.0</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- deck chrome -->
+<nav class="dots" aria-label="Slide navigation"></nav>
+<div class="hint">↓ scroll · → next · press a key</div>
+<div id="rotate-hint"><div class="rh-icon">📱</div><h2>Turn your phone</h2><p>This deck is designed for landscape. Rotate your device, or tap to dismiss.</p><button class="rh-btn">Show anyway</button></div>
+
+<script src="../framework/browserslides.js"></script>
+<script>
+  /* Build the "commits per week" chart declaratively. Colours come from the
+     theme tokens automatically; pass --token names to override per bar. */
+  Browserslides.barChart('#chart-weeks', {
+    ariaLabel: 'Commits per week for the eleven-week project, with three milestones',
+    max: 220,
+    gridlines: [0, 55, 110, 165, 220],
+    data: [
+      { value: 40,  label: 'W1', color: '--accent-60' },
+      { value: 95,  label: 'W2', color: '--accent-60' },
+      { value: 70,  label: 'W3', color: '--accent-60' },
+      { value: 30,  label: 'W4', color: '--muted' },
+      { value: 25,  label: 'W5', color: '--muted' },
+      { value: 120, label: 'W6' },
+      { value: 180, label: 'W7' },
+      { value: 150, label: 'W8' },
+      { value: 205, label: 'W9' },
+      { value: 175, label: 'W10' },
+      { value: 90,  label: 'W11' }
+    ],
+    markers: [
+      { index: 0,  label: 'Kickoff',       level: 0, anchor: 'start' },
+      { index: 6,  label: 'Feature freeze', level: 1, anchor: 'start' },
+      { index: 10, label: 'Launch',        level: 0, anchor: 'end' }
+    ]
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+/* ==========================================================================
+   Theme: Midnight — dark slides on a near-black stage. A worked example of a
+   theme that flips the neutrals (--paper dark, --ink light), which the whole
+   framework picks up because nothing is hard-coded to white/black.
+   Load AFTER framework/browserslides.css.
+   ========================================================================== */
+:root {
+  --accent:      #7aa2f7;
+  --accent-80:   #6b8fe0;
+  --accent-60:   #55709e;
+  --accent-40:   #3f5273;
+  --accent-20:   #263450;
+  --accent-ink:  #0c1020;   /* dark text on the light-blue accent */
+
+  --highlight:      #e0af68;
+  --highlight-soft: #2a2033;
+  --danger:         #f7768e;
+  --danger-soft:    #33202a;
+  --positive:       #9ece6a;
+  --positive-soft:  #1f2a1c;
+
+  --paper:      #16181f;   /* the slide surface is dark now */
+  --ink:        #e6e8ef;
+  --ink-soft:   #a9b1c2;
+  --muted:      #7a8296;
+  --muted-soft: #232631;
+  --rule:       #2e323f;
+
+  --stage:     #0a0b10;
+  --stage-ink: #7f8aa3;
+
+  --font-display: "Iowan Old Style", Georgia, serif;
+  --font-body:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --slide-shadow: 0 1.2vh 4vh rgba(0, 0, 0, .55);
+}
+
+/* Midnight is dark by design; keep it dark regardless of OS preference. */
+:root[data-theme="light"] { --stage: #0a0b10; --stage-ink: #7f8aa3; }

@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 UBA-PSI
+Copyright (c) 2026 Dominik Herrmann and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+------------------------------------------------------------------------------
+Fonts are NOT covered by this license.
+
+The default theme uses only system fonts. If you embed fonts (e.g. Copse,
+Open Sans) via tools/embed-fonts.mjs, those fonts carry their own licenses
+(Copse and Open Sans are under the SIL Open Font License and the Apache
+License 2.0 respectively). Include the relevant font license alongside any
+distribution that embeds them.

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DECK TITLE</title>
+<!-- During authoring, link the assets. Before sharing, inline them into one
+     self-contained file (see tools/inline-deck.mjs). -->
+<link rel="stylesheet" href="assets/browserslides.css">
+<link rel="stylesheet" href="assets/bamberg.css">
+</head>
+<body>
+
+<!-- ============================== TITLE ============================== -->
+<section class="frame">
+  <div class="slide slide--title"><div class="slide-inner">
+    <p class="eyebrow">Kicker · Context</p>
+    <h1>A headline that scales to any screen</h1>
+    <p class="title-sub">A one-line subtitle sits here</p>
+    <div class="title-strip">
+      <div><b>12</b><span>Weeks</span></div>
+      <div><b>3</b><span>People</span></div>
+      <div><b>1</b><span>HTML file</span></div>
+    </div>
+    <div class="pagefoot"><span>Deck footer</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ============================= DIVIDER ============================= -->
+<section class="frame">
+  <div class="slide slide--divider"><div class="slide-inner">
+    <div class="divider-grid">
+      <div class="divider-num">1</div>
+      <div>
+        <p class="divider-kicker">Part one</p>
+        <h2 class="divider-title">Section title goes here</h2>
+        <p class="divider-lead">One sentence of orientation for the section.</p>
+      </div>
+    </div>
+    <div class="pagefoot"><span>Deck footer</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ============================= CONTENT ============================= -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter · Facts</p>
+    <h2>A content slide with a facts grid</h2>
+    <div class="facts">
+      <div class="fact fact--hero"><b>1&nbsp;280</b><span>The headline number</span></div>
+      <div class="fact"><b>117</b><span>A supporting number</span></div>
+      <div class="fact"><b>34<sup>%</sup></b><span>A proportion</span></div>
+      <div class="fact"><b>3</b><span>A small count</span></div>
+    </div>
+    <div class="pagefoot"><span>Deck footer</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- ============================== CHART ============================== -->
+<section class="frame">
+  <div class="slide"><div class="slide-inner">
+    <p class="eyebrow">Chapter · Data</p>
+    <h2>A generated bar chart</h2>
+    <div class="chartbox" id="chart-demo"></div>
+    <div class="pagefoot"><span>Deck footer</span><span class="pagenum"></span></div>
+  </div></div>
+</section>
+
+<!-- deck chrome (keep at end of body) -->
+<nav class="dots" aria-label="Slide navigation"></nav>
+<div class="hint">↓ scroll · → next</div>
+<div id="rotate-hint"><div class="rh-icon">📱</div><h2>Turn your phone</h2><p>This deck is built for landscape. Rotate, or tap to dismiss.</p><button class="rh-btn">Show anyway</button></div>
+
+<script src="assets/browserslides.js"></script>
+<script>
+  Browserslides.barChart('#chart-demo', {
+    ariaLabel: 'Demo bar chart',
+    data: [
+      { value: 40, label: 'A' }, { value: 95, label: 'B' },
+      { value: 70, label: 'C' }, { value: 120, label: 'D' },
+      { value: 180, label: 'E', color: '--accent' }
+    ],
+    markers: [{ index: 4, label: 'Peak', anchor: 'end' }]
+  });
+</script>
+</body>
+</html>
