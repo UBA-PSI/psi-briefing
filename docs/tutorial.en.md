@@ -1,6 +1,6 @@
 # Build your first deck in 15 minutes
 
-*browserslides — a dependency-free framework for self-contained 16:9 HTML slide decks. Licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).*
+*browserslides — a dependency-free framework for self-contained 16:9 HTML slide decks. [MIT-licensed](https://opensource.org/license/mit) (fonts excepted).*
 
 This walkthrough takes you from a blank file to a real presentation: a title slide, a content slide with live components, and a bar chart generated in the browser. By the end you'll know enough to build and share your own deck.
 

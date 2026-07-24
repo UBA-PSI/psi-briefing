@@ -3,7 +3,7 @@
    A dependency-free framework for 16:9 presentation decks that live in a
    single, self-contained HTML file and scale pixel-perfectly to any screen.
 
-   Licensed CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+   MIT License — see LICENSE. Copyright (c) 2026 Dominik Herrmann.
    --------------------------------------------------------------------------
    HOW SCALING WORKS
    Every slide is a 16:9 box with `container-type:size`. Everything inside a

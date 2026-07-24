@@ -47,4 +47,4 @@ browserslides/
 
 Keep `references/assets/` in sync with the framework if you update it (`cp framework/* themes/* skills/browserslides/references/assets/`).
 
-Licensed **CC BY 4.0**, like the rest of the project.
+Licensed **MIT**, like the rest of the project (fonts excepted — see the root LICENSE).

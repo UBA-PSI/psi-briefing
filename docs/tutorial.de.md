@@ -1,6 +1,6 @@
 # Bau dein erstes Deck in 15 Minuten
 
-*browserslides — ein Framework ohne Abhängigkeiten für in sich geschlossene 16:9-Foliendecks als HTML. Lizenziert unter [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).*
+*browserslides — ein Framework ohne Abhängigkeiten für in sich geschlossene 16:9-Foliendecks als HTML. [MIT-lizenziert](https://opensource.org/license/mit) (Fonts ausgenommen).*
 
 Diese Anleitung bringt dich von einer leeren Datei zu einer echten Präsentation: eine Titelfolie, eine Inhaltsfolie mit lebendigen Komponenten und ein Balkendiagramm, das direkt im Browser gezeichnet wird. Am Ende weißt du genug, um dein eigenes Deck zu bauen und weiterzugeben.
 

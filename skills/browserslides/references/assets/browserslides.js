@@ -5,7 +5,7 @@
    previews, lightboxes, image stacks, the portrait hint) and exposes a small
    charting helper on window.Browserslides.
 
-   Licensed CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+   MIT License — see LICENSE. Copyright (c) 2026 Dominik Herrmann.
    ========================================================================== */
 (function () {
   "use strict";

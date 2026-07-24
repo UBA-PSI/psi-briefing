@@ -4,7 +4,7 @@
 
 No framework, no build step, no server, no fonts to install. One `.html` file you open in a browser — on a 13″ laptop, a 4K projector, or a phone in landscape — and it looks identical everywhere.
 
-*Made by [Dominik Herrmann](https://github.com/) · licensed [CC BY 4.0](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
+*Made by [Dominik Herrmann](https://github.com/) · [MIT-licensed](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
 
 ![Example: title slide and a generated chart in the Bamberg theme](docs/preview.png)
 
@@ -95,7 +95,7 @@ See **[docs/cookbook.md](docs/cookbook.md)** for every component and **[docs/tut
 
 ## License
 
-**CC BY 4.0** — use it anywhere, including commercially; just credit *"browserslides" by Dominik Herrmann, CC BY 4.0*. Full text in [LICENSE](LICENSE). Embedded fonts carry their own licenses (see LICENSE).
+**MIT** — use it anywhere, including commercially; just keep the copyright notice. Full text in [LICENSE](LICENSE). Fonts are not covered by MIT: the default theme uses system fonts, and any fonts you embed carry their own licenses (see LICENSE).
 
 ---
 
@@ -119,4 +119,4 @@ python3 -m http.server 8000
 
 Bedienung: Pfeiltasten, Leertaste, Scrollen oder die Nav-Punkte. Die Farb-/Font-Anpassung ist ein Ein-Datei-Wechsel (`themes/…css` kopieren, `--accent` & Co. ändern). Volle Bauteil-Referenz in **[docs/cookbook.md](docs/cookbook.md)**, Schritt-für-Schritt in **[docs/tutorial.de.md](docs/tutorial.de.md)**.
 
-**Lizenz: CC BY 4.0** — frei nutzbar, auch kommerziell; bitte *„browserslides" von Dominik Herrmann, CC BY 4.0* nennen. Eingebettete Schriften haben eigene Lizenzen.
+**Lizenz: MIT** — frei nutzbar, auch kommerziell; nur den Copyright-Vermerk mitführen. Fonts fallen nicht unter MIT: das Default-Theme nutzt System-Schriften, eingebettete Schriften haben ihre eigenen Lizenzen (siehe LICENSE).
