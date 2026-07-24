@@ -12,6 +12,15 @@ A dependency-free framework for presentation decks that live in one self-contain
 1. **Container-query scaling.** Every slide is a `16:9` box with `container-type:size`. Everything inside is sized in `cqw` (1% of slide width) / `cqh` (1% of slide height) — never px/rem. So the whole layout scales *proportionally* with the slide and looks identical on a laptop, a projector, or a phone in landscape. When you size anything custom inside a slide, **use cqw/cqh, never px**.
 2. **Semantic design tokens.** Colours and fonts are CSS variables (`--accent`, `--ink`, `--highlight`, `--font-display`…). A theme is only a `:root{}` override. Re-skinning is a one-file change — including the JS-generated SVG charts, which read tokens at draw time.
 
+## Default style: slidedoc, not sparse slides
+
+Unless the user asks for a sparse "presentation" look, **build slidedocs** (in the Duarte sense): text-dense slides that *fill the frame* with well-arranged blocks — the reading-oriented look of the original retro decks. Draw generously on the source material; a near-empty slide with one line is usually wrong for this framework.
+
+- Reach first for the text-block layouts: `.cols` grids holding `.prose` and `.panel` blocks, plus `.editorial-layout`, `.principle-columns`, `.twocol`, `.net`, `.cardcol`, `.facts`, `.kulissen`, `.delta`.
+- Free paragraphs **must** be wrapped in `.prose` (a bare `<p>` falls back to 16px and won't scale).
+- Use the big `.slide--statement` / `.slide--question` / `.slide--quote` slides *sparingly*, for a deliberate beat — not as the default for content.
+- Aim to fill the vertical space; `.cols`/component `flex:1` do this. After building, check no slide overflows (content taller than the slide) and none is mostly empty.
+
 ## Workflow
 
 1. **Scaffold.** Copy `references/starter.html` and `references/assets/` (browserslides.css, browserslides.js, and a theme) into the deck's folder. During authoring, keep the CSS/JS *linked* (readable); inline only at the end.
@@ -37,6 +46,9 @@ Copy the matching block from `references/components.md` / `docs/cookbook.md`. Pi
 
 | Need | Component (key classes) |
 |------|-------------------------|
+| Free text that scales | `.prose` (+ `--lead` / `--dense`); wrap every bare paragraph |
+| Arrange text blocks | `.cols` (+ `--2` / `--3` / `--wide-left` / `--wide-right` / `--center`) with `.col` children |
+| A grouped text card | `.panel` (+ `--plain` / `--hl`) |
 | Opening slide | `.slide--title` + `.title-grid`, `.title-strip`, `.toc`, `.takeaway` |
 | Section break | `.slide--divider` + `.divider-num`, `.divider-title`, `.divider-lead` |
 | Big numbers | `.facts` + `.fact`, `.fact--hero`, `<sup>` |

@@ -100,6 +100,36 @@ The `.dots` nav is populated at runtime (one dot per `.frame`); if you omit the 
 
 ---
 
+## Slidedoc utilities (start here for text-heavy slides)
+
+browserslides is at its best as a **slidedoc** (Duarte's term): text-dense slides meant to be read, filling the frame with well-arranged blocks — not sparse "one line per slide" presentation slides. These three utilities are the workhorses for that. Reach for them first; the named components below are specialisations.
+
+**`.prose` — scaling free text.** The framework styles paragraphs *per component*, so a bare `<p>` falls back to 16px and does **not** scale with the slide. Always wrap free text in `.prose` (modifiers: `.prose--lead` bigger, `.prose--dense` smaller). `<b>` inside `.prose` is accent-coloured; `.prose ul/li` gives a dotted list.
+
+**`.cols` — arrange blocks in columns.** A flex grid that fills the remaining height. Modifiers: `--2`, `--3`, `--wide-left` (1.5 : 1), `--wide-right` (1 : 1.5), `--center` (centre vertically). Wrap each column's content in `.col` when it should be a flex column.
+
+**`.panel` — a grouped text card.** `--plain` (bordered, no fill), `--hl` (highlight fill). Pair with a `.tl-head` label and `.prose` body.
+
+```html
+<div class="cols cols--wide-right">
+  <div class="col">
+    <div class="prose">
+      <p>A left-hand column of readable prose. Emphasis with <b>bold</b>; wrap
+         every paragraph so it scales with the frame.</p>
+      <p>A second paragraph fills the block.</p>
+    </div>
+  </div>
+  <div class="col">
+    <div class="panel panel--plain">
+      <div class="tl-head">A grouped point</div>
+      <div class="prose prose--dense"><p>Denser supporting text in a card.</p></div>
+    </div>
+  </div>
+</div>
+```
+
+Fill the vertical space and keep density high; after building, verify no slide overflows and none is mostly empty. Note: inside a `.fact`, put emphasis in the label with `<b>` freely — a guard keeps it label-sized (the big number is `.fact > b`).
+
 ## Component catalog
 
 ### Title slide

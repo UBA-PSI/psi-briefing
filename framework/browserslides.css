@@ -146,6 +146,43 @@ h2 {
 }
 
 /* --------------------------------------------------------------------------
+   SLIDEDOC UTILITIES
+   The framework styles text per component. For "slidedoc"-style slides —
+   dense, readable, text-block layouts (à la Duarte) — you need free-flowing
+   prose that scales with the frame, plus generic column and panel wrappers to
+   arrange those blocks. These are the workhorses for text-heavy decks.
+   -------------------------------------------------------------------------- */
+/* Scaling prose. A bare <p> would fall back to 16px and NOT scale — always
+   wrap free text in .prose (or a component that styles its own text). */
+.prose { font-size: 1.35cqw; line-height: 1.6; color: var(--ink-soft); }
+.prose > * { margin: 0 0 1.2cqh; }
+.prose > *:last-child { margin-bottom: 0; }
+.prose b, .prose strong { color: var(--accent); font-weight: 700; }
+.prose em { font-style: italic; }
+.prose--lead  { font-size: 1.6cqw;  line-height: 1.55; }
+.prose--dense { font-size: 1.15cqw; line-height: 1.5; }
+.prose h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.95cqw; color: var(--accent); margin: 0 0 0.7cqh; }
+.prose ul { list-style: none; margin: 0 0 1.2cqh; padding: 0; }
+.prose li { position: relative; padding: 0.35cqh 0 0.35cqh 2cqw; }
+.prose li::before { content: ''; position: absolute; left: 0.2cqw; top: 1.05cqh; width: 0.7cqw; height: 0.7cqw; border-radius: 50%; background: var(--accent-40); }
+
+/* Generic column grids for arranging text blocks. fill the frame via flex. */
+.cols { display: grid; gap: 3.5cqw; flex: 1; min-height: 0; margin-top: 3cqh; align-content: start; }
+.cols--2 { grid-template-columns: 1fr 1fr; }
+.cols--3 { grid-template-columns: repeat(3, 1fr); }
+.cols--wide-left  { grid-template-columns: 1.5fr 1fr; }
+.cols--wide-right { grid-template-columns: 1fr 1.5fr; }
+.cols--center { align-content: center; }
+.col { display: flex; flex-direction: column; min-height: 0; }
+
+/* A plain text card / panel to group a block on a slidedoc slide. */
+.panel { background: var(--accent-20); border-radius: 0.6cqh; padding: 2.4cqh 2.2cqw; }
+.panel--plain { background: none; border: 1px solid var(--rule); }
+.panel--hl { background: var(--highlight-soft); }
+.panel h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.95cqw; color: var(--accent); margin: 0 0 0.9cqh; }
+.panel .tl-head { margin-bottom: 1.2cqh; }
+
+/* --------------------------------------------------------------------------
    TITLE SLIDE  (.slide--title)
    -------------------------------------------------------------------------- */
 .slide--title { background: var(--accent); color: var(--accent-ink); }
@@ -240,6 +277,8 @@ h2 {
 .fact b { font-family: var(--font-body); font-weight: 300; font-size: 4.2cqw; line-height: 1; color: var(--accent); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .fact b sup { font-size: 1.6cqw; font-weight: 400; }
 .fact span { font-size: 1.15cqw; line-height: 1.4; color: var(--ink-soft); margin-top: 1cqh; }
+/* Guard: `.fact b` is the big number; bold *inside a label* must stay label-sized. */
+.fact span b, .fact span strong { font-family: var(--font-body); font-size: inherit; font-weight: 700; letter-spacing: normal; color: inherit; }
 .fact--hero { background: var(--accent); }
 .fact--hero b { color: var(--accent-ink); }
 .fact--hero span { color: var(--accent-20); }
