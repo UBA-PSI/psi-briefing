@@ -12,6 +12,12 @@ A dependency-free framework for presentation decks that live in one self-contain
 1. **Container-query scaling.** Every slide is a `16:9` box with `container-type:size`. Everything inside is sized in `cqw` (1% of slide width) / `cqh` (1% of slide height) — never px/rem. So the whole layout scales *proportionally* with the slide and looks identical on a laptop, a projector, or a phone in landscape. When you size anything custom inside a slide, **use cqw/cqh, never px**.
 2. **Semantic design tokens.** Colours and fonts are CSS variables (`--accent`, `--ink`, `--highlight`, `--font-display`…). A theme is only a `:root{}` override. Re-skinning is a one-file change — including the JS-generated SVG charts, which read tokens at draw time.
 
+## First: does the content fit this framework?
+
+browserslides shines for **reference / report content meant to be read** — retrospectives, project documentation, research summaries, whitepapers, lecture notes, data-driven decks. That is where slidedocs work: the source already has sections, data, comparisons, definitions to arrange densely.
+
+It is a **poor fit for a sparse performance talk** — a short spoken keynote driven by timing, delivery, and question→answer beats. Forcing such a talk into dense slides fights its dramaturgy; making it sparse just yields empty slides. If the user brings that kind of content, say so and suggest either a genuinely document-shaped source, or a different tool.
+
 ## Default style: slidedoc, not sparse slides
 
 Unless the user asks for a sparse "presentation" look, **build slidedocs** (in the Duarte sense): text-dense slides that *fill the frame* with well-arranged blocks — the reading-oriented look of the original retro decks. Draw generously on the source material; a near-empty slide with one line is usually wrong for this framework.
