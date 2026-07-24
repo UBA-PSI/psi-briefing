@@ -689,6 +689,95 @@ A small uppercase marker (e.g. a "public"/"internal" tag) that sits in the foote
 
 ---
 
+## Narrative / talk components
+
+The components above suit reports and retrospectives. An argument-driven *talk* needs a different set of primitives: big rhetorical questions and reveals, a thesis that evolves as you speak, cited studies, and a running tracker of your key points. These pair naturally with the numbered `.slide--divider` for act breaks.
+
+### Big statement / question / reveal
+
+A single line that fills the slide — a rhetorical question or its answer. `.slide--statement` centres it vertically; `.slide--question` turns it into an accent panel with light text and highlight emphasis. `.statement small` adds a supporting paragraph; `.statement--answer` underlines the emphasis in the highlight colour.
+
+```html
+<!-- a question -->
+<section class="frame"><div class="slide slide--question slide--statement"><div class="slide-inner">
+  <p class="statement-kicker">Act 2 · An honest question</p>
+  <p class="statement">Who gains more from AI — the <b>strong</b> or the <b>weak</b>?</p>
+  <div class="pagefoot"><span class="thesis"><b>0 × tool = 0</b></span><span class="pagenum"></span></div>
+</div></div></section>
+
+<!-- the reveal, on a light slide -->
+<section class="frame"><div class="slide slide--statement"><div class="slide-inner">
+  <p class="statement-kicker">Act 3 · The core</p>
+  <p class="statement statement--answer">The multiplier doesn't multiply skill. It multiplies <b>judgement.</b>
+    <small>That's why the students couldn't tell if their program worked: they didn't see the silent errors.</small></p>
+  <div class="pagefoot"><span class="thesis"><b>judgement × tool = leverage</b></span><span class="pagenum"></span></div>
+</div></div></section>
+```
+
+### Running thesis (evolving footer)
+
+A formula-like line in the footer that changes across the talk to dramatise a turn. Assert the current form with `<b>`; strike an abandoned one with `<s>`. On dark title/question slides the emphasis switches to the highlight colour automatically.
+
+```html
+<div class="pagefoot">
+  <span class="thesis"><s>0 × tool = 0</s></span>   <!-- struck once the argument breaks -->
+  <span class="pagenum"></span>
+</div>
+```
+
+### Cited study / stat
+
+Numbers in a `.facts` grid (use `.fact--hero` for the headline figure), followed by a muted `.source` line carrying the reference and link.
+
+```html
+<div class="facts">
+  <div class="fact fact--hero"><b>+43<sup>%</sup></b><span>gain for the <b>weaker</b> performers</span></div>
+  <div class="fact"><b>+17<sup>%</sup></b><span>gain for the stronger</span></div>
+  <div class="fact"><b>758</b><span>consultants with GPT-4</span></div>
+  <div class="fact"><b>−19<sup>pp</sup></b><span>more often wrong outside AI's reach</span></div>
+</div>
+<p class="source"><b>Dell'Acqua et al. 2023</b>, "Navigating the Jagged Technological Frontier".
+  <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4573321">ssrn.com/abstract=4573321</a></p>
+```
+
+### Point tracker
+
+The talk's key points, filling up as you reach each one. Add `.done` to the items already covered; repeat the block on each recap slide with one more `.done`. `margin-top:auto` pushes it to the bottom of the slide.
+
+```html
+<div class="tracker">
+  <div class="tracker-item done"><span class="t-dot">1</span><span><b>Judgement, not skill</b></span></div>
+  <div class="tracker-item"><span class="t-dot">2</span><span>The bar moves</span></div>
+  <div class="tracker-item"><span class="t-dot">3</span><span>Study matters more, not less</span></div>
+</div>
+```
+
+### Sandwich diagram (edges vs. shrinking middle)
+
+Two solid edge bands with a middle band that gets "eaten" — a decide → execute → deliver picture, or any edges-vs-middle idea. `.sandwich-band--mid.eaten` shrinks and strikes the middle; `.sandwich-note` captions it.
+
+```html
+<div class="sandwich">
+  <div class="sandwich-band sandwich-band--edge"><h3>Decide</h3><p><b>what</b> gets built — needs judgement</p></div>
+  <div class="sandwich-band sandwich-band--mid eaten"><h3>Execute</h3><p>this is what AI eats</p></div>
+  <div class="sandwich-band sandwich-band--edge"><h3>Deliver</h3><p>own <b>that</b> it's right — needs judgement</p></div>
+</div>
+<p class="sandwich-note">The middle shrinks. What's left are the <b>edges</b> — and both need judgement.</p>
+```
+
+### Full-bleed quote
+
+```html
+<section class="frame"><div class="slide slide--quote"><div class="slide-inner">
+  <p class="eyebrow">Act 5 · Why study endures</p>
+  <blockquote class="bigquote">"I remember the books no more than the meals; <b>yet they made me.</b>"</blockquote>
+  <p class="quote-attr"><b>Emerson</b>, attributed — the wording is uncertain, which is almost the point.</p>
+  <div class="pagefoot"><span class="pagenum"></span></div>
+</div></div></section>
+```
+
+---
+
 ## Interactions & keyboard
 
 All wired up automatically by `browserslides.js` on load.

@@ -58,6 +58,18 @@ Copy the matching block from `references/components.md` / `docs/cookbook.md`. Pi
 | Jump to another slide w/ preview | `<a class="goto" href="#slide-id">` (hover previews, click jumps) |
 | Zoom an image | add class `zoomable` to an `<img>` |
 
+**Narrative / talk components** (for argument-driven talks — questions, reveals, a running thesis, cited studies):
+
+| Need | Component (key classes) |
+|------|-------------------------|
+| A big rhetorical question | `.slide--question.slide--statement` + `.statement` + `.statement-kicker` (accent panel, highlight emphasis) |
+| A big statement / reveal | `.slide--statement` + `.statement` (+ `.statement--answer` for a highlight underline); `.statement small` adds a supporting line |
+| A cited study/stat | `.facts` + `.fact--hero` for the numbers, then `.source` (with `<b>` author + `<a>` link) |
+| The talk's key points, filling up | `.tracker` + `.tracker-item` (add `.done`) + `.t-dot` — repeat with more `.done` each recap slide |
+| A thesis that evolves in the footer | `<span class="thesis">` in `.pagefoot`; assert with `<b>`, strike the old form with `<s>` |
+| Edges-vs-middle diagram | `.sandwich` + `.sandwich-band--edge` / `.sandwich-band--mid.eaten` + `.sandwich-note` |
+| A full-bleed quote | `.slide--quote` + `.bigquote` + `.quote-attr` |
+
 ### barChart config (the only JS you normally write)
 
 ```js
