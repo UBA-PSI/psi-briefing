@@ -181,6 +181,27 @@ Watch for modifiers that *eat* the gutter. `.panel--flush` and `.panel--marker` 
 
 **Images.** Every image on a slide is click-to-zoom automatically (the runtime opens a lightbox with the caption). Nothing to add – no `zoomable` class needed. So always write a real `alt` or `figcaption`: it becomes the lightbox caption.
 
+## Two ways to build one
+
+**By hand**, slide by slide, from the component catalog – the workflow below.
+Full control, and the only option for a slide that needs an unusual layout.
+
+**From Markdown**, with `tools/md-to-deck.mjs` from the repo (not part of this
+skill's own files): write the deck as a document and let the converter pick the
+components from the shape of the content – three `###` blocks become three
+columns, four become a `.net` grid, a `> blockquote` becomes the closing
+`.punch`. It emits ordinary browserslides HTML that you then hand-tune, so the
+two ways compose rather than compete.
+
+Prefer Markdown when the source is already document-shaped (a report, notes, a
+procedure) and there are more than a handful of slides: it keeps divider
+numbering and the title-slide TOC in sync automatically, normalises the
+typographic marks listed below, and reports the fill problems this file tells
+you to look for. Reach for hand-building when the deck is short, or when most
+slides need a component the converter would have to be told about anyway. The
+rules in this file still apply either way – the converter follows them, it does
+not replace them. `docs/markdown.md` in the repo is the authoring reference.
+
 ## Workflow
 
 1. **Scaffold.** Copy `references/starter.html` and `references/assets/` (browserslides.css, browserslides.js, and a theme) into the deck's folder. During authoring, keep the CSS/JS *linked* (readable); inline only at the end. Browsers cache linked assets aggressively – if an edit to the CSS/JS seems to have no effect, add a `?v=N` query to the `<link>`/`<script>` and bump it, rather than debugging a stale file.
@@ -202,7 +223,7 @@ Watch for modifiers that *eat* the gutter. `.panel--flush` and `.panel--marker` 
    Then run this audit in the page – it catches the three things eyeballing misses (dead space, overlap, overflow):
 
    ```js
-   const rep = { thin: [], overlap: [], overflow: [] };
+   const rep = { thin: [], overlap: [], overflow: [], deadBand: [] };
    document.querySelectorAll('section.frame').forEach((sec, i) => {
      const slide = sec.querySelector('.slide'), inner = sec.querySelector('.slide-inner');
      const foot = sec.querySelector('.pagefoot'), n = i + 1;
@@ -216,6 +237,7 @@ Watch for modifiers that *eat* the gutter. `.panel--flush` and `.panel--marker` 
      if (slide.className.replace('slide', '').trim()) return;   // skip title/divider
      const top = inner.getBoundingClientRect().top;
      const end = foot ? foot.getBoundingClientRect().top : inner.getBoundingClientRect().bottom;
+     const band = inner.querySelector('.punch, .change-strip, .tracker');
      let ink = top;
      inner.querySelectorAll('*').forEach(el => {
        if (el.closest('.pagefoot')) return;
@@ -226,11 +248,44 @@ Watch for modifiers that *eat* the gutter. `.panel--flush` and `.panel--marker` 
      });
      const fill = Math.round((ink - top) / (end - top) * 100);
      if (fill < 85) rep.thin.push({ n, fill });
+
+     // A bottom-pinned band hides the gap above it from `fill`: the band's own
+     // bottom edge IS the deepest ink, so the number reads ~97 % while the
+     // slide's content stops half way down. Measure inside the content row
+     // instead, and compare the slack ABOVE the content with the slack BELOW.
+     // Equal slack means the row is deliberately centred (cols--center, or a
+     // component like .delta that centres itself) - that is balanced
+     // whitespace, not a fault. Only content hanging from the top with a big
+     // gap under it is the real thing. Without that filter this fires on every
+     // centred row: 7 hits / 2 of them false on a finished deck, versus 5 / 0.
+     const row = [...inner.children].find(el => el !== band
+       && !el.classList.contains('pagefoot') && !/^(H1|H2|P)$/.test(el.tagName));
+     if (band && row) {
+       const rr = row.getBoundingClientRect();
+       let lo = Infinity, hi = -Infinity;
+       row.querySelectorAll('*').forEach(el => {
+         const cs = getComputedStyle(el), r = el.getBoundingClientRect();
+         const paints = cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || cs.borderTopWidth !== '0px'
+                     || el.tagName === 'IMG' || (!el.children.length && el.textContent.trim());
+         if (paints && r.height) { lo = Math.min(lo, r.top); hi = Math.max(hi, r.bottom); }
+       });
+       if (isFinite(lo)) {
+         const above = Math.round((lo - rr.top) / (end - top) * 100);
+         const below = Math.round((rr.bottom - hi) / (end - top) * 100);
+         if (below >= 12 && below - above >= 8) rep.deadBand.push({ n, above, below });
+       }
+     }
    });
-   rep;   // want: thin/overlap/overflow all empty
+   rep;   // want: thin/overlap/overflow/deadBand all empty
    ```
 
    Aim for **≥85 % ink fill** on content slides; treat anything under that as a slide needing more content (see "Filling the frame"). Note that measuring alone is not enough – always *look* at a few slides too, because a stretched-but-empty box scores well and reads badly. Screenshot **individual slides** (`.slide` elements), not `fullPage`: scroll-snap makes full-page captures stitch duplicated frames.
+
+   **Read `deadBand` before you trust `thin`.** `thin` finds the deepest painted pixel, and on a slide that ends with a `.punch` that pixel is the band's bottom edge – which `.cols { flex: 1 }` has already pushed down to the footer. So the number reads ~97 % no matter how much empty space sits between the content and the band. Measured on a finished 23-slide deck: five slides scored 97 % while their content stopped at 55–71 %, leaving 13–26 % of dead space under it.
+
+   This matters because adding a `.punch` is *recommended* above as fix #2 for a thin slide. It genuinely closes the bottom of the frame and states the takeaway – but it also silences the metric, so a slide can be "fixed" from 74 % to 97 % without a word being added to its middle. That is the same shape of failure as the stretched container in "Filling the frame", one level up: the band is real content, yet the number it produces is not about the slide being full.
+
+   Treat a `deadBand` hit exactly like a `thin` one – the answer is content in the row, not chrome at the bottom. Note that `cols--center` **suppresses** the check by design: once you have decided to balance the whitespace, the gap is symmetric and deliberate.
 
    Then check the typography – these are mechanical, so never eyeball them:
 

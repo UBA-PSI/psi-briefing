@@ -57,6 +57,39 @@ A minimal deck is three things – link the framework, add slides, add the chrom
 
 Navigate with arrow keys, space, PageUp/Down, Home/End, the scroll wheel, or the nav dots.
 
+### Or write it as Markdown
+
+Picking components out of a catalog is the slow part. `md-to-deck.mjs` reads the
+*shape* of a document instead and chooses for you:
+
+```markdown
+## Four roles on an exam
+
+### Candidates
+They sit the exam at laptops.
+
+### Examiner
+Responsible for the exam, and provides all the printed material.
+
+### Invigilators
+They invigilate, and help set up and pack down.
+
+### Technical lead
+Knows the system in detail. Explicitly **not** an invigilator.
+
+> Who leads is settled **before** the exam day.
+```
+
+Four `###` blocks become a bordered 2×2 grid; the blockquote becomes the
+highlighted band at the bottom of the slide.
+
+```bash
+node tools/md-to-deck.mjs deck.md -o deck.html
+```
+
+The output is normal browserslides HTML, so you can hand-tune any slide
+afterwards. See [`docs/markdown.md`](docs/markdown.md).
+
 ## What's in the box
 
 | Path | What it is |
@@ -66,6 +99,9 @@ Navigate with arrow keys, space, PageUp/Down, Home/End, the scroll wheel, or the
 | `themes/bamberg.css` | The original University of Bamberg blue/yellow palette. |
 | `themes/midnight.css` | A dark theme – proof that flipping `--paper`/`--ink` re-skins everything. |
 | `examples/example-deck.html` | A 14-slide worked example exercising every major layout. |
+| `examples/example-deck.md` | The same idea written as a Markdown document, for `md-to-deck.mjs`. |
+| `tools/md-to-deck.mjs` | **Write a deck as Markdown.** Infers the component from the shape of the content: three `###` blocks become three columns, four become a bordered grid, a blockquote becomes the closing band. Outputs ordinary, hand-editable browserslides HTML. |
+| `docs/markdown.md` | The Markdown authoring reference: document structure, the shape→component table, directives, and what the converter will and will not correct. |
 | `docs/cookbook.md` | The component catalog – copy-paste snippets for every layout. |
 | `docs/tutorial.en.md` · `docs/tutorial.de.md` | Build-your-first-deck walkthrough, bilingual. |
 | `tools/embed-fonts.mjs` · `tools/inline-deck.mjs` | Turn a linked dev deck into one self-contained file with base64 fonts/images. |

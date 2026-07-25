@@ -224,6 +224,47 @@ the same one auto-layout has to answer generally.
 
 ---
 
+## 6a. Addendum from building the Markdown converter
+
+`tools/md-to-deck.mjs` now infers layout from the structure of a Markdown
+document, before rendering. Building its build-time fill estimator turned up two
+things that revise this document.
+
+**The fill metric lies a second way, and §6's "median ink fill 97 %" is
+overstated.** A slide ending in a `.punch` measures ~97 % whatever sits above
+the band: `.cols { flex: 1 }` pushes the band down to the footer, and the band's
+bottom edge is the deepest painted pixel the audit can find. Re-measured on
+`aufsicht-deck.html`, five of eighteen content slides scored 97 % while their
+content stopped at 55–71 %, leaving 13–26 % of dead space under it (slides 9,
+13, 14, 17, 18). The deck is not as full as the number said.
+
+This is worse than the stretched-container case in §1, because there the fix was
+wrong; here the fix is *right* — a `.punch` genuinely closes the frame and
+states the takeaway, and `SKILL.md` recommends it — and it silences the metric
+anyway. **Any move that adds a bottom-pinned element makes a fill score
+meaningless.** An auto-layout pass driven by such a score would learn to add a
+band to every thin slide.
+
+`SKILL.md`'s audit now carries a `deadBand` check for it. Per §2 it was
+calibrated before shipping: the naive version (gap under the content ≥ 12 %)
+gave 7 hits with 2 false, both on rows the author had deliberately centred with
+`cols--center`. Comparing the slack *above* the content with the slack *below*
+and requiring an 8-point difference separates "hanging from the top" from
+"centred": 5 hits, 0 false, across two decks. Same lesson as `crampedLabels` —
+the first version of a detector is not the shippable one.
+
+**A build-time estimator is viable, and cheaper than it looks.** Predicting
+painted height from the CSS geometry (the 88 cqw × 85.5 cqh content box, the
+type scale, and the same average-glyph-width approximation the browser audit
+uses) agreed with the browser on which slides were thin. Two calibration traps
+found by comparing against real measurements: `.flow` carries `flex: 1` but also
+`align-content: start`, so it does **not** fill its row — the same trap as
+`.cols` in §3, and easy to get backwards; and `.editorial-layout` /
+`.principle-columns` size to content and are then centred by `margin: auto`, so
+their measured ink sits higher than their content volume implies. An estimator
+that assumes a component fills is optimistic in exactly the direction that hides
+thin slides.
+
 ## 7. If you change one thing, check these
 
 Run the audit in `SKILL.md` after any framework change, on **both**

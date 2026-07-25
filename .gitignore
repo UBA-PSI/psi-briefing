@@ -5,3 +5,6 @@ node_modules/
 
 # Arbeits-/Testdecks (nicht Teil des Frameworks)
 test-aufsicht/
+
+# Konvertierte Decks (aus der .md erzeugt, kein Quellstand)
+examples/example-deck-md.html
