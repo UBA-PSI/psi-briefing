@@ -295,7 +295,25 @@ Watch for modifiers that *eat* the gutter. `.panel--flush` and `.panel--marker` 
      }).map(el => el.textContent.trim())                         // must be empty
    })
    ```
-7. **Make it self-contained (optional, for sharing).** Fold the CSS/JS and local images into the HTML so the deck is one file. If you have the repo checked out, `tools/inline-deck.mjs deck.html` does it; otherwise inline by hand – paste each stylesheet into a `<style>`, the runtime into a `<script>`, and replace every local `src="…"` with a `data:` URI. Fonts should already be embedded in the theme (see Typography).
+7. **Make it self-contained (for sharing).** Fold the CSS/JS and images into the HTML so the deck is one file. With the repo checked out, `node tools/inline-deck.mjs deck.html -o deck.self-contained.html` does it; otherwise inline by hand – paste each stylesheet into a `<style>`, the runtime into a `<script>`, and replace every local `src="…"` with a `data:` URI. Fonts should already be embedded in the theme (see Typography).
+
+   **Only *local* assets get inlined.** `inline-deck.mjs` deliberately leaves remote URLs alone – it cannot know whether `https://…/photo.jpg` is yours to embed. So a deck whose images are linked from a web server comes out of the tool looking self-contained and still fails offline. Download those files next to the deck and rewrite the `src` attributes to relative paths *before* inlining:
+
+   ```bash
+   # from the deck's folder, for images under imgs/
+   curl -s --create-dirs -o imgs/photo.jpg https://example.org/deck/imgs/photo.jpg
+   # then strip the origin from every src in the HTML, e.g.
+   #   src="https://example.org/deck/imgs/…"  ->  src="imgs/…"
+   ```
+
+   Verify by loading the result and asking the page what it actually fetched – a self-contained deck requests nothing:
+
+   ```js
+   performance.getEntriesByType('resource').filter(e => !e.name.startsWith('data:'))
+   // must be []  (and check no <img> is broken, and document.fonts.check(...) is true)
+   ```
+
+   Expect the file to be large: images as base64 grow by about a third, so a deck with 20 photos lands around 8 MB. That is the trade for a file that works with no network, no server, and no missing-asset risk.
 
 ## Component quick-reference
 
