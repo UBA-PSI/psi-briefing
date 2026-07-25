@@ -2,7 +2,7 @@
 
 **Dependency-free presentation decks that live in a single, self-contained HTML file and scale pixel-perfectly to any screen.**
 
-No framework, no build step, no server, no fonts to install. One `.html` file you open in a browser — on a 13″ laptop, a 4K projector, or a phone in landscape — and it looks identical everywhere.
+No framework, no build step, no server, no fonts to install. One `.html` file you open in a browser – on a 13″ laptop, a 4K projector, or a phone in landscape – and it looks identical everywhere.
 
 *Made by [Dominik Herrmann](https://github.com/) · [MIT-licensed](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
 
@@ -14,9 +14,9 @@ No framework, no build step, no server, no fonts to install. One `.html` file yo
 
 Two ideas do all the work:
 
-1. **Container-query scaling.** Every slide is a `16:9` box with `container-type:size`. Everything inside it — text, spacing, charts, everything — is measured in container-query units (`cqw` = 1 % of slide width, `cqh` = 1 % of slide height), never in `px` or `rem`. So the whole layout scales *proportionally* with the slide. The alignment isn't pixel-*fixed*; it's proportion-perfect, which is what makes it hold together on any display.
+1. **Container-query scaling.** Every slide is a `16:9` box with `container-type:size`. Everything inside it – text, spacing, charts, everything – is measured in container-query units (`cqw` = 1 % of slide width, `cqh` = 1 % of slide height), never in `px` or `rem`. So the whole layout scales *proportionally* with the slide. The alignment isn't pixel-*fixed*; it's proportion-perfect, which is what makes it hold together on any display.
 
-2. **Semantic design tokens.** Every colour and font is a CSS custom property with a semantic name (`--accent`, `--ink`, `--highlight`, `--font-display`…). A *theme* is nothing but a `:root { … }` block that overrides those tokens. Re-skinning the entire deck — including the generated SVG charts, which read the tokens at draw time — is a one-file change.
+2. **Semantic design tokens.** Every colour and font is a CSS custom property with a semantic name (`--accent`, `--ink`, `--highlight`, `--font-display`…). A *theme* is nothing but a `:root { … }` block that overrides those tokens. Re-skinning the entire deck – including the generated SVG charts, which read the tokens at draw time – is a one-file change.
 
 The JavaScript runtime is deliberately small and dumb: it reads declarative markup and config, and generates nav dots, page numbers, SVG bar charts, hover-preview cross-references, detail layers, and lightboxes at runtime. Zero dependencies.
 
@@ -29,7 +29,7 @@ python3 -m http.server 8000
 # open http://localhost:8000/examples/example-deck.html
 ```
 
-A minimal deck is three things — link the framework, add slides, add the chrome:
+A minimal deck is three things – link the framework, add slides, add the chrome:
 
 ```html
 <!DOCTYPE html>
@@ -64,11 +64,12 @@ Navigate with arrow keys, space, PageUp/Down, Home/End, the scroll wheel, or the
 | `framework/browserslides.css` | The core: slide engine, type scale, ~25 layout components, deck chrome. Ships a neutral default theme. |
 | `framework/browserslides.js` | The runtime: navigation, page numbers, `Browserslides.barChart()`, detail layers, cross-reference previews, lightboxes, image stacks. |
 | `themes/bamberg.css` | The original University of Bamberg blue/yellow palette. |
-| `themes/midnight.css` | A dark theme — proof that flipping `--paper`/`--ink` re-skins everything. |
+| `themes/midnight.css` | A dark theme – proof that flipping `--paper`/`--ink` re-skins everything. |
 | `examples/example-deck.html` | A 14-slide worked example exercising every major layout. |
-| `docs/cookbook.md` | The component catalog — copy-paste snippets for every layout. |
+| `docs/cookbook.md` | The component catalog – copy-paste snippets for every layout. |
 | `docs/tutorial.en.md` · `docs/tutorial.de.md` | Build-your-first-deck walkthrough, bilingual. |
 | `tools/embed-fonts.mjs` · `tools/inline-deck.mjs` | Turn a linked dev deck into one self-contained file with base64 fonts/images. |
+| `tools/optimise-images.mjs` | Re-encode a deck's images to WebP at the size the slides actually use, before inlining. Cut a real 20-image deck from 8.3 MB to 3.3 MB. |
 | `skills/browserslides/` | A Claude Code / Agent **skill** so an AI assistant can build these decks for you. |
 
 ## Theming
@@ -85,7 +86,7 @@ Copy `themes/bamberg.css`, change the token values, load it after the core style
 }
 ```
 
-Fonts default to the system stack (zero bytes, works offline). To match a specific brand face, generate `@font-face` rules with `tools/embed-fonts.mjs` and paste them in — then your deck stays a single self-contained file.
+Fonts default to the system stack (zero bytes, works offline). To match a specific brand face, generate `@font-face` rules with `tools/embed-fonts.mjs` and paste them in – then your deck stays a single self-contained file.
 
 See **[docs/cookbook.md](docs/cookbook.md)** for every component and **[docs/tutorial.en.md](docs/tutorial.en.md)** to build one step by step.
 
@@ -95,7 +96,7 @@ See **[docs/cookbook.md](docs/cookbook.md)** for every component and **[docs/tut
 
 ## License
 
-**MIT** — use it anywhere, including commercially; just keep the copyright notice. Full text in [LICENSE](LICENSE). Fonts are not covered by MIT: the default theme uses system fonts, and any fonts you embed carry their own licenses (see LICENSE).
+**MIT** – use it anywhere, including commercially; just keep the copyright notice. Full text in [LICENSE](LICENSE). Fonts are not covered by MIT: the default theme uses system fonts, and any fonts you embed carry their own licenses (see LICENSE).
 
 ---
 
@@ -103,12 +104,12 @@ See **[docs/cookbook.md](docs/cookbook.md)** for every component and **[docs/tut
 
 ## Deutsch
 
-**browserslides** ist ein abhängigkeitsfreies Framework für Präsentationsdecks, die als *eine* selbst-enthaltene HTML-Datei leben und pixelgenau auf jeden Bildschirm skalieren. Kein Framework, kein Build-Schritt, kein Server, keine zu installierenden Schriften — eine `.html`, die überall gleich aussieht: 13″-Laptop, 4K-Beamer oder Handy im Querformat.
+**browserslides** ist ein abhängigkeitsfreies Framework für Präsentationsdecks, die als *eine* selbst-enthaltene HTML-Datei leben und pixelgenau auf jeden Bildschirm skalieren. Kein Framework, kein Build-Schritt, kein Server, keine zu installierenden Schriften – eine `.html`, die überall gleich aussieht: 13″-Laptop, 4K-Beamer oder Handy im Querformat.
 
 **Der Trick in zwei Ideen:**
 
-1. **Container-Query-Skalierung.** Jede Folie ist eine `16:9`-Box mit `container-type:size`. *Alles* darin ist in `cqw`/`cqh` (Container-Query-Einheiten) bemessen, nie in `px`/`rem`. Das Layout skaliert also proportional mit der Folie — kein Pixel-Alignment, sondern Proportions-Alignment.
-2. **Semantische Design-Tokens.** Jede Farbe und Schrift ist eine CSS-Variable mit sprechendem Namen (`--accent`, `--ink`, `--highlight`, `--font-display` …). Ein *Theme* ist nur ein `:root { … }`-Block, der diese Tokens überschreibt — inklusive der zur Laufzeit generierten SVG-Charts.
+1. **Container-Query-Skalierung.** Jede Folie ist eine `16:9`-Box mit `container-type:size`. *Alles* darin ist in `cqw`/`cqh` (Container-Query-Einheiten) bemessen, nie in `px`/`rem`. Das Layout skaliert also proportional mit der Folie – kein Pixel-Alignment, sondern Proportions-Alignment.
+2. **Semantische Design-Tokens.** Jede Farbe und Schrift ist eine CSS-Variable mit sprechendem Namen (`--accent`, `--ink`, `--highlight`, `--font-display` …). Ein *Theme* ist nur ein `:root { … }`-Block, der diese Tokens überschreibt – inklusive der zur Laufzeit generierten SVG-Charts.
 
 **Schnellstart:**
 
@@ -119,4 +120,4 @@ python3 -m http.server 8000
 
 Bedienung: Pfeiltasten, Leertaste, Scrollen oder die Nav-Punkte. Die Farb-/Font-Anpassung ist ein Ein-Datei-Wechsel (`themes/…css` kopieren, `--accent` & Co. ändern). Volle Bauteil-Referenz in **[docs/cookbook.md](docs/cookbook.md)**, Schritt-für-Schritt in **[docs/tutorial.de.md](docs/tutorial.de.md)**.
 
-**Lizenz: MIT** — frei nutzbar, auch kommerziell; nur den Copyright-Vermerk mitführen. Fonts fallen nicht unter MIT: das Default-Theme nutzt System-Schriften, eingebettete Schriften haben ihre eigenen Lizenzen (siehe LICENSE).
+**Lizenz: MIT** – frei nutzbar, auch kommerziell; nur den Copyright-Vermerk mitführen. Fonts fallen nicht unter MIT: das Default-Theme nutzt System-Schriften, eingebettete Schriften haben ihre eigenen Lizenzen (siehe LICENSE).

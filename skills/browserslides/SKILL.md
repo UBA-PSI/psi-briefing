@@ -313,7 +313,16 @@ Watch for modifiers that *eat* the gutter. `.panel--flush` and `.panel--marker` 
    // must be []  (and check no <img> is broken, and document.fonts.check(...) is true)
    ```
 
-   Expect the file to be large: images as base64 grow by about a third, so a deck with 20 photos lands around 8 MB. That is the trade for a file that works with no network, no server, and no missing-asset risk.
+   Expect the file to be large: images as base64 grow by about a third, so a deck with 20 photos lands around 8 MB. Most of that is detail nobody can see – a slide is 16:9 and an image rarely spans more than half of it, so camera-resolution photographs are wasted. Re-encode first:
+
+   ```bash
+   node tools/optimise-images.mjs deck.html -o deck.opt.html    # WebP, capped width
+   node tools/inline-deck.mjs      deck.opt.html -o deck.self-contained.html
+   ```
+
+   On the deck above that turned 8.26 MB into 3.31 MB with no visible loss – verified by zooming into a form screenshot with 8pt text, which survived quality 82 intact. Pick `--max-width` by measuring rather than guessing: find the widest image as a fraction of its slide, and multiply by the widest screen you will present on (a 4K display is ~3800 px). The default 1600 covers an image spanning ~43 % of a slide on 4K.
+
+   The tool is separate because WebP cannot be encoded from plain Node: it shells out to `cwebp` or `magick`, which keeps `inline-deck.mjs` dependency-free, and it lets you look at the re-encoded files before they vanish into a data: URI.
 
 ## Component quick-reference
 
