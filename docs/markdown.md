@@ -100,7 +100,7 @@ like a step number inside a long numbered procedure.
 | one image alone | shown whole, letterboxed rather than cropped |
 | two or more images | a gallery grid |
 | a short paragraph before other blocks | a `.lede` under the heading |
-| a short paragraph after a gallery | the gallery's caption |
+| a short paragraph after a gallery | the gallery's caption (also after `::: stack` / `::: shots`) |
 | `> blockquote` | the `.punch` band, pinned to the bottom |
 | `- bullets` | a `.kulissen` list, density picked from the item count |
 | `1.` items with `**bold leads**` | numbered `.flow` steps |
@@ -115,6 +115,20 @@ rel="noopener"`, because a deck is read full-screen and navigating away in the
 same tab strands the reader.
 
 ## Directives, when inference is not what you want
+
+There is a pattern to which components need one. Inference reads *shape*, and
+some components encode an **intention that has no shape in Markdown**.
+
+`::: editorial` is the clearest case. It lays out one dominant hero block beside
+a stack of smaller points — but in Markdown five `###` blocks all look alike.
+That the first outranks the rest is a decision, not a structure, so no rule
+could recover it. `::: delta` (old → new), `::: principles` (do vs avoid) and
+`::: chart` are directives for the same reason: the relationship between the
+items carries the meaning, and Markdown has no notation for it.
+
+Where the shape *does* carry the meaning — four peers, a list of steps, a
+quotation as the takeaway — no directive is needed, and using one is just extra
+typing. The 23-slide deck in `test-aufsicht/` uses exactly three.
 
 A fenced block forces a component:
 
@@ -136,7 +150,7 @@ Purpose-built ones, which read their body as a list:
 | `::: chat` | `- **Speaker** text of the message` |
 | `::: flow` | `- **Step title** the step's text` |
 | `::: tracker` | `- [x] a point already covered` |
-| `::: editorial` | `###` blocks; the first is the hero |
+| `::: editorial` | `###` blocks; the first is the hero. `::: editorial wide` gives it the dominant column instead of the balanced "lessons" split |
 | `::: principles` | two `###` blocks, each holding a list |
 | `::: net`, `::: cardcol`, `::: sandwich`, `::: doc` | `###` blocks |
 | `::: stack` | four images, fanned and click-to-pin |

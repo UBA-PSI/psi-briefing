@@ -540,9 +540,14 @@ function planSlide(slide, ctx) {
     if (len(t) <= 320) { plan.lede = t; rest.shift(); }
   }
 
-  // A trailing short paragraph after a gallery is a caption for it.
+  // A trailing short paragraph after a gallery is a caption for it. "Gallery"
+  // includes the directives that are galleries in disguise: from the author's
+  // side ::: stack and ::: shots are the same thing as a run of images, so the
+  // rule has to see them the same way or the caption silently stops working.
+  const isGallery = (g) => g && (g.type === 'images' ||
+    (g.type === 'directive' && ['stack', 'shots'].includes(g.block.name)));
   if (rest.length >= 2 && rest[rest.length - 1].type === 'prose' &&
-      rest[rest.length - 2].type === 'images' && rest[rest.length - 1].blocks.length === 1 &&
+      isGallery(rest[rest.length - 2]) && rest[rest.length - 1].blocks.length === 1 &&
       len(rest[rest.length - 1].blocks[0].text) <= 240) {
     plan.note = rest.pop().blocks[0].text;
   }
@@ -1215,7 +1220,11 @@ function renderDirective(d, ctx) {
     case 'editorial': {
       const cs = cards();
       const hero = cs[0];
-      return `<div class="editorial-layout editorial-layout--lessons">\n` +
+      // --lessons rebalances the columns (0.95/1.05 instead of 1.15/0.85) and
+      // shrinks the hero heading; it suits a closing "what we learned" slide,
+      // which is the common case. `::: editorial wide` gives the dominant hero.
+      const mod = truthy(d.args.wide) ? '' : ' editorial-layout--lessons';
+      return `<div class="editorial-layout${mod}">\n` +
         `  <div class="editorial-hero">\n    <h3>${inline(hero.title, ctx)}</h3>\n` +
         `${indent(renderBlocks(hero.blocks, ctx), 4)}\n  </div>\n` +
         `  <div class="editorial-stack">\n${cs.slice(1).map((c) =>
