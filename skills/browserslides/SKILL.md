@@ -316,6 +316,12 @@ Watch for modifiers that *eat* the gutter. `.panel--flush` and `.panel--marker` 
    Expect the file to be large: images as base64 grow by about a third, so a deck with 20 photos lands around 8 MB. Most of that is detail nobody can see – a slide is 16:9 and an image rarely spans more than half of it, so camera-resolution photographs are wasted. Re-encode first:
 
    ```bash
+   tools/build-deck.sh deck.html            # optimise, inline, verify
+   ```
+
+   The script runs both tools and then checks the result, which is the step that actually matters: it exits non-zero and names the files if anything external survived. Without an encoder installed it says so, skips the image step, and still produces a valid file. The two tools are also callable on their own:
+
+   ```bash
    node tools/optimise-images.mjs deck.html -o deck.opt.html    # WebP, capped width
    node tools/inline-deck.mjs      deck.opt.html -o deck.self-contained.html
    ```

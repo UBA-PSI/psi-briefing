@@ -70,6 +70,7 @@ Navigate with arrow keys, space, PageUp/Down, Home/End, the scroll wheel, or the
 | `docs/tutorial.en.md` · `docs/tutorial.de.md` | Build-your-first-deck walkthrough, bilingual. |
 | `tools/embed-fonts.mjs` · `tools/inline-deck.mjs` | Turn a linked dev deck into one self-contained file with base64 fonts/images. |
 | `tools/optimise-images.mjs` | Re-encode a deck's images to WebP at the size the slides actually use, before inlining. Cut a real 20-image deck from 8.3 MB to 3.3 MB. |
+| `tools/build-deck.sh` | The whole pipeline in one command: optimise, inline, then verify that nothing external is left. |
 | `skills/browserslides/` | A Claude Code / Agent **skill** so an AI assistant can build these decks for you. |
 
 ## Theming
