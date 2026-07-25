@@ -286,28 +286,52 @@
     });
   }
 
-  /* Universal image lightbox (img.zoomable) */
+  /* Universal image lightbox.
+     Every image on a slide zooms — no class needed (img.zoomable still works for
+     images outside a slide). Exceptions, so we don't fight other interactions:
+     images already inside an overlay, and an unpinned .stack-card (there the
+     first click pins the card; once pinned, a second click zooms it). */
   function initZoomable() {
     let ov = null;
     const close = () => { if (ov) { ov.remove(); ov = null; } };
+    const zoomable = (img) => {
+      if (img.closest(".zoom-ov, .shot-layer, .slide-preview")) return false;
+      const card = img.closest(".stack-card");
+      if (card && !card.classList.contains("pinned")) return false;
+      return img.classList.contains("zoomable") || !!img.closest(".slide");
+    };
     document.addEventListener("click", (e) => {
-      const img = e.target.closest && e.target.closest("img.zoomable");
-      if (!img) return;
+      if (e.bsPinnedNow) return;            // this click pinned a stack card
+      const img = e.target.closest && e.target.closest("img");
+      if (!img || !zoomable(img)) return;
       close();
       ov = document.createElement("div"); ov.className = "zoom-ov";
       const big = document.createElement("img");
       big.src = img.currentSrc || img.src; big.alt = img.alt || "";
-      ov.appendChild(big); ov.addEventListener("click", close);
+      ov.appendChild(big);
+      // Carry the caption into the overlay when the image has one.
+      const cap = img.closest("figure") && img.closest("figure").querySelector("figcaption");
+      const capText = (cap && cap.textContent.trim()) || img.alt;
+      if (capText) {
+        const c = document.createElement("p");
+        c.className = "zoom-cap"; c.textContent = capText;
+        ov.appendChild(c);
+      }
+      ov.addEventListener("click", close);
       document.body.appendChild(ov);
     });
     document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") close(); });
   }
 
-  /* Image stack: click a card to pin it to the front */
+  /* Image stack: click a card to pin it to the front.
+     This runs on the card (bubbling) before the document-level zoom handler, so
+     mark the event when a click *changes* the pin — that click only pins, and
+     the zoom handler skips it. A click on an already-pinned card zooms. */
   function initImageStacks() {
     document.querySelectorAll(".stack-stage").forEach((stage) => {
       const cards = stage.querySelectorAll(".stack-card");
-      cards.forEach((card) => card.addEventListener("click", () => {
+      cards.forEach((card) => card.addEventListener("click", (ev) => {
+        if (!card.classList.contains("pinned")) ev.bsPinnedNow = true;
         cards.forEach((c) => c.classList.toggle("pinned", c === card));
       }));
     });
@@ -330,6 +354,39 @@
     });
   }
 
+  /* Equalise side-by-side panels that are ALMOST the same height.
+     Boxes ending within a few percent of each other read as sloppy; forcing
+     them level reads as deliberate. Boxes of genuinely different length are
+     left alone on purpose - stretching a short panel to match a long one just
+     draws a border around empty space (see "Filling the frame" in the docs).
+     Equalising is done with a class, not a pixel height, so it survives resize;
+     the class is removed before measuring so the test sees natural heights. */
+  const EQUALISE_TOLERANCE = 0.28;   // max relative height difference to level out
+
+  function equaliseRows() {
+    document.querySelectorAll(".cols").forEach((row) => {
+      row.classList.remove("bs-equalised");
+      // Only level panels that ARE their column. A column stacking prose over a
+      // panel must keep its natural height, or the panel would be forced to the
+      // full column height and overrun the text above it.
+      const panels = [...row.children]
+        .map((col) => (col.children.length === 1 ? col.querySelector(":scope > .panel") : null))
+        .filter(Boolean);
+      if (panels.length < 2 || panels.length !== row.children.length) return;
+      const heights = panels.map((p) => p.getBoundingClientRect().height);
+      const max = Math.max(...heights), min = Math.min(...heights);
+      if (max > 0 && (max - min) / max <= EQUALISE_TOLERANCE) row.classList.add("bs-equalised");
+    });
+  }
+
+  function initEqualise() {
+    equaliseRows();
+    let t;
+    addEventListener("resize", () => { clearTimeout(t); t = setTimeout(equaliseRows, 120); });
+    // Re-check once webfonts land, since they change text height.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(equaliseRows);
+  }
+
   function boot() {
     initDeck();
     initDetailLayers();
@@ -339,6 +396,7 @@
     initImageStacks();
     initRotateHint();
     initThemeToggle();
+    initEqualise();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

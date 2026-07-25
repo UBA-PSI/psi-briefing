@@ -1,26 +1,26 @@
 # Build your first deck in 15 minutes
 
-*browserslides — a dependency-free framework for self-contained 16:9 HTML slide decks. [MIT-licensed](https://opensource.org/license/mit) (fonts excepted).*
+*browserslides – a dependency-free framework for self-contained 16:9 HTML slide decks. [MIT-licensed](https://opensource.org/license/mit) (fonts excepted).*
 
 This walkthrough takes you from a blank file to a real presentation: a title slide, a content slide with live components, and a bar chart generated in the browser. By the end you'll know enough to build and share your own deck.
 
 ## What you'll build
 
-A short deck that opens straight from your file system — double-click it, or serve it statically. No `npm install`, no bundler, no build step, no framework runtime. Just three files you link together: the core CSS, a theme, and one small script.
+A short deck that opens straight from your file system – double-click it, or serve it statically. No `npm install`, no bundler, no build step, no framework runtime. Just three files you link together: the core CSS, a theme, and one small script.
 
 ### The core idea
 
-Every slide is a **16:9 box**. The box uses CSS `container-type: size`, which means everything inside it is measured in *container-query units* — `cqw` (1% of the slide's width) and `cqh` (1% of its height) — instead of pixels. So the whole layout, headline sizes included, scales in proportion to the slide.
+Every slide is a **16:9 box**. The box uses CSS `container-type: size`, which means everything inside it is measured in *container-query units* – `cqw` (1% of the slide's width) and `cqh` (1% of its height) – instead of pixels. So the whole layout, headline sizes included, scales in proportion to the slide.
 
-The practical payoff: a slide looks *identical* on a 13" laptop, a 4K projector, and a phone held in landscape. Nothing reflows, nothing jumps. It isn't "pixel-perfect" so much as **proportion-perfect** — the same design, just bigger or smaller.
+The practical payoff: a slide looks *identical* on a 13" laptop, a 4K projector, and a phone held in landscape. Nothing reflows, nothing jumps. It isn't "pixel-perfect" so much as **proportion-perfect** – the same design, just bigger or smaller.
 
 You'll almost never write `px` in your own slide content. Reach for `cqw`/`cqh` and the layout follows the slide everywhere.
 
 ---
 
-## Step 1 — The minimal HTML
+## Step 1 – The minimal HTML
 
-Create a file called `my-deck.html` next to the `framework/` and `themes/` folders (adjust the two `href`s if you put it elsewhere). Here is a complete, working starter page — copy it in as-is:
+Create a file called `my-deck.html` next to the `framework/` and `themes/` folders (adjust the two `href`s if you put it elsewhere). Here is a complete, working starter page – copy it in as-is:
 
 ```html
 <!DOCTYPE html>
@@ -71,13 +71,13 @@ Open it in a browser. You already have a working slide, navigation dots down the
 
 One `<section class="frame">` = one slide. To add slides, you copy that block. The `.dots`, `.hint`, and the `<script>` go **once** at the very end of `<body>`.
 
-> **Opening it:** `file://` works for everything in this tutorial. If you later add a headless-browser preview or anything that dislikes `file://` URLs, run a throwaway static server from the deck's folder — e.g. `python3 -m http.server 8000` — and visit `http://localhost:8000/my-deck.html`.
+> **Opening it:** `file://` works for everything in this tutorial. If you later add a headless-browser preview or anything that dislikes `file://` URLs, run a throwaway static server from the deck's folder – e.g. `python3 -m http.server 8000` – and visit `http://localhost:8000/my-deck.html`.
 
 ---
 
-## Step 2 — A title slide
+## Step 2 – A title slide
 
-Give the deck an opening. A title slide is a normal slide with the extra class `slide--title` on the `.slide` element — the theme paints it in the accent colour and centres the content. Replace your first `<section>` with this:
+Give the deck an opening. A title slide is a normal slide with the extra class `slide--title` on the `.slide` element – the theme paints it in the accent colour and centres the content. Replace your first `<section>` with this:
 
 ```html
 <section class="frame">
@@ -97,23 +97,22 @@ Give the deck an opening. A title slide is a normal slide with the extra class `
 
 What each piece does:
 
-- `.eyebrow` — the small, spaced, uppercase kicker above the headline.
-- `<h1>` — the big display headline. On a title slide it's set in the display font and sized in `cqw`, so it never overflows.
-- `.title-strip` — a row of small stat blocks (`<b>` is the number, `<span>` is the label). Great for a "deck at a glance" summary.
+- `.eyebrow` – the small uppercase kicker above the headline. Optional, and usually better left out: one on every slide turns into wallpaper and costs a line of height each time. Keep it only where it says something the heading cannot, such as a step number in a long procedure.
+- `<h1>` – the big display headline. On a title slide it's set in the display font and sized in `cqw`, so it never overflows.
+- `.title-strip` – a row of small stat blocks (`<b>` is the number, `<span>` is the label). Great for a "deck at a glance" summary.
 
-Use `&nbsp;` (a non-breaking space) inside numbers and short phrases you don't want to wrap — `1&nbsp;280`, `10&nbsp;a.m.`
+Use `&nbsp;` (a non-breaking space) inside numbers and short phrases you don't want to wrap – `1&nbsp;280`, `10&nbsp;a.m.`
 
 ---
 
-## Step 3 — A content slide with real components
+## Step 3 – A content slide with real components
 
-Now a data slide. Add this as a new `<section>` after the title. It shows two of the built-in components — a **facts grid** and a **two-column timeline** — and demonstrates how the slide body is laid out.
+Now a data slide. Add this as a new `<section>` after the title. It shows two of the built-in components – a **facts grid** and a **two-column timeline** – and demonstrates how the slide body is laid out.
 
 ```html
 <section class="frame">
   <div class="slide"><div class="slide-inner">
-    <p class="eyebrow">Chapter 1 · The numbers</p>
-    <h2>Plan versus reality</h2>
+        <h2>Plan versus reality</h2>
 
     <!-- Facts grid: four big-number cells; the first is a "hero" cell. -->
     <div class="facts">
@@ -148,26 +147,25 @@ Now a data slide. Add this as a new `<section>` after the title. It shows two of
 </section>
 ```
 
-**How the layout works.** `.slide-inner` is a **flex column**: children stack top to bottom. Components like `.facts` and `.twocol` carry `flex: 1`, so they grow to fill the space left between the heading and the footer — the slide always looks balanced, whatever you put in it. (In practice, put *one* main component per content slide; two, as shown here, works when both are compact.)
+**How the layout works.** `.slide-inner` is a **flex column**: children stack top to bottom. Components like `.facts` and `.twocol` carry `flex: 1`, so they grow to fill the space left between the heading and the footer – the slide always looks balanced, whatever you put in it. (In practice, put *one* main component per content slide; two, as shown here, works when both are compact.)
 
-- **`.facts`** — a four-cell grid of big numbers. `.fact b` is the number, `.fact span` is the caption. Add `.fact--hero` to any cell to flood it with the accent colour. `<sup>` shrinks a unit like `%`.
-- **`.twocol` + `.tl`** — two columns, each a timeline list. `.tl-head` is the column heading; every `<li>` is a `<time>` label plus text, and a nested `<span class="sub">` adds a quiet second line.
+- **`.facts`** – a four-cell grid of big numbers. `.fact b` is the number, `.fact span` is the caption. Add `.fact--hero` to any cell to flood it with the accent colour. `<sup>` shrinks a unit like `%`.
+- **`.twocol` + `.tl`** – two columns, each a timeline list. `.tl-head` is the column heading; every `<li>` is a `<time>` label plus text, and a nested `<span class="sub">` adds a quiet second line.
 
-**The footer.** Every slide ends with `.pagefoot` — a left caption and a right `.pagenum`. Leave `.pagenum` empty: the script fills in `n / total` for every slide automatically, so you never renumber by hand.
+**The footer.** Every slide ends with `.pagefoot` – a left caption and a right `.pagenum`. Leave `.pagenum` empty: the script fills in `n / total` for every slide automatically, so you never renumber by hand.
 
 ---
 
-## Step 4 — A generated bar chart
+## Step 4 – A generated bar chart
 
-Charts aren't images — the script draws them as SVG at runtime, and they inherit your theme's colours. Two parts: an empty container in the slide, and one call at the end of the page.
+Charts aren't images – the script draws them as SVG at runtime, and they inherit your theme's colours. Two parts: an empty container in the slide, and one call at the end of the page.
 
 First, the container. It needs an `id` so the script can find it:
 
 ```html
 <section class="frame" id="slide-chart">
   <div class="slide"><div class="slide-inner">
-    <p class="eyebrow">Chapter 1 · Activity</p>
-    <h2>Commits per week, with milestones</h2>
+        <h2>Commits per week, with milestones</h2>
     <div class="chartbox" id="chart-weeks"></div>
     <div class="pagefoot"><span>My deck</span><span class="pagenum"></span></div>
   </div></div>
@@ -204,20 +202,20 @@ Then, *after* `<script src="framework/browserslides.js"></script>`, add your own
 
 What the options mean:
 
-- **`data`** — an array of bars. Each is `{ value, label?, color?, tooltip? }`; a plain number works too when you only need the height.
-- **`max`** — the top of the y-axis. Omit it and the chart picks a sensible round maximum just above your tallest bar.
-- **`gridlines`** — the y-values to draw horizontal lines and labels at. Omit for five evenly-spaced defaults.
-- **`markers`** — milestone overlays: a dashed line + dot + label at a bar `index`. `level` staggers labels vertically so they don't collide; `anchor` is `'start'` or `'end'` for which side the text sits.
+- **`data`** – an array of bars. Each is `{ value, label?, color?, tooltip? }`; a plain number works too when you only need the height.
+- **`max`** – the top of the y-axis. Omit it and the chart picks a sensible round maximum just above your tallest bar.
+- **`gridlines`** – the y-values to draw horizontal lines and labels at. Omit for five evenly-spaced defaults.
+- **`markers`** – milestone overlays: a dashed line + dot + label at a bar `index`. `level` staggers labels vertically so they don't collide; `anchor` is `'start'` or `'end'` for which side the text sits.
 
-**Colours come from your theme, for free.** With no `color`, bars use `--accent`. Any per-bar `color` (or `barColor` for the whole chart) accepts either a literal colour *or* a `"--token"` name — `'--accent-60'`, `'--muted'` — which is read live from the active theme. Change the theme and the chart recolours itself; you never hard-code a hex value into a chart. The chart also redraws on resize and after web fonts load, so it stays crisp.
+**Colours come from your theme, for free.** With no `color`, bars use `--accent`. Any per-bar `color` (or `barColor` for the whole chart) accepts either a literal colour *or* a `"--token"` name – `'--accent-60'`, `'--muted'` – which is read live from the active theme. Change the theme and the chart recolours itself; you never hard-code a hex value into a chart. The chart also redraws on resize and after web fonts load, so it stays crisp.
 
 Other handy options: `valueLabels: true` prints each bar's value on top, `labelEvery: 5` thins a crowded x-axis, `yLabels: false` hides the numeric axis.
 
 ---
 
-## Step 5 — Theme it
+## Step 5 – Theme it
 
-A **theme is nothing but a `:root { … }` block that overrides design tokens** — colours and fonts. The framework hard-codes no colours; every component reads tokens like `--accent`, `--ink`, `--paper`. So re-theming a whole deck is a one-line change.
+A **theme is nothing but a `:root { … }` block that overrides design tokens** – colours and fonts. The framework hard-codes no colours; every component reads tokens like `--accent`, `--ink`, `--paper`. So re-theming a whole deck is a one-line change.
 
 **Try a different look instantly.** Swap the theme `<link>`:
 
@@ -226,7 +224,7 @@ A **theme is nothing but a `:root { … }` block that overrides design tokens** 
 <link rel="stylesheet" href="themes/midnight.css">   <!-- was: themes/bamberg.css -->
 ```
 
-`midnight.css` flips the neutrals too — `--paper` goes dark, `--ink` goes light — and because nothing is pinned to white or black, the entire deck, charts included, goes dark with it.
+`midnight.css` flips the neutrals too – `--paper` goes dark, `--ink` goes light – and because nothing is pinned to white or black, the entire deck, charts included, goes dark with it.
 
 **Make your own theme.** Copy `themes/bamberg.css` to `themes/mytheme.css` and change a few tokens. The essentials:
 
@@ -249,52 +247,88 @@ A **theme is nothing but a `:root { … }` block that overrides design tokens** 
 
 The tint ramp (`--accent-80 … --accent-20`) is worth getting right: it's the accent progressively mixed toward white, and it's what gives fact cells, timelines, and chart bars their range. Pick five evenly-lightening steps.
 
-**Fonts.** The framework's default fonts are **system fonts** — so a deck renders identically offline with zero downloaded bytes. A theme may *name* real fonts (Bamberg asks for Copse + Open Sans); if they aren't available, the stack falls back to the system serif/sans and the deck still works. To ship the real fonts, embed them (next step).
+**Fonts.** The framework's default fonts are **system fonts** – so a deck renders identically offline with zero downloaded bytes. A theme may *name* real fonts (Bamberg asks for Copse + Open Sans); if they aren't available, the stack falls back to the system serif/sans and the deck still works. To ship the real fonts, embed them (next step).
 
 ---
 
-## Step 6 — Make it self-contained for sharing
+## Step 6 – Make it self-contained for sharing
 
-While you're building, three linked files is convenient. To *hand the deck to someone* — email it, drop it on a USB stick, put it behind a login — you want **one HTML file that works offline**, with no folder of assets to lose.
+While you're building, three linked files is convenient. To *hand the deck to someone* – email it, drop it on a USB stick, put it behind a login – you want **one HTML file that works offline**, with no folder of assets to lose.
 
 The recipe:
 
-1. **Inline the CSS** — paste `browserslides.css` and your theme into a `<style>` block in the `<head>`, replacing the two `<link>`s.
-2. **Inline the JS** — paste `browserslides.js` into a `<script>` block, replacing `<script src=…>`.
-3. **Embed fonts and images as base64** — instead of linking a `.woff2` or a `.png`, encode it and drop it straight into the CSS/HTML as a `data:` URI.
+1. **Inline the CSS** – paste `browserslides.css` and your theme into a `<style>` block in the `<head>`, replacing the two `<link>`s.
+2. **Inline the JS** – paste `browserslides.js` into a `<script>` block, replacing `<script src=…>`.
+3. **Embed fonts and images as base64** – instead of linking a `.woff2` or a `.png`, encode it and drop it straight into the CSS/HTML as a `data:` URI.
 
 Do that and the file has zero external references: it opens from `file://`, from a stick, from anywhere, forever, with no network.
 
 You don't have to do this by hand. The intended home for the helper scripts is the **`tools/`** directory:
 
-- **`tools/embed-fonts.mjs`** — encodes your `.woff2`/`.png` assets as base64 and inlines them.
-- **`tools/inline-deck.mjs`** — folds the linked CSS and JS into the HTML, producing the single self-contained file.
+- **`tools/embed-fonts.mjs`** – encodes your `.woff2`/`.png` assets as base64 and inlines them.
+- **`tools/inline-deck.mjs`** – folds the linked CSS and JS into the HTML, producing the single self-contained file.
 
 Run those against your working deck to get the shareable artifact, and keep editing the linked version.
 
 ---
+
+## Step 7 – The things that decide whether it looks good
+
+The layout engine gets you a scaling 16:9 frame. These few settings decide whether the result looks
+composed or thrown together, and they are the ones people get wrong first.
+
+**Size.** `--type-scale` in `:root` multiplies every body and label size at once (display sizes stay
+fixed, so headlines never break). Slides are read across a room – err large. If a slide only fits at a
+smaller size, it has too much on it; split it instead of shrinking the type.
+
+**Fill the frame.** `.cols` stretches to full height but packs its content to the top, so a slide with
+two short panels ends up half empty. Do **not** fix that by stretching the boxes – a bordered panel
+stretched to full height just frames the emptiness. Fix it with content: take more from your source,
+or end the slide with a `.punch` line stating its takeaway.
+
+**Vertical alignment – three different questions:**
+
+| Question | Modifier |
+| --- | --- |
+| Is the whole row sitting too high? | `.cols--center` |
+| Do two columns of different length hang from the top? | `.cols--middle` |
+| Does an equal-height cell look top-heavy? | `.net--middle` |
+
+**Call-outs.** A tinted `.panel--hl` inside a text column is indented by its own padding. `.panel--flush`
+pulls it left so its text lines up with the column; `.panel--marker` drops the fill and marks the passage
+with a highlighter rule instead.
+
+**Typography.** Text on a highlight uses `--highlight-ink` / `--highlight-ink-em` – near-black carrying
+the highlight's own hue. Never accent blue on yellow. Keep uppercase tracking near `0.08–0.11em`; past
+that a word stops reading as a word. Use the en dash `–`, never the em dash. Links out of the deck need
+`target="_blank" rel="noopener"`.
+
+**Never hard-code the width of a content-sized column.** `grid-template-columns: 7cqw 1fr` is a guess
+about how long your labels will be, and it shreds anything longer. Use `minmax(7cqw, max-content)` with
+`subgrid` on the rows, so the track fits the longest label and every row stays aligned.
+
 
 ## Navigation & tips
 
 Once the script is on the page, the deck drives itself:
 
 - **Move around:** `→` `↓` `Space` `PageDown` go forward; `←` `↑` `PageUp` go back; `Home`/`End` jump to the first/last slide. Plain scrolling works too, and each slide **snaps** to centre.
-- **Nav dots:** the `.dots` rail on the right shows your position and is clickable. It's built from your slides automatically — the number of dots always matches the number of `.frame` sections.
+- **Nav dots:** the `.dots` rail on the right shows your position and is clickable. It's built from your slides automatically – the number of dots always matches the number of `.frame` sections.
 - **Page numbers:** any empty `.pagenum` is filled with `n / total` on load. Renumbering is never your job.
 - **Reduced motion:** if the viewer's OS asks for reduced motion, scrolling jumps instead of animating and transitions are dropped. Respected automatically.
-- **Phones:** in portrait on a small screen, a dismissible hint suggests turning the device — the deck is designed for landscape.
+- **Phones:** in portrait on a small screen, a dismissible hint suggests turning the device – the deck is designed for landscape.
 
 A couple of rules keep things predictable:
 
 - **One `<section class="frame">` per slide.** The dots, page numbers, and keyboard nav all count `.frame` elements.
-- **Don't hand-edit a browser-saved copy of the deck as your source.** The script *generates* charts, dots and page numbers into the DOM on load, so a "Save page as…" dump has that output baked in — reopen it and you'd get duplicates. Always edit the original source file.
+- **Don't hand-edit a browser-saved copy of the deck as your source.** The script *generates* charts, dots and page numbers into the DOM on load, so a "Save page as…" dump has that output baked in – reopen it and you'd get duplicates. Always edit the original source file.
 
 ---
 
 ## Where to go next
 
-You've used a handful of components; there are many more — image galleries, annotated screenshots, flow steps, before/after deltas, chat bubbles, section dividers, document mock-ups, clickable detail layers, cross-reference previews, and more.
+You've used a handful of components; there are many more – image galleries, annotated screenshots, flow steps, before/after deltas, chat bubbles, section dividers, document mock-ups, clickable detail layers, cross-reference previews, and more.
 
-They're all catalogued, with copy-paste markup, in **[`docs/cookbook.md`](cookbook.md)**. The **[`examples/example-deck.html`](../examples/example-deck.html)** file is a complete deck that exercises most of them — read its source alongside the cookbook.
+They're all catalogued, with copy-paste markup, in **[`docs/cookbook.md`](cookbook.md)**. The **[`examples/example-deck.html`](../examples/example-deck.html)** file is a complete deck that exercises most of them – read its source alongside the cookbook.
 
 Happy building.

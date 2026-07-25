@@ -2,3 +2,6 @@
 .DS_Store
 node_modules/
 *.log
+
+# Arbeits-/Testdecks (nicht Teil des Frameworks)
+test-aufsicht/

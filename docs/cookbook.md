@@ -6,16 +6,16 @@ A copy-from reference catalog for building 16:9 HTML slide decks with browsersli
 
 ## How it works
 
-**Scaling.** Every `.slide` is a 16:9 box declared with `container-type: size`. Because of that, everything *inside* a slide is measured in container-query units — `cqw` (1% of the slide's width) and `cqh` (1% of its height) — never in `px` or `rem`. The entire layout, including the type scale, is expressed as a proportion of the slide itself. Show the same deck on a 13" laptop, a 4K projector, or a phone in landscape and every heading, gap, and rule keeps the exact same relative position. That is why the alignment feels pixel-perfect: it is proportion-perfect. When you write your own additions, stay in `cqw`/`cqh` so they scale with the frame too.
+**Scaling.** Every `.slide` is a 16:9 box declared with `container-type: size`. Because of that, everything *inside* a slide is measured in container-query units – `cqw` (1% of the slide's width) and `cqh` (1% of its height) – never in `px` or `rem`. The entire layout, including the type scale, is expressed as a proportion of the slide itself. Show the same deck on a 13" laptop, a 4K projector, or a phone in landscape and every heading, gap, and rule keeps the exact same relative position. That is why the alignment feels pixel-perfect: it is proportion-perfect. When you write your own additions, stay in `cqw`/`cqh` so they scale with the frame too.
 
-**Theming.** Colours and fonts are semantic design tokens — CSS custom properties declared in `:root` in the core stylesheet (a neutral "slate" default). A theme file is nothing but a `:root { … }` block that overrides some of those tokens; it never restyles components. Load the core CSS first, then a theme:
+**Theming.** Colours and fonts are semantic design tokens – CSS custom properties declared in `:root` in the core stylesheet (a neutral "slate" default). A theme file is nothing but a `:root { … }` block that overrides some of those tokens; it never restyles components. Load the core CSS first, then a theme:
 
 ```html
 <link rel="stylesheet" href="framework/browserslides.css">
 <link rel="stylesheet" href="themes/bamberg.css">
 ```
 
-Swap the second line for `themes/midnight.css` and the same deck goes dark — because nothing is hard-coded to white or black, only to tokens. Charts read these same tokens at runtime (via `Browserslides.token()`), so a generated chart automatically matches the active theme. For distribution, inline the two stylesheets and the script into the HTML to get one self-contained file.
+Swap the second line for `themes/midnight.css` and the same deck goes dark – because nothing is hard-coded to white or black, only to tokens. Charts read these same tokens at runtime (via `Browserslides.token()`), so a generated chart automatically matches the active theme. For distribution, inline the two stylesheets and the script into the HTML to get one self-contained file.
 
 ---
 
@@ -25,11 +25,11 @@ Every custom property from `:root` in `browserslides.css`. Override any of these
 
 | Token | What it's for |
 | --- | --- |
-| `--accent` | Brand accent — headings, rules, default chart bars, the title/divider background |
-| `--accent-80` | Accent tint ramp step (darker end) — divider numbers, secondary bars, borders |
-| `--accent-60` | Accent tint — eyebrows, muted bars, dotted underlines |
-| `--accent-40` | Accent tint — arrows, faint borders, min TOC numerals |
-| `--accent-20` | Lightest accent tint — panel fills, fact cards, chat bubbles |
+| `--accent` | Brand accent – headings, rules, default chart bars, the title/divider background |
+| `--accent-80` | Accent tint ramp step (darker end) – divider numbers, secondary bars, borders |
+| `--accent-60` | Accent tint – eyebrows, muted bars, dotted underlines |
+| `--accent-40` | Accent tint – arrows, faint borders, min TOC numerals |
+| `--accent-20` | Lightest accent tint – panel fills, fact cards, chat bubbles |
 | `--accent-ink` | Text/icons placed on top of `--accent` (usually white) |
 | `--highlight` | Call-outs, emphasis (the `.punch` family) |
 | `--highlight-soft` | Soft fill behind a highlight (e.g. `.punch` background) |
@@ -39,15 +39,15 @@ Every custom property from `:root` in `browserslides.css`. Override any of these
 | `--positive-soft` | Soft fill behind a positive marker |
 | `--paper` | The slide surface (light by default) |
 | `--ink` | Primary text |
-| `--ink-soft` | Secondary text — body copy, captions inside components |
+| `--ink-soft` | Secondary text – body copy, captions inside components |
 | `--muted` | Captions, footers, axis labels |
 | `--muted-soft` | Subtle fills and row separators |
 | `--rule` | Borders and hairlines |
 | `--stage` | The area behind the slides (the "desk") |
-| `--stage-ink` | Text/dots on the stage — nav dots, hint, scroll cue |
+| `--stage-ink` | Text/dots on the stage – nav dots, hint, scroll cue |
 | `--font-display` | Display face for headings |
 | `--font-body` | Body face for running text |
-| `--font-mono` | Monospace face — document heads, build-card titles |
+| `--font-mono` | Monospace face – document heads, build-card titles |
 | `--slide-radius` | Corner radius of the slide box |
 | `--slide-shadow` | Drop shadow under each slide |
 
@@ -62,7 +62,7 @@ One slide is one `<section class="frame">`. The nesting is required: `.frame` ce
 ```html
 <section class="frame">
   <div class="slide"><div class="slide-inner">
-    <p class="eyebrow">Chapter · Section</p>
+    <!-- <p class="eyebrow">Chapter · Section</p>   optional - usually omit -->
     <h2>Slide heading</h2>
     <!-- component markup goes here -->
     <div class="pagefoot"><span>Deck name</span><span class="pagenum"></span></div>
@@ -70,9 +70,9 @@ One slide is one `<section class="frame">`. The nesting is required: `.frame` ce
 </section>
 ```
 
-- `.eyebrow` — small uppercase kicker above the heading (optional).
+- `.eyebrow` – optional uppercase kicker. **Leave it out unless it carries orientation the heading cannot** – a step number inside a long numbered procedure, say. One on every slide is wallpaper: the eye stops reading it by slide four, and it has cost a line of vertical space on every slide. An eyebrow that restates the heading, or the section its divider just announced, should be deleted.
 - `h1` is for title/closing slides; `h2` for content slides.
-- `.pagefoot` sits at the bottom of every slide. Leave `.pagenum` empty — the runtime fills it with `n / total`.
+- `.pagefoot` sits at the bottom of every slide. Leave `.pagenum` empty – the runtime fills it with `n / total`.
 - Give a `<section>` an `id` if you want to link to it with an `a.goto` cross-reference.
 
 ### Deck chrome (once, at the end of `<body>`)
@@ -102,13 +102,46 @@ The `.dots` nav is populated at runtime (one dot per `.frame`); if you omit the 
 
 ## Slidedoc utilities (start here for text-heavy slides)
 
-browserslides is at its best as a **slidedoc** (Duarte's term): text-dense slides meant to be read, filling the frame with well-arranged blocks — not sparse "one line per slide" presentation slides. These three utilities are the workhorses for that. Reach for them first; the named components below are specialisations.
+browserslides is at its best as a **slidedoc** (Duarte's term): text-dense slides meant to be read, filling the frame with well-arranged blocks – not sparse "one line per slide" presentation slides. These three utilities are the workhorses for that. Reach for them first; the named components below are specialisations.
 
-**`.prose` — scaling free text.** The framework styles paragraphs *per component*, so a bare `<p>` falls back to 16px and does **not** scale with the slide. Always wrap free text in `.prose` (modifiers: `.prose--lead` bigger, `.prose--dense` smaller). `<b>` inside `.prose` is accent-coloured; `.prose ul/li` gives a dotted list.
+**`.prose` – scaling free text.** The framework styles paragraphs *per component*, so a bare `<p>` falls back to 16px and does **not** scale with the slide. Always wrap free text in `.prose` (modifiers: `.prose--lead` bigger, `.prose--dense` smaller). `<b>` inside `.prose` is accent-coloured; `.prose ul/li` gives a dotted list.
 
-**`.cols` — arrange blocks in columns.** A flex grid that fills the remaining height. Modifiers: `--2`, `--3`, `--wide-left` (1.5 : 1), `--wide-right` (1 : 1.5), `--center` (centre vertically). Wrap each column's content in `.col` when it should be a flex column.
+**`.cols` – arrange blocks in columns.** A flex grid that fills the remaining height. Width modifiers: `--2`, `--3`, `--wide-left` (1.5 : 1), `--wide-right` (1 : 1.5). Wrap each column's content in `.col`.
 
-**`.panel` — a grouped text card.** `--plain` (bordered, no fill), `--hl` (highlight fill). Pair with a `.tl-head` label and `.prose` body.
+Two vertical modifiers act on different axes and are easy to confuse:
+
+| Modifier | Effect |
+| --- | --- |
+| `.cols--center` | Centres the **whole row** in the slide. The columns still stretch, so their contents stay top-aligned to each other. |
+| `.cols--middle` | Centres **each column's content** against its neighbours – use it when a short text block sits beside a taller image and the two should share a middle. |
+
+They combine. `--middle` centres the content *inside* the stretched column rather than shrinking the column, so components that size themselves to the space they are given (`.shots`, `.chartbox`) keep working; centring them by un-stretching the column makes those grow to their natural height and run off the slide.
+
+**`.panel` – a grouped text card.** `--plain` (bordered, no fill), `--hl` (highlight fill). Pair with a `.tl-head` label and `.prose` body.
+
+**Attaching a call-out to its column.** A tinted `.panel--hl` dropped into a text column is indented by its own padding, so its text no longer lines up with the running text above it. Two modifiers fix that, and both are worth having:
+
+| Modifier | Look |
+| --- | --- |
+| `.panel--flush` | Keeps the tinted fill but pulls the box left by its padding, so the text inside is flush with the column text and the fill bleeds into the margin. The call-out still reads as a block. |
+| `.panel--marker` | Drops the fill entirely and marks the passage with a thick rule in the highlight colour, like a highlighter stripe down the side. Lightest touch; the text column stays visually unbroken. |
+
+```html
+<div class="panel panel--hl panel--flush">…</div>
+<div class="panel panel--marker">…</div>
+```
+
+Both work on `.punch` too (`.punch--flush`, `.punch--marker`).
+
+**No blue on yellow.** Accent blue on a highlight fill reads badly – two saturated colours competing, neither winning. Text on a highlight uses `--highlight-ink` (body) and `--highlight-ink-em` (bold, labels, links): near-black, but carrying the highlight's own hue, so emphasis reads as *weight* rather than as a second colour. Both are derived from `--highlight` with `color-mix`, so re-theming the highlight carries them along. The framework applies them automatically inside `.punch` and `.panel--hl`; you do not need to set colours by hand.
+
+**`.lede` – the one full-width paragraph.** A short orienting sentence directly under the slide heading, capped at `58cqw` so the measure stays readable. This is the only place running text should span the slide; everywhere else it belongs in a column or panel. A closing line at the bottom is a `.punch`, not a `.lede`.
+
+```html
+<h2>Laptops austeilen – drei Varianten</h2>
+<p class="lede">Welche Variante gilt, gibt die technische Leitung vor dem Aufbau vor.</p>
+<div class="cols cols--3"> … </div>
+```
 
 ```html
 <div class="cols cols--wide-right">
@@ -128,7 +161,19 @@ browserslides is at its best as a **slidedoc** (Duarte's term): text-dense slide
 </div>
 ```
 
-Fill the vertical space and keep density high; after building, verify no slide overflows and none is mostly empty. Note: inside a `.fact`, put emphasis in the label with `<b>` freely — a guard keeps it label-sized (the big number is `.fact > b`).
+Fill the vertical space and keep density high; after building, verify no slide overflows and none is mostly empty. Note: inside a `.fact`, put emphasis in the label with `<b>` freely – a guard keeps it label-sized (the big number is `.fact > b`).
+
+**Filling the frame – the usual failure.** `.cols` is `flex:1` *and* `align-content:start`: the container stretches to full height, the content row inside it does not. A slide with two short panels therefore sits in the top half with a dead band above the footer.
+
+Do **not** fix that by giving `.panel` / `.shots` / `.col` children a `flex:1` of their own. It scores well on any fill metric and looks worse: a bordered panel stretched to full height just frames the emptiness, and stretched images crop badly and can shove their text sibling off the slide. Fix it with content instead:
+
+- **more real content** on the slide (usually the source was over-compressed) – the best answer;
+- a closing **`.punch`** line, which has `margin-top:auto`, so it pins to the bottom, closes the band, and states the takeaway;
+- **bigger images** – a `.shots` grid on the narrow side of `cols--wide-left` renders postage stamps; prefer `cols--2`;
+- **merge two thin slides** into one dense one;
+- `cols--center` only as a last resort – it balances the whitespace rather than filling it.
+
+Also note: a `flex:1` component (`.cols`, `.flow`) will **overlap** a sibling placed after it instead of pushing it down, and that overlap does not show up as overflow – compare sibling bounding boxes when you verify.
 
 ## Component catalog
 
@@ -203,7 +248,7 @@ A dark chapter break with a giant number. Keep the divider number and the title-
 
 ### Two-column timeline
 
-Two parallel lists of time-stamped items — good for plan-vs-reality or two workstreams. Each `<li>` holds a `<time>` cell and a description; add a `.sub` span for a secondary line.
+Two parallel lists of time-stamped items – good for plan-vs-reality or two workstreams. Each `<li>` holds a `<time>` cell and a description; add a `.sub` span for a secondary line.
 
 **Use when:** comparing two sequences of dated events.
 
@@ -260,13 +305,13 @@ An SVG bar chart generated by the runtime into a `.chartbox`. It reads theme tok
 
 **Use when:** showing a distribution or series (commits per week, counts per category).
 
-Markup — just an empty box with an id:
+Markup – just an empty box with an id:
 
 ```html
 <div class="chartbox" id="chart-weeks"></div>
 ```
 
-Definition — in the trailing `<script>`, after `browserslides.js`:
+Definition – in the trailing `<script>`, after `browserslides.js`:
 
 ```js
 Browserslides.barChart('#chart-weeks', {
@@ -480,7 +525,9 @@ A numbered vertical process, laid out in two columns with a connector line betwe
 
 A 2×2 grid of bordered cells, each a heading plus a line. (Also used inside detail layers.)
 
-**Use when:** four parallel points — pillars, guarantees, categories.
+**Use when:** four parallel points – pillars, guarantees, categories.
+
+Cells are equal-height by design (`grid-auto-rows: 1fr`), so a short entry leaves a gap under its text. Add `.net--middle` to centre each cell's content vertically instead of hanging it from the top edge. Same family as `.cols--middle`, same caveat: it centres the content, it does not shrink the cell.
 
 ```html
 <div class="net">
@@ -514,7 +561,7 @@ A magazine split: one hero block beside a stack of smaller items. Add `.editoria
 
 ### Principle columns
 
-Two soft panels of bulleted principles — a do/avoid pair reads well here. Each group can carry a `.tl-head` label.
+Two soft panels of bulleted principles – a do/avoid pair reads well here. Each group can carry a `.tl-head` label.
 
 **Use when:** two contrasting lists side by side.
 
@@ -611,7 +658,7 @@ A vertical stack of bordered cards inside a column. Combine several `.cardcol` i
 
 ### Scenery lists
 
-Plain separated lists with density variants: `.kulissen` (default), `--dicht` (dense), `--mittel` (medium), `--rollen` (roles — bold label on its own line).
+Plain separated lists with density variants: `.kulissen` (default), `--dicht` (dense), `--mittel` (medium), `--rollen` (roles – bold label on its own line).
 
 **Use when:** a straightforward itemised list, sized to the content.
 
@@ -698,7 +745,7 @@ A button that opens a dark overlay with one or two enlarged screenshots. The `.s
 </div>
 ```
 
-Separately, any image can be made click-to-zoom on its own by adding the `zoomable` class — the runtime opens a full-viewport lightbox:
+Separately, any image can be made click-to-zoom on its own by adding the `zoomable` class – the runtime opens a full-viewport lightbox:
 
 ```html
 <img class="zoomable" src="chart.png" alt="Full-size chart">
@@ -725,7 +772,7 @@ The components above suit reports and retrospectives. An argument-driven *talk* 
 
 ### Big statement / question / reveal
 
-A single line that fills the slide — a rhetorical question or its answer. `.slide--statement` centres it vertically; `.slide--question` turns it into an accent panel with light text and highlight emphasis. `.statement small` adds a supporting paragraph; `.statement--answer` underlines the emphasis in the highlight colour.
+A single line that fills the slide – a rhetorical question or its answer. `.slide--statement` centres it vertically; `.slide--question` turns it into an accent panel with light text and highlight emphasis. `.statement small` adds a supporting paragraph; `.statement--answer` underlines the emphasis in the highlight colour.
 
 ```html
 <!-- a question -->
@@ -784,7 +831,7 @@ The talk's key points, filling up as you reach each one. Add `.done` to the item
 
 ### Sandwich diagram (edges vs. shrinking middle)
 
-Two solid edge bands with a middle band that gets "eaten" — a decide → execute → deliver picture, or any edges-vs-middle idea. `.sandwich-band--mid.eaten` shrinks and strikes the middle; `.sandwich-note` captions it.
+Two solid edge bands with a middle band that gets "eaten" – a decide → execute → deliver picture, or any edges-vs-middle idea. `.sandwich-band--mid.eaten` shrinks and strikes the middle; `.sandwich-note` captions it.
 
 ```html
 <div class="sandwich">
