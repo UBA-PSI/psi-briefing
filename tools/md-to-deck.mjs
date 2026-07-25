@@ -1018,24 +1018,22 @@ function correct(slide, plan, ctx) {
     break;
   }
 
-  // cols--center is deliberately NOT applied automatically, though it is the
-  // obvious move for a short row. Two reasons, both from experience:
+  // A short row hanging from the top leaves its slack in one lump above the
+  // closing band, which reads as broken; the same slack split above and below
+  // reads as composed. So centring a short row is applied.
   //
-  //  - It is the only correction here that changes nothing about the content.
-  //    Every other one rearranges blocks; this one just redistributes the
-  //    whitespace so the gap sits above and below instead of only below. That
-  //    makes the slide look composed without making it fuller.
-  //  - Applying it would silence this tool's own honest reading, because a
-  //    centred row is excluded from the thin check (its slack is balanced by
-  //    definition). The metric would go quiet exactly where it should speak.
-  //
-  // docs/handoff-autolayout.md §4 records the same conclusion from the manual
-  // build: whether a slide should be centred at all is a decision the author
-  // kept, in their words "automatismus ist da glaub ich nicht die lösung".
-  // So it is offered, not taken.
-  if (est.row < target - 15 && plan.layout.kind === 'cols' &&
-      !/cols--center/.test(plan.layout.mod)) {
-    plan.suggest = 'add {.center} to balance the whitespace, if there is nothing left to say';
+  // What it is NOT is a fullness fix, and that distinction is the whole point:
+  // arrangement and content volume are separate questions, and centring only
+  // answers the first. So the slide keeps its honest row-fill reading and stays
+  // in the thin list afterwards - see printReport. Earlier this correction also
+  // suppressed the thin check (a centred row has balanced slack by definition),
+  // which made the tool quiet exactly where it should speak. That was the
+  // reason not to automate it; reporting the two separately removes the reason.
+  if (est.row < target && plan.layout.kind === 'cols' &&
+      !/cols--center/.test(plan.layout.mod) && truthy(ctx.meta.autocenter ?? true)) {
+    plan.layout.mod += ' cols--center';
+    log(`short row (${est.row} %) -> cols--center; balances the gap, does not fill it`);
+    est = estimate(plan, slide);
   }
 
   return est;
@@ -1590,7 +1588,10 @@ function printReport(report, ctx, outPath, n) {
   w.write(`  "row" = how full the content row is. A closing band is not counted as\n` +
     `  fill, so it cannot mask an empty row; "gap" is the space left over.\n\n`);
   const thin = [];
-  const isThin = (e) => e && e.row < ctx.targetFill && !e.centred;
+  // Thinness is about how much content the row holds. Centring changes where
+  // the leftover space sits, not how much of it there is, so a centred row is
+  // still thin and still says so.
+  const isThin = (e) => e && e.row < ctx.targetFill;
   for (const r of report) {
     const fill = r.est ? `${String(Math.min(r.est.row, 100)).padStart(3)} %` : '  –  ';
     const gap = r.est && r.est.gap >= 8 ? ` gap ${String(r.est.gap).padStart(2)} %` : '        ';
@@ -1599,7 +1600,7 @@ function printReport(report, ctx, outPath, n) {
       `${(r.heading || '').slice(0, 40)}\n`);
     for (const f of r.fixes) w.write(`       fix   ${f}\n`);
     if (r.suggest) w.write(`       note  ${r.suggest}\n`);
-    if (isThin(r.est) && !r.fixes.length) thin.push(r);
+    if (isThin(r.est)) thin.push(r);
   }
 
   const content = report.filter((r) => r.est);
@@ -1620,12 +1621,14 @@ function printReport(report, ctx, outPath, n) {
   if (ctx.usedClasses.size) w.write(`  passed through as class names: ${[...ctx.usedClasses].join(', ')}\n`);
 
   if (thin.length) {
-    w.write(`\n  thin rows - these need content, which no tool can invent:\n`);
+    w.write(`\n  thin rows - these need content, which no tool can invent.\n` +
+      `  A centred one already looks composed; that is arrangement, not fullness:\n`);
     for (const r of thin) {
+      const how = r.est.centred ? 'centred' : 'hanging from the top';
       const hint = r.est.hasBand
         ? 'take more from the source; it already has a closing band'
         : 'add detail from the source, or close it with a > blockquote';
-      w.write(`    ${r.n}: row ${r.est.row} %, ${r.est.gap} % of the slide left empty — ${hint}\n`);
+      w.write(`    ${r.n}: row ${r.est.row} %, ${r.est.gap} % empty (${how}) — ${hint}\n`);
     }
   }
   if (ctx.warnings.length) {

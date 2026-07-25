@@ -161,18 +161,18 @@ Every one is printed in the report.
 
 It will: use fewer or more columns, add `.cols--middle` when one column hangs
 more than 20 % higher than its neighbour, move images off the narrow side of a
-row where they would render as postage stamps, and split an overfull prose
-slide into two columns.
+row where they would render as postage stamps, split an overfull prose slide
+into two columns, and centre a short row with `.cols--center`.
+
+That last one is worth being precise about, because it is easy to mistake for a
+fullness fix. A short row hanging from the top leaves its slack in one lump
+above the closing band, which reads as broken; the same slack split above and
+below reads as composed. So it is applied — but it is an **arrangement**
+decision, and it does not touch the row's fill. The slide keeps its honest
+reading and stays in the thin list afterwards, marked `(centred)`. Set
+`autocenter: false` in the frontmatter to turn it off, or `{keep}` on one slide.
 
 It will not:
-
-- **Centre a short row.** `cols--center` is offered as a `note`, never applied.
-  It is the one move that changes nothing about the content — it redistributes
-  the whitespace so the gap sits above and below rather than only below, which
-  makes a slide look composed without making it fuller. Worse, a centred row is
-  excluded from the thin check by definition, so applying it automatically
-  would silence this tool's own reading. Write `{.center}` under the heading
-  when you have decided there is nothing left to say.
 
 - **Stretch a container to close a gap.** This is the move a fill-driven
   optimiser finds first, and the one measured to make decks worse. It is not in
@@ -226,6 +226,9 @@ browser on 18 content slides: mean error 7 points, 14 of 18 within 10, errors in
 both directions. Run the audit from `SKILL.md` before you ship, and look at a
 few slides.
 
-A centred row — `{.center}`, or a self-centring component like `::: delta` — is
-reported but never called thin: its slack sits above and below by design. That
-is the same rule the browser audit's `deadBand` check uses, so the two agree.
+Centring does not change this number, by design. `.cols--center` moves where the
+leftover space sits, not how much of it there is, so a centred row reports the
+same fill and stays in the thin list. The browser audit's `deadBand` check is
+the complement: it goes quiet once a row is centred, because it asks whether the
+gap is lopsided. Read together, the pair tells you both things — `deadBand`
+silent means it *looks* right, a low row fill means it still *is* thin.

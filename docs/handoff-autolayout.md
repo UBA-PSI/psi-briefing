@@ -263,13 +263,27 @@ metric reads 26 % and 31 %; an ink-fill metric reads 36 % and 49 %. Checked
 against a browser on 18 content slides: mean error 7 points, 14 within 10,
 errors in both directions.
 
-**`cols--center` was demoted from an automatic fix to a suggestion**, after it
-fired on 6 of 18 slides. Two reasons, and the second is the general one: it is
-the only correction that changes nothing about the content, and a centred row is
-excluded from the thin check by construction — so automating it would have made
-the tool quiet exactly where it should speak. Any "fix" that also disables the
-detector that found the problem is not a fix. §4 had already recorded the
-author's own view on this one ("automatismus ist da glaub ich nicht die lösung").
+**`cols--center` is automatic after all, once the two questions are separated.**
+It was first demoted to a suggestion on the grounds that a centred row is
+excluded from the thin check by construction, so automating it would silence the
+tool exactly where it should speak. That objection was aimed at the wrong thing.
+The problem was never the centring; it was that one number was being asked to
+answer two questions.
+
+Split them and both work. *Arrangement*: a short row hanging from the top leaves
+its slack in one lump above the closing band and reads as broken, while the same
+slack split above and below reads as composed — so centre it, automatically.
+*Content volume*: the row fill is computed from content over room and is
+unaffected by where that room sits, so the slide keeps its honest reading and
+stays in the thin list, marked `(centred)`. Measured on the 23-slide deck: 10
+rows centred, every dead band symmetric afterwards (19/19, 11/11, 17/17 …),
+`deadBand` silent on all of them, and the measured row fills unchanged at 44 %,
+52 %, 46 %.
+
+The general lesson is worth more than the specific fix: **before rejecting an
+automation because it would suppress a signal, check whether the signal is
+conflating two things.** §4's note that the author wanted to keep the centring
+decision came from an image/text balance case, and was over-generalised here.
 
 **`.tl` now has a regression test, and writing it found a hole in
 `crampedLabels`.** `test-aufsicht/stress-tracks.html` gained two `.tl` slides
