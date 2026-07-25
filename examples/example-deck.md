@@ -25,7 +25,12 @@ slides is placeholder content.
 ### How to read it
 
 Open the `.md` beside the rendered deck. Each slide shows one inference rule, so
-you can see which shape produced which component.
+you can see which shape of Markdown produced which component — the report the
+converter prints names the rule that fired for every slide.
+
+Nothing here is hand-tuned. Where a directive appears (`::: delta`,
+`::: principles`, `::: chart`) it is because that component has no natural
+Markdown shape, not because the inference was overridden.
 
 > Every layout on the following slides was chosen from the **shape of the
 > Markdown**, not from a class name.
@@ -119,6 +124,8 @@ Deploy scripts and the font-embedding pipeline. 70 commits, then left alone.
 2. **Build in the open.** Small commits, deployed continuously, no staging queue to wait on. Anyone could see the portal as it stood at any hour.
 3. **Review on Friday.** Look at the real thing running, never at a status document. Bugs found here were fixed before the note was written, not filed.
 4. **Write it down.** A short note per week, describing what now works that did not before. Eleven notes are where these slides came from.
+5. **Cut on Monday, not Thursday.** Scope came off at the start of a week, while there was still time to reshape it, never in a panic two days before the review.
+6. **Leave it running.** The Friday build stayed deployed over the weekend. Anyone who wanted to look — registrar, IT, a student — could, without asking anyone.
 
 > If it was not running by Friday, it did not count as done.
 

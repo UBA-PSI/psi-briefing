@@ -253,6 +253,43 @@ and requiring an 8-point difference separates "hanging from the top" from
 "centred": 5 hits, 0 false, across two decks. Same lesson as `crampedLabels` —
 the first version of a detector is not the shippable one.
 
+**Measure the row, not the slide.** The converter's estimator was changed to
+report the fill of the *content row* — content height over the height the row
+was given — instead of the painted fraction of the slide. That is the smallest
+change that makes the number unbuyable: the band is not in the row, so it cannot
+inflate it, but it still shrinks the room the row has, which is a real effect
+and should show. On two slides identical but for a closing blockquote the row
+metric reads 26 % and 31 %; an ink-fill metric reads 36 % and 49 %. Checked
+against a browser on 18 content slides: mean error 7 points, 14 within 10,
+errors in both directions.
+
+**`cols--center` was demoted from an automatic fix to a suggestion**, after it
+fired on 6 of 18 slides. Two reasons, and the second is the general one: it is
+the only correction that changes nothing about the content, and a centred row is
+excluded from the thin check by construction — so automating it would have made
+the tool quiet exactly where it should speak. Any "fix" that also disables the
+detector that found the problem is not a fix. §4 had already recorded the
+author's own view on this one ("automatismus ist da glaub ich nicht die lösung").
+
+**`.tl` now has a regression test, and writing it found a hole in
+`crampedLabels`.** `test-aufsicht/stress-tracks.html` gained two `.tl` slides
+with long German labels, including the original "kurz vor 0" case. The first
+version of the test had no power: reinstating `grid-template-columns: 7cqw 1fr`
+changed none of its assertions, because `.tl time` carries
+`white-space: nowrap`. The label cannot wrap, so it clips — and `crampedLabels`,
+which looks for a short string on more than one line, sees a normal one-line
+label and reports nothing. **The cause detector is blind to the exact fault
+class it was written for, whenever the label is a nowrap atom.**
+
+`SKILL.md` gained `clippedLabels` (`scrollWidth > clientWidth`, skipping `<svg>`
+because generated chart labels report it differently). Calibrated as §2
+requires: 0 hits across six decks with the fix in place, 5 hits with the
+hard-coded track reinstated, 0 again on restore. Note also the second-order
+lesson — the test's first assertion silently never ran, because
+`getComputedStyle(li).gridTemplateColumns` returns the string `"subgrid [] []
+[]"` under subgrid and `parseFloat` of that is `NaN`, so every comparison was
+false. **A regression test is not finished until you have watched it fail.**
+
 **A build-time estimator is viable, and cheaper than it looks.** Predicting
 painted height from the CSS geometry (the 88 cqw × 85.5 cqh content box, the
 type scale, and the same average-glyph-width approximation the browser audit

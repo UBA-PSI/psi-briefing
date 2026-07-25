@@ -749,6 +749,21 @@ function groupChars(g) {
 //    so a correction can be chosen before anything is rendered. It is an
 //    estimate, not a measurement: the browser audit in SKILL.md stays the
 //    authority. Its job is to be right about *which* slides are thin.
+//
+//    WHAT IS MEASURED, AND WHY IT IS NOT "INK FILL"
+//    The obvious metric - what fraction of the slide is painted - is not
+//    trustworthy here, and the browser audit's `thin` check shows why: a
+//    `.punch` is pinned to the bottom by `.cols { flex: 1 }`, so its bottom
+//    edge becomes the deepest ink and the slide scores ~97 % however empty the
+//    row above it is. Counting the band's own height as "filled" means adding
+//    one closing line raises the number by that line's height (~12 points)
+//    without a word being added to the content.
+//
+//    So the number reported is the fill of the CONTENT ROW - how much of the
+//    space the row was given does the row's content occupy. A band still
+//    affects it, but in the honest direction: it takes real space, leaving a
+//    smaller row for the same content to fill. It cannot mask an empty row,
+//    because it is not part of the row. `gap` reports the leftover separately.
 // ---------------------------------------------------------------------------
 function estimate(plan, slide) {
   const avail = contentHeight();
@@ -775,14 +790,34 @@ function estimate(plan, slide) {
   const heights = cols.map((c) => columnHeight(c.groups, c.width, c));
   const bodyHeight = fillsByDesign(plan.layout) ? bodyRoom : Math.max(...heights, 0);
 
-  const painted = bodyTop + G.colsMarginTop + Math.min(bodyHeight, bodyRoom) + punch + note;
+  // A row that is centred on purpose - cols--center, or a component that
+  // centres itself - distributes its slack above and below instead of hanging
+  // from the top. That is balanced whitespace, not dead space, so it is
+  // reported but not treated as thin. Same rule as the browser audit's
+  // deadBand check, so the two agree.
+  const centred = /cols--center/.test(plan.layout.mod || '') || selfCentring(plan.layout);
+
   return {
-    fill: Math.round((painted / avail) * 100),
+    // Fill of the content row: the punch-proof number.
+    row: bodyRoom > 0 ? Math.round((bodyHeight / bodyRoom) * 100) : 100,
+    // Dead space left in the row, as a percentage of the whole content area.
+    gap: bodyRoom > 0 ? Math.max(0, Math.round(((bodyRoom - bodyHeight) / avail) * 100)) : 0,
+    // Whole-slide occupancy, kept only to detect a slide that will not fit.
     overflow: Math.round(((bodyTop + G.colsMarginTop + bodyHeight + punch + note) / avail) * 100),
+    centred,
+    hasBand: punch > 0,
     columns: heights,
     imbalance: heights.length > 1 && Math.max(...heights) > 0
       ? (Math.max(...heights) - Math.min(...heights)) / Math.max(...heights) : 0,
   };
+}
+
+// Components that centre themselves in the row they are given: .delta
+// (justify-content:center), .editorial-layout / .principle-columns / .sandwich
+// / .doc (auto margins or align-self:center).
+const SELF_CENTRING = new Set(['delta', 'editorial', 'principles', 'sandwich', 'doc']);
+function selfCentring(layout) {
+  return layout.kind === 'directive' && SELF_CENTRING.has(layout.dir.name);
 }
 
 // Components whose height is the space they are given, not the text they hold.
@@ -890,7 +925,13 @@ function groupHeight(g, width, col = {}) {
       (n, it) => n + textHeight(len(it), G.kulSize, G.kulLine, width) + 2 * G.kulPad, 0);
     case 'table': return g.block.rows.reduce(
       (n, r) => n + textHeight(r.reduce((m, c) => m + len(c), 0), G.tlSize, G.tlLine, width) + 2 * G.tlPad, 0);
-    case 'images': return contentHeight() * 0.55;
+    // A .shots grid is flex:1 with grid-auto-rows:1fr, so in a row beside a
+    // text column it takes whatever height that column needs - it does not
+    // drive the row, it follows it. Measured: two slides with identical
+    // galleries but different amounts of text render rows of 96 % and 52 %.
+    // Contributing 0 here lets the text column decide, which is what happens.
+    // A row that is ONLY images is handled by FILLS_BY_DESIGN instead.
+    case 'images': return 0;
     case 'quote': return textHeight(len(g.block.text), G.punchSize, G.punchLine, width) + 2 * G.punchPadV;
     default: return contentHeight() * 0.4;
   }
@@ -948,7 +989,7 @@ function correct(slide, plan, ctx) {
 
     // Thin. Fewer columns make each column taller, which fills the frame with
     // the same content rather than with padding.
-    if (est.fill < target && plan.layout.kind === 'cols') {
+    if (est.row < target && plan.layout.kind === 'cols') {
       // Note what is NOT done here: three equal-ranked cards are not regrouped
       // into 2 + 1 to raise the number. They are parallel by authorial intent,
       // and a lopsided grid says they are not. A thin row of three is a
@@ -977,15 +1018,24 @@ function correct(slide, plan, ctx) {
     break;
   }
 
-  // Last resort, and only for a row that is genuinely short: balance the
-  // whitespace instead of removing it. SKILL.md ranks this below every content
-  // fix, so it is logged loudly.
-  if (est.fill < target - 12 && plan.layout.kind === 'cols' &&
-      !/cols--center/.test(plan.layout.mod) && !plan.punch) {
-    plan.layout.mod += ' cols--center';
-    plan.fixes.push('very thin -> cols--center (balances the whitespace; content is the real fix)');
-    ctx.fixCount += 1;
-    est = estimate(plan, slide);
+  // cols--center is deliberately NOT applied automatically, though it is the
+  // obvious move for a short row. Two reasons, both from experience:
+  //
+  //  - It is the only correction here that changes nothing about the content.
+  //    Every other one rearranges blocks; this one just redistributes the
+  //    whitespace so the gap sits above and below instead of only below. That
+  //    makes the slide look composed without making it fuller.
+  //  - Applying it would silence this tool's own honest reading, because a
+  //    centred row is excluded from the thin check (its slack is balanced by
+  //    definition). The metric would go quiet exactly where it should speak.
+  //
+  // docs/handoff-autolayout.md §4 records the same conclusion from the manual
+  // build: whether a slide should be centred at all is a decision the author
+  // kept, in their words "automatismus ist da glaub ich nicht die lösung".
+  // So it is offered, not taken.
+  if (est.row < target - 15 && plan.layout.kind === 'cols' &&
+      !/cols--center/.test(plan.layout.mod)) {
+    plan.suggest = 'add {.center} to balance the whitespace, if there is nothing left to say';
   }
 
   return est;
@@ -1428,6 +1478,14 @@ function main(argv) {
     const plan = slide.kind === 'content' ? planSlide(slide, ctx)
       : { rule: slide.kind, lede: null, punch: null, note: null, layout: { kind: 'empty' }, groups: [] };
     plan.fixes = [];
+    // {.center} / {.middle} are the author's way of taking the two vertical
+    // decisions this tool declines to take for them.
+    for (const [attr, mod] of [['center', 'cols--center'], ['middle', 'cols--middle']]) {
+      const at = slide.attrs.classes.indexOf(attr);
+      if (at === -1) continue;
+      slide.attrs.classes.splice(at, 1);
+      if (plan.layout.kind === 'cols' && !plan.layout.mod.includes(mod)) plan.layout.mod += ` ${mod}`;
+    }
     const est = slide.kind === 'content' ? correct(slide, plan, ctx) : null;
 
     if (slide.heading && ANNOUNCING.some((re) => re.test(slide.heading))) {
@@ -1439,7 +1497,8 @@ function main(argv) {
       ctx.warn(slide, 'eyebrow restates the heading - delete it');
     }
 
-    report.push({ n: i + 1, kind: slide.kind, heading: slide.heading, rule: plan.rule, est, fixes: plan.fixes });
+    report.push({ n: i + 1, kind: slide.kind, heading: slide.heading, rule: plan.rule, est,
+      fixes: plan.fixes, suggest: plan.suggest });
     return emitSlide(slide, plan, ctx);
   });
 
@@ -1527,22 +1586,33 @@ ${charts.length ? `<script>\n${charts.join('\n')}\n</script>\n` : ''}</body>
 
 function printReport(report, ctx, outPath, n) {
   const w = process.stderr;
-  w.write(`\nmd-to-deck: ${n} slides -> ${outPath}\n\n`);
+  w.write(`\nmd-to-deck: ${n} slides -> ${outPath}\n`);
+  w.write(`  "row" = how full the content row is. A closing band is not counted as\n` +
+    `  fill, so it cannot mask an empty row; "gap" is the space left over.\n\n`);
   const thin = [];
+  const isThin = (e) => e && e.row < ctx.targetFill && !e.centred;
   for (const r of report) {
-    const fill = r.est ? `${String(r.est.fill).padStart(3)} %` : '  – ';
-    const flag = r.est && r.est.overflow > 104 ? '!' : r.est && r.est.fill < ctx.targetFill ? '~' : ' ';
-    w.write(`  ${String(r.n).padStart(3)}${flag} ${fill}  ${(r.rule || r.kind).padEnd(38)}` +
-      `${(r.heading || '').slice(0, 44)}\n`);
+    const fill = r.est ? `${String(Math.min(r.est.row, 100)).padStart(3)} %` : '  –  ';
+    const gap = r.est && r.est.gap >= 8 ? ` gap ${String(r.est.gap).padStart(2)} %` : '        ';
+    const flag = r.est && r.est.overflow > 104 ? '!' : isThin(r.est) ? '~' : ' ';
+    w.write(`  ${String(r.n).padStart(3)}${flag} ${fill}${gap}  ${(r.rule || r.kind).padEnd(36)}` +
+      `${(r.heading || '').slice(0, 40)}\n`);
     for (const f of r.fixes) w.write(`       fix   ${f}\n`);
-    if (r.est && r.est.fill < ctx.targetFill && !r.fixes.length) thin.push(r);
+    if (r.suggest) w.write(`       note  ${r.suggest}\n`);
+    if (isThin(r.est) && !r.fixes.length) thin.push(r);
   }
 
   const content = report.filter((r) => r.est);
   if (content.length) {
-    const fills = content.map((r) => r.est.fill).sort((a, b) => a - b);
+    const fills = content.map((r) => Math.min(r.est.row, 100)).sort((a, b) => a - b);
     const median = fills[Math.floor(fills.length / 2)];
-    w.write(`\n  estimated median ink fill: ${median} % (target ${ctx.targetFill} %)\n`);
+    w.write(`\n  estimated median row fill: ${median} % (target ${ctx.targetFill} %)\n`);
+    const banded = content.filter((r) => r.est.hasBand && r.est.gap >= 12 && !r.est.centred);
+    if (banded.length) {
+      w.write(`  ${banded.length} slide(s) end in a band with a gap above it: ` +
+        `${banded.map((r) => r.n).join(', ')}\n` +
+        `  In a browser these will measure ~97 % ink fill. They are not full.\n`);
+    }
   }
   if (ctx.typoFixes) w.write(`  typography: ${ctx.typoFixes} marks normalised\n`);
   if (ctx.strayQuotes) w.write(`  typography: ${ctx.strayQuotes} unpaired straight quote(s) left as-is - fix by hand\n`);
@@ -1550,9 +1620,12 @@ function printReport(report, ctx, outPath, n) {
   if (ctx.usedClasses.size) w.write(`  passed through as class names: ${[...ctx.usedClasses].join(', ')}\n`);
 
   if (thin.length) {
-    w.write(`\n  thin slides - these need content, which no tool can invent:\n`);
+    w.write(`\n  thin rows - these need content, which no tool can invent:\n`);
     for (const r of thin) {
-      w.write(`    ${r.n}: ~${r.est.fill} % — add detail from the source, or close it with a > blockquote\n`);
+      const hint = r.est.hasBand
+        ? 'take more from the source; it already has a closing band'
+        : 'add detail from the source, or close it with a > blockquote';
+      w.write(`    ${r.n}: row ${r.est.row} %, ${r.est.gap} % of the slide left empty — ${hint}\n`);
     }
   }
   if (ctx.warnings.length) {

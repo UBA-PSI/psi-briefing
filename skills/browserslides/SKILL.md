@@ -171,7 +171,9 @@ All three centre *content*; none of them shrinks its container. Reach for them w
 .tl time { white-space: nowrap; }   /* the label is an atom */
 ```
 
-`minmax(floor, max-content)` keeps a sensible minimum and grows for the longest entry; `subgrid` shares the parent's tracks so every row lines up without anyone guessing a number. Apply the same shape to any label/value pair. The audit's `crampedLabels` check below catches the class when it slips through.
+`minmax(floor, max-content)` keeps a sensible minimum and grows for the longest entry; `subgrid` shares the parent's tracks so every row lines up without anyone guessing a number. Apply the same shape to any label/value pair.
+
+Two audit checks below cover this class, and you need both, because the fix has two halves. `crampedLabels` finds a short label that *wrapped*. But `white-space: nowrap` — which `.tl time` carries, and which any "the label is an atom" rule needs — means the label cannot wrap: it gets clipped by its cell instead, and `crampedLabels` then sees a perfectly ordinary one-line label. `clippedLabels` asks the other question, whether the content is wider than its own box. Verified by reinstating `grid-template-columns: 7cqw 1fr` on a deck with long German labels: `crampedLabels` reported nothing, `clippedLabels` reported five.
 
 **The gutter needs more room than it looks like it needs.** In a two-column slide the gutter is the only thing keeping two blocks of text apart. If it gets close to the width of a word space, the eye reads straight across the gap and the columns fuse into one ragged block. It should read as a deliberate channel, not as a slightly larger word space – the framework's `4.8cqw` is a floor, not a target.
 
@@ -347,7 +349,17 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
        [...r.getClientRects()].filter(x => x.width > 1 && x.height > 1)
          .forEach(x => { if (!tops.some(v => Math.abs(v - x.top) < 3)) tops.push(x.top); });
        return tops.length > 1;                                   // short string, >1 line
-     }).map(el => el.textContent.trim())                         // must be empty
+     }).map(el => el.textContent.trim()),                        // must be empty
+
+     // The same fault where the label CANNOT wrap. `white-space: nowrap` (which
+     // .tl time and any label-as-an-atom carries) turns a too-narrow track into
+     // a clipped label instead of a wrapped one, so crampedLabels above sees
+     // nothing at all. Ask whether the content is wider than its own box.
+     // Skip <svg>: generated chart labels report scrollWidth differently.
+     clippedLabels: [...document.querySelectorAll('.slide *')].filter(el =>
+       !el.children.length && el.textContent.trim() && !el.closest('svg')
+       && el.clientWidth > 0 && el.scrollWidth - el.clientWidth > 1
+     ).map(el => `${el.textContent.trim()} (${el.scrollWidth}px in ${el.clientWidth}px)`)
    })
    ```
 7. **Make it self-contained (for sharing).** Fold the CSS/JS and images into the HTML so the deck is one file. With the repo checked out, `node tools/inline-deck.mjs deck.html -o deck.self-contained.html` does it; otherwise inline by hand – paste each stylesheet into a `<style>`, the runtime into a `<script>`, and replace every local `src="…"` with a `data:` URI. Fonts should already be embedded in the theme (see Typography).

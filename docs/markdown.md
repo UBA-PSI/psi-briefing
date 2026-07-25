@@ -78,7 +78,9 @@ One optional `{…}` line directly under a slide heading:
 | `{#anchor}` | gives the slide an id, so `[text](#anchor)` can link to it |
 | `{eyebrow="…"}` | adds a kicker — leave it out unless it earns its line |
 | `{footer="…"}` | overrides the deck footer on this slide |
-| `{.statement}` | adds a class to the `.slide` element |
+| `{.center}` | centres the whole row in the slide (`cols--center`) |
+| `{.middle}` | centres each column's content against its neighbour (`cols--middle`) |
+| `{.statement}` | adds any other class to the `.slide` element |
 | `{keep}` | exempts the slide from layout corrections |
 
 Eyebrows are never generated. An eyebrow on nearly every slide is wallpaper;
@@ -159,11 +161,18 @@ Every one is printed in the report.
 
 It will: use fewer or more columns, add `.cols--middle` when one column hangs
 more than 20 % higher than its neighbour, move images off the narrow side of a
-row where they would render as postage stamps, split an overfull prose slide
-into two columns, and — as a logged last resort on a genuinely short row — add
-`.cols--center`.
+row where they would render as postage stamps, and split an overfull prose
+slide into two columns.
 
 It will not:
+
+- **Centre a short row.** `cols--center` is offered as a `note`, never applied.
+  It is the one move that changes nothing about the content — it redistributes
+  the whitespace so the gap sits above and below rather than only below, which
+  makes a slide look composed without making it fuller. Worse, a centred row is
+  excluded from the thin check by definition, so applying it automatically
+  would silence this tool's own reading. Write `{.center}` under the heading
+  when you have decided there is nothing left to say.
 
 - **Stretch a container to close a gap.** This is the move a fill-driven
   optimiser finds first, and the one measured to make decks worse. It is not in
@@ -178,25 +187,45 @@ It will not:
 ## Reading the report
 
 ```
-    6~  77 %  3 cards -> three columns              Was vorab abgesprochen wird
-   10  100 %  3 cards -> three columns              Laptops austeilen – drei Varianten
+    6~  65 % gap 23 %  3 cards -> three columns      Was vorab abgesprochen wird
+       note  add {.center} to balance the whitespace, if there is nothing left to say
+   10  100 %          3 cards -> three columns      Laptops austeilen – drei Varianten
        fix   uneven columns (28 %) -> cols--middle
 ```
 
-`~` marks a slide under the fill target, `!` one that will not fit. The rule
-name tells you which inference fired, so the next slide's outcome is
-predictable. `fix` lines are the corrections that were applied.
+`~` marks a thin row, `!` one that will not fit. The rule name tells you which
+inference fired, so the next slide's outcome is predictable. `fix` lines are
+corrections that were applied; `note` lines are suggestions that were not.
 
-**The percentage is an estimate, not a measurement.** It is computed from the
-real geometry in `framework/browserslides.css` — the 88 cqw × 85.5 cqh content
-box, the type scale, and the same average-glyph-width approximation the browser
-audit uses — but it cannot know about font metrics or image aspect ratios. Run
-the audit from `SKILL.md` in a browser before you ship, and look at a few
-slides.
+### What the percentage means
 
-One thing the estimate is *better* at than the browser audit: a slide ending in
-a `.punch` measures ~97 % in the browser whatever sits above the band, because
-the band's bottom edge is the deepest painted pixel and `.cols { flex: 1 }` has
-pushed it to the footer. The estimate measures the row's own content, so it
-reports such a slide as thin — correctly. The audit in `SKILL.md` now carries a
-`deadBand` check for the same blind spot; read it before trusting `thin`.
+It is the fill of the **content row** — how much of the space the row was given
+its content actually occupies — and `gap` is what is left over, as a share of
+the whole slide.
+
+It is deliberately *not* "how much of the slide is painted", because that
+number can be bought. A `.punch` is pinned to the bottom by `.cols { flex: 1 }`,
+so its bottom edge is the deepest ink on the slide: under an ink-fill metric,
+adding one closing line lifts the score by that line's height — around 12 points
+— without a word being added to the content. Measured on a finished 23-slide
+deck, five slides scored 97 % ink fill with their content stopping between 55 %
+and 71 %.
+
+Row fill cannot be bought that way, because the band is not part of the row. A
+band does still move the number, in the honest direction: it occupies real
+space, leaving a smaller row for the same content to fill. On identical slides
+differing only in a closing blockquote, the estimate reads 26 % and 31 %, and
+the gap falls from 64 % to 51 %. Under the old metric the same pair read 36 %
+and 49 %.
+
+**It is an estimate, not a measurement.** It is computed from the real geometry
+in `framework/browserslides.css` — the 88 cqw × 85.5 cqh content box, the type
+scale, and the same average-glyph-width approximation the browser audit uses —
+but it cannot know font metrics or image aspect ratios. Checked against a
+browser on 18 content slides: mean error 7 points, 14 of 18 within 10, errors in
+both directions. Run the audit from `SKILL.md` before you ship, and look at a
+few slides.
+
+A centred row — `{.center}`, or a self-centring component like `::: delta` — is
+reported but never called thin: its slack sits above and below by design. That
+is the same rule the browser audit's `deadBand` check uses, so the two agree.
