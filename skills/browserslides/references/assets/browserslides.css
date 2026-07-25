@@ -50,6 +50,11 @@
      it. Override explicitly in a theme if the mix lands wrong. */
   --highlight-ink:    color-mix(in srgb, var(--highlight) 34%, #000);
   --highlight-ink-em: color-mix(in srgb, var(--highlight) 24%, #000);
+  /* The same idea for the cool tint: ink to sit on an --accent-20 fill.
+     (--accent-ink is the white that goes on the SOLID accent; this is its
+     counterpart for the pale one.) */
+  --accent-soft-ink:    color-mix(in srgb, var(--accent) 80%, #000);
+  --accent-soft-ink-em: color-mix(in srgb, var(--accent) 50%, #000);
   --danger:         #d64550; /* annotations, alerts, milestones */
   --danger-soft:    #f8dadd;
   --positive:       #1a7a4c; /* badges, "public" markers */
@@ -363,6 +368,14 @@ h2 {
 /* Highlighted call-out strip */
 .punch { background: var(--highlight-soft); padding: 2.2cqh 2.2cqw; font-size: calc(1.5cqw * var(--type-scale)); line-height: 1.5; margin-top: 2.4cqh; border-radius: 0.5cqh; }
 .punch b { color: var(--highlight-ink-em); }
+/* Two tones for the closing band, same construction in both: a pale fill with
+   near-black text in that fill's own hue. Warm (default) reads as a caution or
+   a rule to remember; cool reads as a plain summary. Pick per deck and stay
+   with it - alternating them turns the band into a traffic light. */
+.punch--accent { background: var(--accent-20); color: var(--accent-soft-ink); }
+.punch--accent b, .punch--accent strong { color: var(--accent-soft-ink-em); }
+.punch--accent small { color: var(--accent-soft-ink); }
+.punch--accent a { color: var(--accent-soft-ink-em); }
 .punch small { display: block; font-size: calc(1.02cqw * var(--type-scale)); line-height: 1.4; color: var(--highlight-ink); margin-top: 0.9cqh; }
 
 /* --------------------------------------------------------------------------

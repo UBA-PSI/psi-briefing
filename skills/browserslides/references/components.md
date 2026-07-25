@@ -133,6 +133,15 @@ They combine. `--middle` centres the content *inside* the stretched column rathe
 
 Both work on `.punch` too (`.punch--flush`, `.punch--marker`).
 
+**Two tones for the closing band.** `.punch` is warm (the highlight tint); `.punch--accent` is cool (the accent tint). Both are built the same way: a pale fill with near-black text in *that fill's own hue*, so emphasis reads as weight and never as a second colour.
+
+| | Fill | Body ink | Emphasis |
+| --- | --- | --- | --- |
+| `.punch` (warm) | `--highlight-soft` | `--highlight-ink` | `--highlight-ink-em` |
+| `.punch--accent` (cool) | `--accent-20` | `--accent-soft-ink` | `--accent-soft-ink-em` |
+
+Warm reads as a rule to remember or a caution; cool reads as a plain summary. Pick one per deck and stay with it – alternating them turns the band into a traffic light. All four inks are mixed from the theme colour with `color-mix`, so re-theming carries them along; the mix percentages are chosen so body and emphasis stay a visible step apart (roughly 8:1 and 11:1 against their fill).
+
 **No blue on yellow.** Accent blue on a highlight fill reads badly – two saturated colours competing, neither winning. Text on a highlight uses `--highlight-ink` (body) and `--highlight-ink-em` (bold, labels, links): near-black, but carrying the highlight's own hue, so emphasis reads as *weight* rather than as a second colour. Both are derived from `--highlight` with `color-mix`, so re-theming the highlight carries them along. The framework applies them automatically inside `.punch` and `.panel--hl`; you do not need to set colours by hand.
 
 **`.lede` – the one full-width paragraph.** A short orienting sentence directly under the slide heading, capped at `58cqw` so the measure stays readable. This is the only place running text should span the slide; everywhere else it belongs in a column or panel. A closing line at the bottom is a `.punch`, not a `.lede`.

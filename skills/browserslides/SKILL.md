@@ -138,7 +138,14 @@ That fixes the pathological case but not a genuinely short last line. A one-sent
 
 **Letterspacing: a little, not a lot.** Uppercase labels need *some* tracking to stop the caps colliding, but past roughly `0.12em` the word stops reading as a word and becomes separate letters. Keep uppercase labels near `0.08–0.11em`. The framework's own defaults were far too loose (`.eyebrow` sat at `0.28em`) and were pulled back; if you add an uppercase element, stay in that range. Long German compounds are the test case: at `0.2em`, "ERKLÄRVIDEO FÜR PRÜFLINGE" wraps to two lines and crowds its own box; at `0.08em` it fits on one.
 
-**No blue on a yellow fill.** Accent blue on a highlight background is two saturated colours competing and neither winning. Text inside `.punch` and `.panel--hl` uses `--highlight-ink` / `--highlight-ink-em`: near-black, but carrying the highlight's own hue, so emphasis reads as weight rather than as a second colour. Both are mixed from `--highlight`, so a re-themed highlight takes them with it. Don't hand-colour text on a tinted fill.
+**Ink on a tinted fill comes from the fill.** Accent blue on a yellow background is two saturated colours competing and neither winning. Text on a tint is near-black *in that tint's own hue*, so emphasis reads as weight rather than as a second colour. Two pairs exist, both mixed from the theme colour with `color-mix`, so re-theming carries them along:
+
+| Fill | Body ink | Emphasis |
+|---|---|---|
+| `--highlight-soft` (warm: `.punch`, `.panel--hl`) | `--highlight-ink` | `--highlight-ink-em` |
+| `--accent-20` (cool: `.punch--accent`) | `--accent-soft-ink` | `--accent-soft-ink-em` |
+
+The percentages are picked so body and emphasis stay a visible step apart (about 8:1 and 11:1 against their own fill) – check that when you add a tint, or the emphasis stops registering. Never hand-colour text on a tinted fill.
 
 **Links.** The framework styles links on a slide: accent colour, a thin underline pushed clear of the descenders, and – importantly – the same colour when visited. Never leave a slide link to the browser default: a followed link renders purple, which on a yellow `.punch` or `.panel--hl` reads as a mistake.
 
@@ -308,7 +315,7 @@ Copy the matching block from `references/components.md`. Pick by intent:
 | Section break | `.slide--divider` + `.divider-num`, `.divider-title`, `.divider-lead` |
 | Big numbers | `.facts` + `.fact`, `.fact--hero`, `<sup>` |
 | Two timelines / plan vs reality | `.twocol` + `.tl` + `time` + `.sub` |
-| Highlighted takeaway line | `.punch` |
+| Highlighted takeaway line | `.punch` (warm) or `.punch--accent` (cool); one tone per deck |
 | Bar chart (generated) | `.chartbox#id` + `Browserslides.barChart('#id', {...})` |
 | Numbered process | `.flow` + `.fcol` + `.fstep` + `.step-num` |
 | Grid of 4 cards | `.net` (bordered) or `.cardcol` (stacked) |
