@@ -72,6 +72,7 @@ Navigate with arrow keys, space, PageUp/Down, Home/End, the scroll wheel, or the
 | `tools/optimise-images.mjs` | Re-encode a deck's images to WebP at the size the slides actually use, before inlining. Cut a real 20-image deck from 8.3 MB to 3.3 MB. |
 | `tools/build-deck.sh` | The whole pipeline in one command: optimise, inline, then verify that nothing external is left. |
 | `skills/browserslides/` | A Claude Code / Agent **skill** so an AI assistant can build these decks for you. |
+| `docs/handoff-autolayout.md` | What building a real deck taught us about the framework, and what an auto-layout pass has to survive. |
 
 ## Theming
 
