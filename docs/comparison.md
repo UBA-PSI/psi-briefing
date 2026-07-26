@@ -26,7 +26,7 @@ going to stand up and talk, almost everything below is a better fit.
 mainstream.** iA Presenter analyses a slide's content and picks a layout for the
 text and graphics on it; slides are separated by `---`, and layouts are
 responsive across displays. On that specific claim we are doing the same kind of
-thing, and it would be dishonest to present inference as novel.
+thing, and inference is not what makes this different.
 
 The difference is the **default**, and it is the whole design rather than a
 detail. In iA Presenter the document is a *script*: an ordinary paragraph is what
@@ -47,8 +47,8 @@ also keeps script and slide in one document. If you want beautiful automatic
 layout for a talk you are going to give, iA Presenter is a mature, well-designed,
 actively developed product and this is not a serious competitor to it.
 
-Two practical differences worth knowing: its HTML export produces a package —
-the presentation, graphics, the theme and a JavaScript rendering engine — rather
+Two practical differences worth knowing: its HTML export produces a package –
+the presentation, graphics, the theme and a JavaScript rendering engine – rather
 than a single file; and it is macOS-only, paid, and closed source.
 
 **Use iA Presenter instead when:** you are presenting, you want the script and
@@ -78,8 +78,8 @@ The closest thing to psi-briefing in spirit: MIT, Markdown in, HTML out, CSS
 themes, a CLI. If you want Markdown slides and none of the above matters to you,
 Marp is mature and you should look at it first.
 
-Two distinctions, both real. Layout in Marp comes from a **theme** — CSS you
-write or pick — rather than from the structure of the content; the Markdown does
+Two distinctions, both real. Layout in Marp comes from a **theme** – CSS you
+write or pick – rather than from the structure of the content; the Markdown does
 not change which component you get. And on the single-file question the Marp
 team is explicit that they do not bundle assets into the HTML, recommending the
 separate `monolith` tool for that. Here, bundling and then *verifying* that
@@ -87,7 +87,7 @@ nothing external survived is the last step of the pipeline and it exits non-zero
 if anything is left.
 
 **Use Marp instead when:** you want a large ecosystem, VS Code integration, and
-themes you control directly, and you do not need the artefact to be one file.
+themes you control directly, and you do not need the output to be a single file.
 
 ## LaTeX Beamer
 
@@ -125,15 +125,15 @@ will not be maintained.
 
 ## Others, briefly
 
-- **Slidev** — MIT, Markdown plus Vue components, a dev server and a build step.
+- **Slidev** – MIT, Markdown plus Vue components, a dev server and a build step.
   Much more powerful and much larger; a different weight class, aimed at
   developer talks.
-- **Quarto** — renders to reveal.js, with excellent support for executable code
+- **Quarto** – renders to reveal.js, with excellent support for executable code
   and citations. If your slides come out of an analysis, start there.
-- **remark / Pandoc** — Markdown to HTML slides with no build step. Closer in
+- **remark / Pandoc** – Markdown to HTML slides with no build step. Closer in
   spirit; no layout inference and no bundling step.
-- **Deckset** — macOS, Markdown, themes rather than inference, paid.
-- **Google Slides** — the collaboration answer. If two people are editing at
+- **Deckset** – macOS, Markdown, themes rather than inference, paid.
+- **Google Slides** – the collaboration answer. If two people are editing at
   once, nothing in this document competes.
 
 ## What is actually distinctive here
@@ -159,5 +159,5 @@ If your deck has a speaker, pick something else on this page.
 indentation-based split between spoken and shown text, its layout analysis, its
 export formats, its pricing and its platform support; Marp's position on
 bundling assets. Everything said about Beamer, PowerPoint and Keynote is general
-knowledge rather than a cited claim. Corrections are welcome as issues — a
+knowledge rather than a cited claim. Corrections are welcome as issues – a
 comparison that has gone stale is worse than none.*

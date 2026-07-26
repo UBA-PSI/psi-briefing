@@ -1,10 +1,10 @@
-# psi-briefing — Claude skill
+# psi-briefing – Claude skill
 
 Packages the [psi-briefing](../../README.md) framework as a skill so Claude Code (or any Claude Agent SDK / Claude.ai setup that loads skills) can author self-contained HTML slide decks for you.
 
 ## What it does
 
-Describe a talk — an outline, a set of notes, a retrospective — and Claude will:
+Describe a talk – an outline, a set of notes, a retrospective – and Claude will:
 
 1. Scaffold a deck from `references/starter.html` + `references/assets/`.
 2. Give it a shape (title → section dividers → content → close).
@@ -47,4 +47,4 @@ briefing/
 
 Keep `references/assets/` in sync with the framework: run `tools/sync-assets.sh` after changing the CSS, the runtime or a theme, or `tools/sync-assets.sh --check` to see whether a copy has drifted. CI runs the check, because a stale copy shows the OLD behaviour and sends you debugging your change instead of the copy.
 
-Licensed **MIT**, like the rest of the project (fonts excepted — see the root LICENSE).
+Licensed **MIT**, like the rest of the project (fonts excepted – see the root LICENSE).

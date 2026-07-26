@@ -9,7 +9,7 @@ python3 -m http.server 8000          # then look at it
 tools/build-deck.sh deck.html        # when you want one shareable file
 ```
 
-The output is the same deck HTML you would write by hand — readable, and safe to edit
+The output is the same deck HTML you would write by hand – readable, and safe to edit
 afterwards. Re-running the converter overwrites it, so keep the `.md` as the
 source of truth and hand-edit only once you have stopped converting.
 
@@ -67,7 +67,7 @@ punch: accent            # use the cool band tone throughout
 
 `lang` does two jobs and they are not the same job. It is written through to
 `<html lang>` verbatim, because that attribute is what the browser reads to pick
-a hyphenation dictionary and what a screen reader reads to choose a voice — so
+a hyphenation dictionary and what a screen reader reads to choose a voice – so
 `de-CH`, `en-GB` and `fr` all work and all mean something. Separately, a tag
 starting `en` switches the deck's own conventions to English: the quotation
 marks, and the handful of generated labels (`Part two`, `In one sentence`,
@@ -93,7 +93,7 @@ One optional `{…}` line directly under a slide heading:
 | Attribute | Effect |
 |---|---|
 | `{#anchor}` | gives the slide an id, so `[text](#anchor)` can link to it |
-| `{eyebrow="…"}` | adds a kicker — leave it out unless it earns its line |
+| `{eyebrow="…"}` | adds a kicker – leave it out unless it earns its line |
 | `{footer="…"}` | overrides the deck footer on this slide |
 | `{.center}` | centres the whole row in the slide (`cols--center`) |
 | `{.middle}` | centres each column's content against its neighbour (`cols--middle`) |
@@ -139,14 +139,14 @@ There is a pattern to which components need one. Inference reads *shape*, and
 some components encode an **intention that has no shape in Markdown**.
 
 `::: editorial` is the clearest case. It lays out one dominant hero block beside
-a stack of smaller points — but in Markdown five `###` blocks all look alike.
+a stack of smaller points – but in Markdown five `###` blocks all look alike.
 That the first outranks the rest is a decision, not a structure, so no rule
 could recover it. `::: delta` (old → new), `::: principles` (do vs avoid) and
 `::: chart` are directives for the same reason: the relationship between the
 items carries the meaning, and Markdown has no notation for it.
 
-Where the shape *does* carry the meaning — four peers, a list of steps, a
-quotation as the takeaway — no directive is needed, and using one is just extra
+Where the shape *does* carry the meaning – four peers, a list of steps, a
+quotation as the takeaway – no directive is needed, and using one is just extra
 typing. The 23-slide deck in `test-aufsicht/` uses exactly three.
 
 A fenced block forces a component:
@@ -163,7 +163,7 @@ Purpose-built ones, which read their body as a list:
 
 | Directive | Body |
 |---|---|
-| `::: facts` | `- 1 280 \| Commits across the project` |
+| `::: facts` | `- 1280 \| Commits across the project` |
 | `::: timeline` | `- Wk 1 \| Kickoff \| optional second line` |
 | `::: delta` | `- Seven pages -> **One guided flow** a note` |
 | `::: chat` | `- **Speaker** text of the message` |
@@ -185,7 +185,7 @@ Purpose-built ones, which read their body as a list:
 
 A reveal is a slide the deck never pages to. A clickable strip sits on the
 visible slide; clicking it covers that slide with a full panel holding the
-depth — the derivation, the caveat, the numbers behind the claim. The panel has
+depth – the derivation, the caveat, the numbers behind the claim. The panel has
 no page number and no nav dot, so running through the deck never lands on it.
 
 ```markdown
@@ -205,7 +205,7 @@ Jede Sitzung wird bis zum nächsten Commit als aktiv gezählt.
 :::
 ```
 
-`line` is the strip's own text — say what is behind it, not "click here".
+`line` is the strip's own text – say what is behind it, not "click here".
 `more` is the call to action on the right (default *Mehr* / *Details*).
 `eyebrow` works as on a slide.
 
@@ -220,7 +220,7 @@ closing band. Reveals are corrected like slides and reported separately:
        fix   short row (31 %) -> cols--center; balances the gap, does not fill it
 ```
 
-They are listed on their own because they are the slides nobody proof-reads —
+They are listed on their own because they are the slides nobody proof-reads –
 an overfull reveal is invisible until someone clicks it in front of an audience.
 
 More than one reveal per slide is fine; each strip opens its own panel.
@@ -228,7 +228,7 @@ More than one reveal per slide is fine; each strip opens its own panel.
 An **unknown** directive name becomes `<div class="that-name">` with its body
 rendered inside, so any component in the catalog is reachable without teaching
 the converter about it. Raw HTML blocks in the Markdown also pass through
-unchanged — that is the "notfalls HTML" escape hatch, and it is not a
+unchanged – that is the "notfalls HTML" escape hatch, and it is not a
 second-class path.
 
 ## What it corrects, and what it refuses to
@@ -243,7 +243,7 @@ side of a row where they would render as postage stamps, split an overfull prose
 slide into two columns, and centre a short row with `.cols--center`.
 
 `.cols--figure` is the least visible of those and worth one sentence. Text
-against text is what the `4.8cqw` gutter is calibrated for — two ragged edges,
+against text is what the `4.8cqw` gutter is calibrated for – two ragged edges,
 nothing for the eye to catch on. A photograph or a bordered call-out puts a hard
 vertical rule down one side of that gutter, and then the last words of every line
 read as touching it. The class widens the gutter to `6.4cqw` for that pairing
@@ -254,7 +254,7 @@ columns cannot leave the class describing a pairing that no longer exists.
 That last one is worth being precise about, because it is easy to mistake for a
 fullness fix. A short row hanging from the top leaves its slack in one lump
 above the closing band, which reads as broken; the same slack split above and
-below reads as composed. So it is applied — but it is an **arrangement**
+below reads as composed. So it is applied – but it is an **arrangement**
 decision, and it does not touch the row's fill. The slide keeps its honest
 reading and stays in the thin list afterwards, marked `(centred)`. Set
 `autocenter: false` in the frontmatter to turn it off, or `{keep}` on one slide.
@@ -286,15 +286,15 @@ corrections that were applied; `note` lines are suggestions that were not.
 
 ### What the percentage means
 
-It is the fill of the **content row** — how much of the space the row was given
-its content actually occupies — and `gap` is what is left over, as a share of
+It is the fill of the **content row** – how much of the space the row was given
+its content actually occupies – and `gap` is what is left over, as a share of
 the whole slide.
 
 It is deliberately *not* "how much of the slide is painted", because that
 number can be bought. A `.punch` is pinned to the bottom by `.cols { flex: 1 }`,
 so its bottom edge is the deepest ink on the slide: under an ink-fill metric,
-adding one closing line lifts the score by that line's height — around 12 points
-— without a word being added to the content. Measured on a finished 23-slide
+adding one closing line lifts the score by that line's height – around 12 points
+– without a word being added to the content. Measured on a finished 23-slide
 deck, five slides scored 97 % ink fill with their content stopping between 55 %
 and 71 %.
 
@@ -306,8 +306,8 @@ the gap falls from 64 % to 51 %. Under the old metric the same pair read 36 %
 and 49 %.
 
 **It is an estimate, not a measurement.** It is computed from the real geometry
-in `framework/briefing.css` — the 88 cqw × 85.5 cqh content box, the type
-scale, and the same average-glyph-width approximation the browser audit uses —
+in `framework/briefing.css` – the 88 cqw × 85.5 cqh content box, the type
+scale, and the same average-glyph-width approximation the browser audit uses –
 but it cannot know font metrics or image aspect ratios. Checked against a
 browser on 18 content slides: mean error 7 points, 14 of 18 within 10, errors in
 both directions. Run the audit from `SKILL.md` before you ship, and look at a
@@ -317,5 +317,5 @@ Centring does not change this number, by design. `.cols--center` moves where the
 leftover space sits, not how much of it there is, so a centred row reports the
 same fill and stays in the thin list. The browser audit's `deadBand` check is
 the complement: it goes quiet once a row is centred, because it asks whether the
-gap is lopsided. Read together, the pair tells you both things — `deadBand`
+gap is lopsided. Read together, the pair tells you both things – `deadBand`
 silent means it *looks* right, a low row fill means it still *is* thin.

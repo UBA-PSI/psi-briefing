@@ -9,7 +9,7 @@ css: [../framework/briefing.css, ../themes/bamberg.css]
 js: ../framework/briefing.js
 strip:
   - "11: Weeks"
-  - "1 280: Commits"
+  - "1280: Commits"
   - "1: HTML file"
 ---
 
@@ -25,7 +25,7 @@ slides is placeholder content.
 ### How to read it
 
 Open the `.md` beside the rendered deck. Each slide shows one inference rule, so
-you can see which shape of Markdown produced which component — the report the
+you can see which shape of Markdown produced which component – the report the
 converter prints names the rule that fired for every slide.
 
 Nothing here is hand-tuned. Where a directive appears (`::: delta`,
@@ -37,16 +37,17 @@ Markdown shape, not because the inference was overridden.
 
 # How the timeline went
 
-Context, cadence, and the numbers behind the eleven weeks.
+What the eleven weeks looked like from the inside, and the numbers behind them.
 
 ## The numbers
 
-- **1 280** — Commits across the whole project
-- **117** — Working days of elapsed time
-- **34%** — Of commits before 10 a.m.
-- **3** — People on the core team
+- **1280** – Commits across the whole project
+- **117** – Working days of elapsed time
+- **34%** – Of commits before 10 a.m.
+- **3** – People on the core team
 
-> A small team ships fast when the tooling gets out of the way.
+> Three people, and 34 % of the commits landed before 10 a.m. The schedule was
+> built around that, not against it.
 
 ## Plan against reality
 
@@ -82,13 +83,13 @@ Context, cadence, and the numbers behind the eleven weeks.
 ## How a commit is counted
 
 ### What is in
-Commits on `main`, and on any branch that eventually reached `main` — a branch
+Commits on `main`, and on any branch that eventually reached `main` – a branch
 that was abandoned still cost the time it took, but it did not ship, so it is
 not in this number. One commit per author per push, which means a pair
 programming session shows up once rather than twice.
 
 Reverts count as commits. Undoing work is work, and a week with three reverts
-in it was a real week — flattening that would make week five look calmer than
+in it was a real week – flattening that would make week five look calmer than
 it was.
 
 ### What is out
@@ -97,12 +98,12 @@ touching only `dist/` or a lockfile, for the same reason. And the two history
 rewrites in week six, which would otherwise have shown up as 300 commits on a
 single afternoon.
 
-Together that is roughly 9 % of the raw count — enough to matter if you compare
+Together that is roughly 9 % of the raw count – enough to matter if you compare
 this chart against a number someone else counted differently, and the reason
 this panel exists at all rather than a footnote nobody reads.
 
-> Counted the other way — every commit object in the repository — the same
-> eleven weeks come to 1 407. Pick one definition and stay with it.
+> Counted the other way – every commit object in the repository – the same
+> eleven weeks come to 1407. Pick one definition and stay with it.
 :::
 
 > The lull in weeks four and five was the scope argument, not a holiday.
@@ -132,7 +133,7 @@ the thing.
 
 Deploy scripts and the font-embedding pipeline. 70 commits, then left alone.
 
-> Nobody owned a layer exclusively — **everyone shipped end to end.**
+> Nobody owned a layer exclusively – **everyone shipped end to end.**
 
 ## What changed for the user
 
@@ -152,7 +153,7 @@ Deploy scripts and the font-embedding pipeline. 70 commits, then left alone.
 3. **Review on Friday.** Look at the real thing running, never at a status document. Bugs found here were fixed before the note was written, not filed.
 4. **Write it down.** A short note per week, describing what now works that did not before. Eleven notes are where these slides came from.
 5. **Cut on Monday, not Thursday.** Scope came off at the start of a week, while there was still time to reshape it, never in a panic two days before the review.
-6. **Leave it running.** The Friday build stayed deployed over the weekend. Anyone who wanted to look — registrar, IT, a student — could, without asking anyone.
+6. **Leave it running.** The Friday build stayed deployed over the weekend. Anyone who wanted to look – registrar, IT, a student – could, without asking anyone.
 
 > If it was not running by Friday, it did not count as done.
 

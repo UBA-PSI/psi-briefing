@@ -102,7 +102,7 @@ The `.dots` nav is populated at runtime (one dot per `.frame`); if you omit the 
 
 ## Briefing utilities (start here for text-heavy slides)
 
-psi-briefing is at its best on **text-dense slides meant to be read**: slides that fill the frame with well-arranged blocks, rather than sparse "one line per slide" presentation slides. Nancy Duarte named this genre — she calls such documents Slidedocs®, and her [free book on them](https://www.duarte.com/resources/books/slidedocs/) is the best short introduction to why they work. These three utilities are the workhorses for that. Reach for them first; the named components below are specialisations.
+psi-briefing is at its best on **text-dense slides meant to be read**: slides that fill the frame with well-arranged blocks, rather than sparse "one line per slide" presentation slides. Nancy Duarte named this genre – she calls such documents Slidedocs®, and her [free book on them](https://www.duarte.com/resources/books/slidedocs/) is the best short introduction to why they work. These three utilities are the workhorses for that. Reach for them first; the named components below are specialisations.
 
 **`.prose` – scaling free text.** The framework styles paragraphs *per component*, so a bare `<p>` falls back to 16px and does **not** scale with the slide. Always wrap free text in `.prose` (modifiers: `.prose--lead` bigger, `.prose--dense` smaller). `<b>` inside `.prose` is accent-coloured; `.prose ul/li` gives a dotted list.
 
@@ -202,11 +202,11 @@ Off by default: a hyphenated ragged edge is busier than an un-hyphenated one, an
 | `.bf-nohyphens` | the same, to opt one slide back out of a deck-wide `.bf-hyphens` |
 | `.bf-hyphenate` | one element, when you do not want the switch deck-wide |
 
-The browser picks its dictionary from the nearest `lang` attribute, so `<html lang="de">` has to be right or nothing happens at all — and a *wrong* `lang` is worse than a missing one, because German gets broken at English break points. Put `lang` on a single `.slide` when it quotes another language. Display type (`h1`, `h2`, `.editorial-hero h3`) is excluded on purpose: those are balanced, not hyphenated. So are label atoms like `.tl time`, which carry `white-space: nowrap`.
+The browser picks its dictionary from the nearest `lang` attribute, so `<html lang="de">` has to be right or nothing happens at all – and a *wrong* `lang` is worse than a missing one, because German gets broken at English break points. Put `lang` on a single `.slide` when it quotes another language. Display type (`h1`, `h2`, `.editorial-hero h3`) is excluded on purpose: those are balanced, not hyphenated. So are label atoms like `.tl time`, which carry `white-space: nowrap`.
 
 From Markdown: `hyphenate: true` in the frontmatter, `{hyphenate}` / `{hyphenate=off}` on one slide.
 
-Measured on a 23-slide German deck, turning it on: average line shortfall 24.5 % → 22.0 %, and the three worst holes in the deck went from 77/75/67 % of the column width down to 71/59/56 %. It buys the worst lines the most, which is the point — the average was never the problem.
+Measured on a 23-slide German deck, turning it on: average line shortfall 24.5 % → 22.0 %, and the three worst holes in the deck went from 77/75/67 % of the column width down to 71/59/56 %. It buys the worst lines the most, which is the point – the average was never the problem.
 
 ## Component catalog
 
@@ -226,7 +226,7 @@ The opening slide. Dark accent background, big headline, an optional numeric str
         <p class="title-sub">A worked example of the psi-briefing framework</p>
         <div class="title-strip">
           <div><b>11</b><span>Weeks</span></div>
-          <div><b>1&nbsp;280</b><span>Commits</span></div>
+          <div><b>1280</b><span>Commits</span></div>
           <div><b>1</b><span>HTML file</span></div>
         </div>
       </div>
@@ -325,7 +325,7 @@ Four big-number cells. Mark one `.fact--hero` to invert it (accent background). 
 
 ```html
 <div class="facts">
-  <div class="fact fact--hero"><b>1&nbsp;280</b><span>Commits across the whole project</span></div>
+  <div class="fact fact--hero"><b>1280</b><span>Commits across the whole project</span></div>
   <div class="fact"><b>117</b><span>Working days of elapsed time</span></div>
   <div class="fact"><b>34<sup>%</sup></b><span>Of commits before 10&nbsp;a.m.</span></div>
   <div class="fact"><b>3</b><span>People on the core team</span></div>
@@ -356,7 +356,7 @@ Briefing.barChart('#chart-weeks', {
   barColor: '--accent',            // default fill; a "--token" name or a raw colour
   data: [
     { value: 40,  label: 'W1', color: '--accent-60' },   // per-bar color override
-    { value: 95,  label: 'W2', tooltip: '<b>Week 2</b> — 95 commits' }, // custom tooltip HTML
+    { value: 95,  label: 'W2', tooltip: '<b>Week 2</b> – 95 commits' }, // custom tooltip HTML
     { value: 120, label: 'W6' },
     { value: 205, label: 'W9' }
   ],
@@ -454,11 +454,11 @@ A grid of screenshots with captions. Default is a 2-up grid (`.shots`); `.shots-
 <div class="shots">
   <figure>
     <div class="imgwrap"><img src="shot-a.png" alt="Enrolment start screen"></div>
-    <figcaption><b>Start</b> — one obvious entry point</figcaption>
+    <figcaption><b>Start</b> – one obvious entry point</figcaption>
   </figure>
   <figure>
     <div class="imgwrap"><img src="shot-b.png" alt="Guided flow step"></div>
-    <figcaption><b>Flow</b> — same information, fewer clicks</figcaption>
+    <figcaption><b>Flow</b> – same information, fewer clicks</figcaption>
   </figure>
 </div>
 <p class="gallery-note">Screens are from the launch build. <a href="#">See the live portal</a>.</p>
@@ -501,7 +501,7 @@ A soft accent strip summarising a change under a gallery (`.change-strip`), a la
 ```html
 <div class="change-strip">Enrolment went from <b>seven pages</b> to <b>one guided flow</b>.</div>
 
-<div class="change-strip change-strip--statement">The most-requested change shipped first — and became the most-used screen.</div>
+<div class="change-strip change-strip--statement">The most-requested change shipped first – and became the most-used screen.</div>
 
 <div class="change-panel">
   <h3>What we changed</h3>
@@ -521,7 +521,7 @@ Renders a spec, PRD, or email as a paper document with a mono header and a body 
 
 ```html
 <div class="doc">
-  <div class="doc-head">PRD — Guided Enrolment<span class="doc-meta">v3 · owner: product · 2 pages</span></div>
+  <div class="doc-head">PRD – Guided Enrolment<span class="doc-meta">v3 · owner: product · 2 pages</span></div>
   <div class="doc-body">
     <p class="doc-sect">Problem</p>
     <p>New students cannot tell where to begin. Seven separate pages, no obvious order.</p>
@@ -663,8 +663,8 @@ Cards connected by arrows, showing inputs → build → output. `.pcard--build` 
   <div class="pipe-col">
     <div class="pcard-group">
       <div class="pcard-src">
-        <div class="pcard-src-half"><b>Content</b> — Markdown notes per week</div>
-        <div class="pcard-src-half"><b>Assets</b> — screenshots, fonts</div>
+        <div class="pcard-src-half"><b>Content</b> – Markdown notes per week</div>
+        <div class="pcard-src-half"><b>Assets</b> – screenshots, fonts</div>
       </div>
     </div>
   </div>
@@ -683,7 +683,7 @@ A vertical stack of bordered cards inside a column. Combine several `.cardcol` i
 
 ```html
 <div class="cardcol">
-  <div><h3>Offline-first</h3><p>Everything embedded — no network at runtime.</p></div>
+  <div><h3>Offline-first</h3><p>Everything embedded – no network at runtime.</p></div>
   <div><h3>No build step</h3><p>Edit the HTML directly; refresh to see changes.</p></div>
   <div><h3>Theme-driven</h3><p>Restyle the whole deck by swapping tokens.</p></div>
 </div>
@@ -697,9 +697,9 @@ Plain separated lists with density variants: `.kulissen` (default), `--dicht` (d
 
 ```html
 <ul class="kulissen kulissen--mittel">
-  <li><b>Registrar</b> — owns the enrolment rules</li>
-  <li><b>IT</b> — hosting and single sign-on</li>
-  <li><b>Design</b> — the guided flow and these slides</li>
+  <li><b>Registrar</b> – owns the enrolment rules</li>
+  <li><b>IT</b> – hosting and single sign-on</li>
+  <li><b>Design</b> – the guided flow and these slides</li>
 </ul>
 
 <ul class="kulissen kulissen--rollen">
@@ -716,10 +716,10 @@ Four fanned "polaroid" cards. Click (or focus) one to pin it to the front; the r
 
 ```html
 <div class="stack-stage">
-  <figure class="stack-card stack-p1"><span class="stack-shot"><img src="wk2.png" alt="Week 2 prototype"></span><figcaption class="stack-cap"><b>Week 2</b> — first clickable prototype</figcaption></figure>
-  <figure class="stack-card stack-p2"><span class="stack-shot"><img src="wk6.png" alt="Week 6 flow"></span><figcaption class="stack-cap"><b>Week 6</b> — the guided flow takes shape</figcaption></figure>
-  <figure class="stack-card stack-p3"><span class="stack-shot"><img src="wk11.png" alt="Launch build"></span><figcaption class="stack-cap"><b>Week 11</b> — launch build</figcaption></figure>
-  <figure class="stack-card stack-p4"><span class="stack-shot"><img src="wk12.png" alt="First metrics"></span><figcaption class="stack-cap"><b>Week 12</b> — the first metrics</figcaption></figure>
+  <figure class="stack-card stack-p1"><span class="stack-shot"><img src="wk2.png" alt="Week 2 prototype"></span><figcaption class="stack-cap"><b>Week 2</b> – first clickable prototype</figcaption></figure>
+  <figure class="stack-card stack-p2"><span class="stack-shot"><img src="wk6.png" alt="Week 6 flow"></span><figcaption class="stack-cap"><b>Week 6</b> – the guided flow takes shape</figcaption></figure>
+  <figure class="stack-card stack-p3"><span class="stack-shot"><img src="wk11.png" alt="Launch build"></span><figcaption class="stack-cap"><b>Week 11</b> – launch build</figcaption></figure>
+  <figure class="stack-card stack-p4"><span class="stack-shot"><img src="wk12.png" alt="First metrics"></span><figcaption class="stack-cap"><b>Week 12</b> – the first metrics</figcaption></figure>
 </div>
 ```
 
@@ -739,27 +739,27 @@ An inline link that previews and jumps to another slide. Give the target `<secti
 
 ### Bottom-line + detail layer (the "reveal")
 
-A clickable strip that opens a full-slide panel which is **not in the scroll path**: the layer has no `.frame`, no page number and no nav dot, so paging through the deck never lands on it. That is the whole point — it lets a slide carry depth that would otherwise force an extra slide into the linear run for the one person in ten who wants it.
+A clickable strip that opens a full-slide panel which is **not in the scroll path**: the layer has no `.frame`, no page number and no nav dot, so paging through the deck never lands on it. That is the whole point – it lets a slide carry depth that would otherwise force an extra slide into the linear run for the one person in ten who wants it.
 
-**Use when:** a claim needs its derivation, its caveat or its raw numbers available on demand — and would be worse for having them on screen by default.
+**Use when:** a claim needs its derivation, its caveat or its raw numbers available on demand – and would be worse for having them on screen by default.
 
-A layer is a slide in every respect except reachability, so **build it like one**: an `.eyebrow`, an `h2`, `.cols` or a `.net`, a closing `.punch`. What you must not do is drop bare `<p>` elements in — they fall back to 16px and stop scaling with the frame. Wrap text in `.prose`.
+A layer is a slide in every respect except reachability, so **build it like one**: an `.eyebrow`, an `h2`, `.cols` or a `.net`, a closing `.punch`. What you must not do is drop bare `<p>` elements in – they fall back to 16px and stop scaling with the frame. Wrap text in `.prose`.
 
 The `.detail-layer` should be the **next sibling** of its `.bottomline`. That is how the runtime pairs them, and it is the only unambiguous way when a slide carries more than one reveal. If they are separated, the *n*th strip takes the *n*th layer and the console says so; earlier versions silently opened the slide's first layer, so two strips on one slide both showed the same panel.
 
-While a layer is open the deck's own keyboard navigation stands down — otherwise an arrow key pages to the next slide *behind* the overlay. Tab is kept inside the panel, Esc closes it (an image zoomed from inside the layer closes first), and focus returns to the strip that opened it. The strip carries `role="button"`, `aria-controls` and `aria-expanded`; the layer gets `role="dialog"` and `aria-modal`.
+While a layer is open the deck's own keyboard navigation stands down – otherwise an arrow key pages to the next slide *behind* the overlay. Tab is kept inside the panel, Esc closes it (an image zoomed from inside the layer closes first), and focus returns to the strip that opened it. The strip carries `role="button"`, `aria-controls` and `aria-expanded`; the layer gets `role="dialog"` and `aria-modal`.
 
-From Markdown, `::: detail` does all of this — see [`markdown.md`](markdown.md).
+From Markdown, `::: detail` does all of this – see [`markdown.md`](markdown.md).
 
 ```html
 <div class="bottomline">
-  <span>The team logged <b>1&nbsp;280 commits</b> — click for the breakdown</span>
+  <span>The team logged <b>1280 commits</b> – click for the breakdown</span>
   <span class="more">Details &rarr;</span>
 </div>
 <div class="detail-layer">
   <button type="button" class="layer-close">Close &times;</button>
   <p class="eyebrow">Deep dive</p>
-  <h2>Where the 1&nbsp;280 commits went</h2>
+  <h2>Where the 1280 commits went</h2>
   <div class="net" style="margin-top:2cqh">
     <div><h3>Frontend</h3><p>620 commits.</p></div>
     <div><h3>Backend</h3><p>410 commits.</p></div>
@@ -819,7 +819,7 @@ A single line that fills the slide – a rhetorical question or its answer. `.sl
 <!-- a question -->
 <section class="frame"><div class="slide slide--question slide--statement"><div class="slide-inner">
   <p class="statement-kicker">Act 2 · An honest question</p>
-  <p class="statement">Who gains more from AI — the <b>strong</b> or the <b>weak</b>?</p>
+  <p class="statement">Who gains more from AI – the <b>strong</b> or the <b>weak</b>?</p>
   <div class="pagefoot"><span class="thesis"><b>0 × tool = 0</b></span><span class="pagenum"></span></div>
 </div></div></section>
 
@@ -876,11 +876,11 @@ Two solid edge bands with a middle band that gets "eaten" – a decide → execu
 
 ```html
 <div class="sandwich">
-  <div class="sandwich-band sandwich-band--edge"><h3>Decide</h3><p><b>what</b> gets built — needs judgement</p></div>
+  <div class="sandwich-band sandwich-band--edge"><h3>Decide</h3><p><b>what</b> gets built – needs judgement</p></div>
   <div class="sandwich-band sandwich-band--mid eaten"><h3>Execute</h3><p>this is what AI eats</p></div>
-  <div class="sandwich-band sandwich-band--edge"><h3>Deliver</h3><p>own <b>that</b> it's right — needs judgement</p></div>
+  <div class="sandwich-band sandwich-band--edge"><h3>Deliver</h3><p>own <b>that</b> it's right – needs judgement</p></div>
 </div>
-<p class="sandwich-note">The middle shrinks. What's left are the <b>edges</b> — and both need judgement.</p>
+<p class="sandwich-note">The middle shrinks. What's left are the <b>edges</b> – and both need judgement.</p>
 ```
 
 ### Full-bleed quote
@@ -889,7 +889,7 @@ Two solid edge bands with a middle band that gets "eaten" – a decide → execu
 <section class="frame"><div class="slide slide--quote"><div class="slide-inner">
   <p class="eyebrow">Act 5 · Why study endures</p>
   <blockquote class="bigquote">"I remember the books no more than the meals; <b>yet they made me.</b>"</blockquote>
-  <p class="quote-attr"><b>Emerson</b>, attributed — the wording is uncertain, which is almost the point.</p>
+  <p class="quote-attr"><b>Emerson</b>, attributed – the wording is uncertain, which is almost the point.</p>
   <div class="pagefoot"><span class="pagenum"></span></div>
 </div></div></section>
 ```

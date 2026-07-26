@@ -99,7 +99,7 @@ German's closing mark is the same character as English's opening one, which is w
 
 Straight quotes stay straight inside code: a `<script>` block, a class name, a file path, an `alt` attribute delimiter. Convert the words on the slide, not the markup around them.
 
-**Dashes.** Use the en dash `–` for parenthetical breaks, spaced in German (`Wort – Wort`), and unspaced for ranges (`2–3`, `1994–2003`). **Never use the em dash `—`**; it is wrong in German typography and a tired tic everywhere else. Hyphens stay hyphens (`E-Prüfung`).
+**Dashes.** Use the en dash `–` for parenthetical breaks, spaced in German (`Wort – Wort`), and unspaced for ranges (`2–3`, `1994–2003`). **Never use the em dash `–`**; it is wrong in German typography and a tired tic everywhere else. Hyphens stay hyphens (`E-Prüfung`).
 
 **Hyphenation** is off by default, which is right for a wide measure – a hyphenated ragged edge is busier for nothing gained. It becomes worth having in a **narrow** German column (a `.net` cell, a `.cardcol` card, one third of a `cols--3` row), where a single `Prüfungsaufsicht` on a line leaves a hole nothing else can close. Turn it on with `.bf-hyphens` on `<body>` or on one `.slide`; `.bf-nohyphens` opts a slide back out of a deck-wide setting; `.bf-hyphenate` does one element. From Markdown: `hyphenate: true` in the frontmatter, `{hyphenate}` per slide. Two things have to be right. The browser chooses its dictionary from the nearest `lang` attribute, so `<html lang>` must be set **and correct** – a wrong `lang` breaks German at English break points, which is worse than no hyphenation at all. And display type stays out of it: `h1`, `h2` and `.editorial-hero h3` are balanced, not hyphenated, as are `nowrap` label atoms like `.tl time`.
 
@@ -177,7 +177,7 @@ All three centre *content*; none of them shrinks its container. Reach for them w
 
 `minmax(floor, max-content)` keeps a sensible minimum and grows for the longest entry; `subgrid` shares the parent's tracks so every row lines up without anyone guessing a number. Apply the same shape to any label/value pair.
 
-Two audit checks below cover this class, and you need both, because the fix has two halves. `crampedLabels` finds a short label that *wrapped*. But `white-space: nowrap` — which `.tl time` carries, and which any "the label is an atom" rule needs — means the label cannot wrap: it gets clipped by its cell instead, and `crampedLabels` then sees a perfectly ordinary one-line label. `clippedLabels` asks the other question, whether the content is wider than its own box. Verified by reinstating `grid-template-columns: 7cqw 1fr` on a deck with long German labels: `crampedLabels` reported nothing, `clippedLabels` reported five.
+Two audit checks below cover this class, and you need both, because the fix has two halves. `crampedLabels` finds a short label that *wrapped*. But `white-space: nowrap` – which `.tl time` carries, and which any "the label is an atom" rule needs – means the label cannot wrap: it gets clipped by its cell instead, and `crampedLabels` then sees a perfectly ordinary one-line label. `clippedLabels` asks the other question, whether the content is wider than its own box. Verified by reinstating `grid-template-columns: 7cqw 1fr` on a deck with long German labels: `crampedLabels` reported nothing, `clippedLabels` reported five.
 
 **The gutter needs more room than it looks like it needs.** In a two-column slide the gutter is the only thing keeping two blocks of text apart. If it gets close to the width of a word space, the eye reads straight across the gap and the columns fuse into one ragged block. It should read as a deliberate channel, not as a slightly larger word space – the framework's `4.8cqw` is a floor, not a target.
 
@@ -337,7 +337,7 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
    rep;   // want: every list empty
    ```
 
-   That last probe is worth running over the **slides** too, not just the layers — swap `.detail-layer` for `.slide` and drop the open/close. A bare `<p>` is the framework's loudest trap: it falls back to 16px and stops tracking the frame, so it looks right on your screen and wrong on the projector.
+   That last probe is worth running over the **slides** too, not just the layers – swap `.detail-layer` for `.slide` and drop the open/close. A bare `<p>` is the framework's loudest trap: it falls back to 16px and stops tracking the frame, so it looks right on your screen and wrong on the projector.
 
    Aim for **≥85 % ink fill** on content slides; treat anything under that as a slide needing more content (see "Filling the frame"). Note that measuring alone is not enough – always *look* at a few slides too, because a stretched-but-empty box scores well and reads badly. Screenshot **individual slides** (`.slide` elements), not `fullPage`: scroll-snap makes full-page captures stitch duplicated frames.
 
@@ -490,7 +490,7 @@ Copy the matching block from `references/components.md`. Pick by intent:
 | Jump to another slide w/ preview | `<a class="goto" href="#slide-id">` (hover previews, click jumps) |
 | Zoom an image | add class `zoomable` to an `<img>` |
 
-**A reveal is a slide, so build it like one.** A `.detail-layer` is a full-slide panel outside the scroll path — no page number, no nav dot, unreachable by paging. Use it for depth that would otherwise force a slide into the linear run for the one reader in ten who wants it: a derivation, a caveat, the numbers behind a claim. Inside the layer, use the same components you would on a slide (`h2`, `.cols`, `.net`, a closing `.punch`) and never a bare `<p>` — those fall back to 16px and stop scaling. The layer must be the **next sibling** of its strip; on a slide with two reveals that is the only unambiguous pairing, and the runtime warns when it has to guess. The layer is also the slide nobody proof-reads, so check it for overflow explicitly — the audit only sees what is on screen.
+**A reveal is a slide, so build it like one.** A `.detail-layer` is a full-slide panel outside the scroll path – no page number, no nav dot, unreachable by paging. Use it for depth that would otherwise force a slide into the linear run for the one reader in ten who wants it: a derivation, a caveat, the numbers behind a claim. Inside the layer, use the same components you would on a slide (`h2`, `.cols`, `.net`, a closing `.punch`) and never a bare `<p>` – those fall back to 16px and stop scaling. The layer must be the **next sibling** of its strip; on a slide with two reveals that is the only unambiguous pairing, and the runtime warns when it has to guess. The layer is also the slide nobody proof-reads, so check it for overflow explicitly – the audit only sees what is on screen.
 
 **Narrative / talk components** (for argument-driven talks – questions, reveals, a running thesis, cited studies):
 

@@ -239,8 +239,8 @@ content stopped at 55–71 %, leaving 13–26 % of dead space under it (slides 9
 13, 14, 17, 18). The deck is not as full as the number said.
 
 This is worse than the stretched-container case in §1, because there the fix was
-wrong; here the fix is *right* — a `.punch` genuinely closes the frame and
-states the takeaway, and `SKILL.md` recommends it — and it silences the metric
+wrong; here the fix is *right* – a `.punch` genuinely closes the frame and
+states the takeaway, and `SKILL.md` recommends it – and it silences the metric
 anyway. **Any move that adds a bottom-pinned element makes a fill score
 meaningless.** An auto-layout pass driven by such a score would learn to add a
 band to every thin slide.
@@ -250,12 +250,12 @@ calibrated before shipping: the naive version (gap under the content ≥ 12 %)
 gave 7 hits with 2 false, both on rows the author had deliberately centred with
 `cols--center`. Comparing the slack *above* the content with the slack *below*
 and requiring an 8-point difference separates "hanging from the top" from
-"centred": 5 hits, 0 false, across two decks. Same lesson as `crampedLabels` —
+"centred": 5 hits, 0 false, across two decks. Same lesson as `crampedLabels` –
 the first version of a detector is not the shippable one.
 
 **Measure the row, not the slide.** The converter's estimator was changed to
-report the fill of the *content row* — content height over the height the row
-was given — instead of the painted fraction of the slide. That is the smallest
+report the fill of the *content row* – content height over the height the row
+was given – instead of the painted fraction of the slide. That is the smallest
 change that makes the number unbuyable: the band is not in the row, so it cannot
 inflate it, but it still shrinks the room the row has, which is a real effect
 and should show. On two slides identical but for a closing blockquote the row
@@ -272,7 +272,7 @@ answer two questions.
 
 Split them and both work. *Arrangement*: a short row hanging from the top leaves
 its slack in one lump above the closing band and reads as broken, while the same
-slack split above and below reads as composed — so centre it, automatically.
+slack split above and below reads as composed – so centre it, automatically.
 *Content volume*: the row fill is computed from content over room and is
 unaffected by where that room sits, so the slide keeps its honest reading and
 stays in the thin list, marked `(centred)`. Measured on the 23-slide deck: 10
@@ -290,7 +290,7 @@ decision came from an image/text balance case, and was over-generalised here.
 with long German labels, including the original "kurz vor 0" case. The first
 version of the test had no power: reinstating `grid-template-columns: 7cqw 1fr`
 changed none of its assertions, because `.tl time` carries
-`white-space: nowrap`. The label cannot wrap, so it clips — and `crampedLabels`,
+`white-space: nowrap`. The label cannot wrap, so it clips – and `crampedLabels`,
 which looks for a short string on more than one line, sees a normal one-line
 label and reports nothing. **The cause detector is blind to the exact fault
 class it was written for, whenever the label is a nowrap atom.**
@@ -299,7 +299,7 @@ class it was written for, whenever the label is a nowrap atom.**
 because generated chart labels report it differently). Calibrated as §2
 requires: 0 hits across six decks with the fix in place, 5 hits with the
 hard-coded track reinstated, 0 again on restore. Note also the second-order
-lesson — the test's first assertion silently never ran, because
+lesson – the test's first assertion silently never ran, because
 `getComputedStyle(li).gridTemplateColumns` returns the string `"subgrid [] []
 []"` under subgrid and `parseFloat` of that is `NaN`, so every comparison was
 false. **A regression test is not finished until you have watched it fail.**
@@ -309,7 +309,7 @@ painted height from the CSS geometry (the 88 cqw × 85.5 cqh content box, the
 type scale, and the same average-glyph-width approximation the browser audit
 uses) agreed with the browser on which slides were thin. Two calibration traps
 found by comparing against real measurements: `.flow` carries `flex: 1` but also
-`align-content: start`, so it does **not** fill its row — the same trap as
+`align-content: start`, so it does **not** fill its row – the same trap as
 `.cols` in §3, and easy to get backwards; and `.editorial-layout` /
 `.principle-columns` size to content and are then centred by `margin: auto`, so
 their measured ink sits higher than their content volume implies. An estimator
@@ -321,7 +321,7 @@ thin slides.
 A review pass over every file. Ordered by how quietly each thing failed.
 
 **A check that could never fire.** `build-deck.sh`'s verify step blanked
-`<script>` elements with `"<script></script>"` — replacing the *opening tag* as
+`<script>` elements with `"<script></script>"` – replacing the *opening tag* as
 well, so the `src` attribute it then went looking for had already been deleted.
 The "external script" check had therefore never matched anything, and the script
 printed **"no external references"** for a deck loading a remote `<script src>`.
@@ -335,13 +335,13 @@ that never fires looks exactly like a check that always passes.
 **A guess dressed as a default.** The runtime filled in a missing `<html lang>`
 with `"en"`. Harmless while nothing read it; now that hyphenation depends on
 `lang`, an undeclared German deck would have been broken at English break points
-and read aloud in English by a screen reader. Replaced with a console warning —
+and read aloud in English by a screen reader. Replaced with a console warning –
 with no `lang` at all, browsers simply do not hyphenate, which is the safe
 failure.
 
 **Two handlers, one keypress.** `.bottomline` handles Space to open its detail
 layer and calls `preventDefault()`. The document-level key handler then ran
-anyway — `preventDefault` stops the default action, not the propagation — so one
+anyway – `preventDefault` stops the default action, not the propagation – so one
 press both opened the layer and advanced the deck. Guarded with
 `ev.defaultPrevented`.
 
@@ -357,7 +357,7 @@ cheap to close and expensive to diagnose.
 whether or not it had achieved one. A flat-colour screenshot at q82 regularly
 encodes *larger* than its source PNG, and the deck got heavier. It now keeps
 whichever file wins and says so. Related: `photo.png` and `photo.jpg` in one
-folder both map to `photo.webp`, and the second used to overwrite the first —
+folder both map to `photo.webp`, and the second used to overwrite the first –
 refused now, but only for collisions *within* a run, since refusing pre-existing
 files would make every second `build-deck.sh` run skip every image.
 
@@ -369,7 +369,7 @@ because the deck was linking a stale copy. `tools/sync-assets.sh` copies or, wit
 
 **Documentation rot, found by reading it against the code.** `tools/README.md`
 opened with "Two small, dependency-free helper scripts" and documented two of six
-tools — `md-to-deck.mjs`, `build-deck.sh` and `optimise-images.mjs` were absent.
+tools – `md-to-deck.mjs`, `build-deck.sh` and `optimise-images.mjs` were absent.
 All four tool headers claimed "CC BY 4.0" against an MIT `LICENSE`.
 
 **Not fixed, on purpose.** `inline-deck.mjs` embeds one data URI per `<img>` tag,
@@ -377,7 +377,7 @@ so an image reused on three slides is carried three times; de-duplicating means 
 lookup table and a runtime, which costs more than it saves for a deck that should
 not be reusing photographs anyway. `optimise-images.mjs` rewrites only
 `<img src>`, not CSS `url()`. `.pipe--offset` translates by a hard-coded
-`10.7cqh` — the fault class of §3, in a place no detector looks.
+`10.7cqh` – the fault class of §3, in a place no detector looks.
 
 **One thing this review got wrong, worth recording.** An ad-hoc paraphrase of
 `crampedLabels` (element height vs line-height) reported three false positives on
@@ -388,13 +388,13 @@ detector from memory to run it quickly, you are testing your memory.
 
 ## 6d. Reveals: the slides no metric was looking at
 
-A `.detail-layer` is a full-slide panel outside the scroll path — the mechanism
+A `.detail-layer` is a full-slide panel outside the scroll path – the mechanism
 the retro decks used for optional depth. The markup and the runtime were both
 already here; what was missing was everything around them.
 
 **A reveal was not built like a slide, even though it is one.** From Markdown,
 `::: detail` rendered its body with `renderBlocks`: flat `h3`/`p`, no shape
-inference, and — worst — bare `<p>` elements, which fall back to 16 px and stop
+inference, and – worst – bare `<p>` elements, which fall back to 16 px and stop
 scaling with the frame. The framework's loudest documented trap, in the one place
 nobody looks. The body now goes through the same planner as a slide, so a reveal
 gets its `h2`, its columns, its closing band. The fix was mostly *factoring*: the
@@ -408,7 +408,7 @@ about that check are worth keeping:
 
 - Measure the deepest painted **descendant**, not the direct children. The
   components inside are `flex: 1` / `1fr`, so their boxes never exceed the layer
-  however much text they hold — text overflows inside a `.net` cell while the
+  however much text they hold – text overflows inside a `.net` cell while the
   `.net` box reports a perfect fit. Children said 0 on a layer that was 10 px
   over; descendants found it.
 - To ask "does this text scale?", **halve the container and look**. A cq-based
@@ -418,7 +418,7 @@ about that check are worth keeping:
   `<p>`: one hit at 16 px unchanged, nine other elements clean.
 
 **A reveal is chrome, not a column.** Because `::: detail` was a group like any
-other, it took half the row on the example deck's chart slide — demoting a
+other, it took half the row on the example deck's chart slide – demoting a
 full-width `.chartbox` to one column of two and dropping the row from 100 % to
 59 %. It is now pulled out of the layout like `note` and `source`. The general
 shape: a directive that renders *around* the body must never be planned *as* the
@@ -426,7 +426,7 @@ body, and the symptom is a fill number that moves when you add chrome.
 
 **One threshold was serving two different jobs.** The reveal came out at 78 % row
 fill and the report flagged it, so the first instinct was to add sentences until
-the number went up — which is exactly the behaviour §1 exists to forbid, applied
+the number went up – which is exactly the behaviour §1 exists to forbid, applied
 to a doc example. The 85 % target exists because a slide is projected in front of
 a room and empty space on it is space nobody chose. A reveal is opened by one
 reader who asked one question; its job is to answer it and get out of the way.
@@ -435,7 +435,7 @@ it is that reaching for content to satisfy a metric is a signal to go and look a
 whether the metric applies.
 
 **Interaction bugs the reveal work surfaced.** An arrow key paged the deck
-*behind* an open layer, which then stayed open on a slide nobody was looking at —
+*behind* an open layer, which then stayed open on a slide nobody was looking at –
 the deck's key handler now stands down while any overlay is up. Tab walked out of
 the panel into the invisible slide underneath. Focus never came back to the strip
 on close. And on a slide with two reveals, both strips opened the first layer,
@@ -445,7 +445,7 @@ retro deck happened to be immune only because its markup interleaves them.
 **And a documentation claim that was simply false.** Both `SKILL.md` and the
 cookbook stated that `.punch` carries `margin-top: auto`. It does not, and never
 did: the band is pushed down by the `flex: 1` on the `.cols` above it. The first
-instinct was to add the missing `auto` and make the docs true — but that would be
+instinct was to add the missing `auto` and make the docs true – but that would be
 wrong. After a `.kulissen` list or a `.doc` there is no `flex: 1` sibling, and a
 band floated to the bottom of a short list *opens* a dead band rather than
 closing one, which is the fault `deadBand` exists to find. The framework was

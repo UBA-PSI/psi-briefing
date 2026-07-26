@@ -1,6 +1,6 @@
 # psi-briefing tools
 
-Small, dependency-free scripts (Node.js 18+, ESM, built-ins only — the one
+Small, dependency-free scripts (Node.js 18+, ESM, built-ins only – the one
 exception is the WebP encode step, which shells out to `cwebp` or `magick`).
 
 | Tool | What it is for |
@@ -26,14 +26,14 @@ embedded. These tools do that.
 
 ## Recommended workflow
 
-1. **Write** the deck — as Markdown through `md-to-deck.mjs`, or by hand from
+1. **Write** the deck – as Markdown through `md-to-deck.mjs`, or by hand from
    the catalog in `docs/cookbook.md`.
 2. **Look at it** over `python3 -m http.server`, and run the audit from
    `skills/briefing/SKILL.md`.
 3. *(once per theme)* **Embed fonts**: run `embed-fonts.mjs` and paste its
    output into your theme, so the fonts travel with the deck.
 4. **Ship one file**: `tools/build-deck.sh deck.html`. That runs the image and
-   inline steps and then *verifies* that nothing external is left — the step
+   inline steps and then *verifies* that nothing external is left – the step
    people skip, and the reason this is a script and not a note in a README.
 
 ```
@@ -82,7 +82,7 @@ warns, skips that step, and still produces a valid file.
 
 ## `sync-assets.sh`
 
-`framework/` and `themes/` are the originals, but two directories hold copies —
+`framework/` and `themes/` are the originals, but two directories hold copies –
 `skills/briefing/references/assets/` so the skill is self-contained, and
 `test-aufsicht/assets/` so the local test decks link without a path prefix.
 `docs/cookbook.md` and `skills/briefing/references/components.md` are the
@@ -176,7 +176,7 @@ What it inlines (all resolved **relative to the input HTML's directory**):
 Supported image types: `.png .jpg .jpeg .gif .svg .webp`.
 
 **Left untouched:** remote URLs (`http://`, `https://`, `//host/…`), existing
-`data:` URIs, and any local file that cannot be found — those log a warning to
+`data:` URIs, and any local file that cannot be found – those log a warning to
 stderr and the original tag is kept, so the run never fails on a missing asset.
 Document order of styles and scripts is preserved. A one-line summary
 (bytes in → bytes out) is printed to stderr.
@@ -202,7 +202,7 @@ node tools/optimise-images.mjs deck.html --dry-run
 ```
 
 Two things it refuses to do quietly. If the `.webp` comes out **larger** than
-its source — routine for a flat-colour screenshot at q82 — it deletes it and
+its source – routine for a flat-colour screenshot at q82 – it deletes it and
 keeps the original, because switching would make the deck heavier while
 reporting an optimisation. And if two sources in the same folder would produce
 the same `.webp` (`photo.png` and `photo.jpg`), the second is left alone rather

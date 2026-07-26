@@ -87,7 +87,7 @@ Give the deck an opening. A title slide is a normal slide with the extra class `
     <p class="title-sub">A worked example built with psi-briefing</p>
     <div class="title-strip">
       <div><b>11</b><span>Weeks</span></div>
-      <div><b>1&nbsp;280</b><span>Commits</span></div>
+      <div><b>1280</b><span>Commits</span></div>
       <div><b>1</b><span>HTML file</span></div>
     </div>
     <div class="pagefoot"><span>My deck</span><span class="pagenum"></span></div>
@@ -101,7 +101,7 @@ What each piece does:
 - `<h1>` – the big display headline. On a title slide it's set in the display font and sized in `cqw`, so it never overflows.
 - `.title-strip` – a row of small stat blocks (`<b>` is the number, `<span>` is the label). Great for a "deck at a glance" summary.
 
-Use `&nbsp;` (a non-breaking space) inside numbers and short phrases you don't want to wrap – `1&nbsp;280`, `10&nbsp;a.m.`
+Use `&nbsp;` (a non-breaking space) inside numbers and short phrases you don't want to wrap – `1280`, `10&nbsp;a.m.`
 
 ---
 
@@ -116,7 +116,7 @@ Now a data slide. Add this as a new `<section>` after the title. It shows two of
 
     <!-- Facts grid: four big-number cells; the first is a "hero" cell. -->
     <div class="facts">
-      <div class="fact fact--hero"><b>1&nbsp;280</b><span>Commits across the project</span></div>
+      <div class="fact fact--hero"><b>1280</b><span>Commits across the project</span></div>
       <div class="fact"><b>117</b><span>Working days elapsed</span></div>
       <div class="fact"><b>34<sup>%</sup></b><span>Of commits before 10&nbsp;a.m.</span></div>
       <div class="fact"><b>3</b><span>People on the core team</span></div>

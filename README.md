@@ -143,7 +143,7 @@ See **[docs/cookbook.md](docs/cookbook.md)** for every component and **[docs/tut
 The framework is built for content that is **already document-shaped** – a
 retrospective, project documentation, a research summary, lecture notes, a
 data-driven report. Those sources arrive with sections, comparisons and numbers
-to arrange densely, and arranging them densely is the whole job.
+to arrange densely, in an order somebody already chose.
 
 It is a **poor fit for a sparse performance talk**: a short spoken keynote driven
 by timing, delivery and question→answer beats. This was tested on a real one and

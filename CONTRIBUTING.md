@@ -33,7 +33,7 @@ snippet from `skills/briefing/SKILL.md` in the console. Every fault recorded in
 `docs/handoff-autolayout.md` that a metric missed was found by looking.
 
 If you changed `framework/briefing.css`, `framework/briefing.js` or a theme, run
-`tools/sync-assets.sh` — four copies of those files exist so the skill and the
+`tools/sync-assets.sh` – four copies of those files exist so the skill and the
 local test decks are self-contained, and a stale copy makes your change appear
 not to work.
 
@@ -41,7 +41,7 @@ not to work.
 
 **Never use `px` or `rem` inside a slide.** Everything is `cqw` and `cqh`, which
 is what makes a deck scale proportionally instead of breaking at one size. A bare
-`<p>` falls back to 16px and stops scaling — wrap free text in `.prose` or a
+`<p>` falls back to 16px and stops scaling – wrap free text in `.prose` or a
 component that styles its own text. The audit has a check that halves the
 container and looks for text whose size does not move.
 
@@ -64,7 +64,7 @@ the empty space instead of removing it. The honest fixes are more content, a
 closing `.punch`, or merging two thin slides.
 
 **Typography.** German quotation marks are `„…“`, apostrophes are `’`, and the
-em dash is not used — en dash for parenthetical breaks, spaced in German. The
+em dash is not used – en dash for parenthetical breaks, spaced in German. The
 Markdown converter applies this automatically to slide text; it deliberately does
 not touch code spans, so an example that *teaches* a character should show the
 one the project actually uses.
@@ -73,8 +73,8 @@ one the project actually uses.
 
 This codebase has an unusual convention and it is deliberate: **a comment
 explains why, and names the concrete failure it prevents.** There are a lot of
-comments that read like short paragraphs. Where a number appears — a threshold, a
-tolerance, a magic constant — the comment says where the number came from and,
+comments that read like short paragraphs. Where a number appears – a threshold, a
+tolerance, a magic constant – the comment says where the number came from and,
 where possible, what was measured. `# run the tests` would be out of place.
 
 The same goes for commit messages. They are long here because the reasoning is
@@ -105,7 +105,7 @@ ignore it.
 | `examples/` | The worked example and the tutorial deck. Both are documentation. |
 
 `examples/example-deck.html` is hand-maintained source. `examples/example-deck-md.html`
-and `examples/tutorial.html` are generated and gitignored — edit the `.md`.
+and `examples/tutorial.html` are generated and gitignored – edit the `.md`.
 
 ## The example decks are documentation
 

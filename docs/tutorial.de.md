@@ -87,7 +87,7 @@ Gib dem Deck einen Auftakt. Eine Titelfolie ist eine normale Folie mit der zusä
     <p class="title-sub">Ein durchgespieltes Beispiel mit psi-briefing</p>
     <div class="title-strip">
       <div><b>11</b><span>Wochen</span></div>
-      <div><b>1&nbsp;280</b><span>Commits</span></div>
+      <div><b>1280</b><span>Commits</span></div>
       <div><b>1</b><span>HTML-Datei</span></div>
     </div>
     <div class="pagefoot"><span>Mein Deck</span><span class="pagenum"></span></div>
@@ -101,7 +101,7 @@ Was die einzelnen Teile tun:
 - `<h1>` – die große Display-Überschrift. Auf einer Titelfolie steht sie in der Display-Schrift und wird in `cqw` bemessen, läuft also nie über.
 - `.title-strip` – eine Reihe kleiner Kennzahl-Blöcke (`<b>` ist die Zahl, `<span>` die Beschriftung). Ideal als „Deck auf einen Blick".
 
-Verwende `&nbsp;` (geschütztes Leerzeichen) innerhalb von Zahlen und kurzen Wendungen, die nicht umbrechen sollen – `1&nbsp;280`, `10&nbsp;Uhr`.
+Verwende `&nbsp;` (geschütztes Leerzeichen) innerhalb von Zahlen und kurzen Wendungen, die nicht umbrechen sollen – `1280`, `10&nbsp;Uhr`.
 
 ---
 
@@ -116,7 +116,7 @@ Jetzt eine Datenfolie. Füg sie als neuen `<section>` nach dem Titel ein. Sie ze
 
     <!-- Kennzahlen-Raster: vier Zellen mit großen Zahlen; die erste ist "Hero". -->
     <div class="facts">
-      <div class="fact fact--hero"><b>1&nbsp;280</b><span>Commits im gesamten Projekt</span></div>
+      <div class="fact fact--hero"><b>1280</b><span>Commits im gesamten Projekt</span></div>
       <div class="fact"><b>117</b><span>vergangene Arbeitstage</span></div>
       <div class="fact"><b>34<sup>%</sup></b><span>der Commits vor 10&nbsp;Uhr</span></div>
       <div class="fact"><b>3</b><span>Leute im Kernteam</span></div>

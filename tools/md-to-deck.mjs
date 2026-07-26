@@ -1230,7 +1230,11 @@ function renderLayout(layout, ctx) {
 
 function renderFacts(facts, ctx) {
   const cells = facts.map((f, i) => {
-    const value = f.value.replace(/(\d)\s+(\d)/g, '$1&nbsp;$2')
+    // If an author does group a number, keep the group unbreakable - but with a
+    // THIN space. A full &nbsp; at the 4.2cqw display size of .fact b renders as a
+    // visible gap that reads as two numbers rather than one, which is why the
+    // examples now write 1280 unspaced.
+    const value = f.value.replace(/(\d)\s+(\d)/g, '$1&thinsp;$2')
       .replace(/([%‰]|pp)$/, '<sup>$1</sup>');
     return `  <div class="fact${i === 0 ? ' fact--hero' : ''}"><b>${value}</b>` +
       `<span>${inline(f.label, ctx)}</span></div>`;
@@ -1461,7 +1465,24 @@ function renderDirective(d, ctx) {
 }
 
 const plainText = (blocks) => blocks.map((b) => b.text ?? (b.items || []).join(' ')).join(' ').trim();
-const indent = (s, n) => s ? s.split('\n').map((l) => (l ? ' '.repeat(n) + l : l)).join('\n') : s;
+// Indent generated HTML for readability, but never inside a <pre>, where
+// whitespace is content rather than formatting. Indenting blindly pushed the
+// surrounding markup's indentation into every line of every code sample from the
+// second line onwards: on screen the first line sat flush and the rest stepped
+// right, on every slide that showed code. The first line escaped only because it
+// follows the <pre><code> tags on the same line, which is what made the fault
+// look like a styling quirk instead of a whitespace bug.
+const indent = (s, n) => {
+  if (!s) return s;
+  const pad = ' '.repeat(n);
+  let inPre = false;
+  return s.split('\n').map((l) => {
+    const out = inPre || !l ? l : pad + l;
+    if (/<pre\b/.test(l)) inPre = true;
+    if (/<\/pre>/.test(l)) inPre = false;
+    return out;
+  }).join('\n');
+};
 
 // ---------------------------------------------------------------------------
 // Slide emitters

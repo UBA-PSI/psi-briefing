@@ -47,7 +47,7 @@ by itself, and which slides are thin in a way no tool can fix.
 {eyebrow="Structure"}
 
 Divider numbering and the table of contents on the title slide are both derived
-from the `#` headings, so the two can never drift apart — the one piece of
+from the `#` headings, so the two can never drift apart – the one piece of
 bookkeeping hand-written decks kept getting wrong.
 
 ::: cols--2
@@ -84,23 +84,23 @@ become two columns of stacked cards.
 ::: cols--2
 ```markdown
 ### Candidates
-They sit the exam at laptops.
+They sit the exam.
 
 ### Examiner
-Responsible for the exam.
+Owns the paper.
 
 ### Invigilators
-They invigilate, and help set up.
+They set up and watch.
 
 ### Technical lead
-Knows the system. Not an invigilator.
+Knows the system.
 ```
 
 <div class="net net--middle">
-  <div><h3>Candidates</h3><p>They sit the exam at laptops.</p></div>
-  <div><h3>Examiner</h3><p>Responsible for the exam.</p></div>
-  <div><h3>Invigilators</h3><p>They invigilate, and help set up.</p></div>
-  <div><h3>Technical lead</h3><p>Knows the system. Not an invigilator.</p></div>
+  <div><h3>Candidates</h3><p>They sit the exam.</p></div>
+  <div><h3>Examiner</h3><p>Owns the paper.</p></div>
+  <div><h3>Invigilators</h3><p>They set up and watch.</p></div>
+  <div><h3>Technical lead</h3><p>Knows the system.</p></div>
 </div>
 :::
 
@@ -135,13 +135,13 @@ value, is not a list. It is a row of figures, and it is set as one.
 
 ::: cols--2
 ```markdown
-- **1 280** – commits across the project
+- **1280** – commits across the project
 - **11** – weeks from kickoff to launch
 - **3** – people, none of them full time
 ```
 
 <div class="facts">
-  <div class="fact fact--hero"><b>1&nbsp;280</b><span>commits across the project</span></div>
+  <div class="fact fact--hero"><b>1280</b><span>commits across the project</span></div>
   <div class="fact"><b>11</b><span>weeks from kickoff to launch</span></div>
   <div class="fact"><b>3</b><span>people, none of them full time</span></div>
 </div>
@@ -180,7 +180,7 @@ intention that has no shape in Markdown.
 {eyebrow="Directives"}
 
 In Markdown five `###` blocks all look alike. That the first outranks the rest
-is a decision, not a structure, so no rule could recover it — and that is
+is a decision, not a structure, so no rule could recover it – and that is
 exactly when you reach for a directive.
 
 ::: cols--2
@@ -197,23 +197,127 @@ Also worth a line.
 :::
 ```
 
-### The same reason, three more times
-`::: delta` for old → new, `::: principles` for do vs avoid, `::: chart` for a
-bar chart. In each of them the **relationship** between the items carries the
-meaning, and Markdown has no notation for a relationship.
-
-Where the shape *does* carry the meaning — four peers, a list of steps, a
-quotation as the takeaway — a directive is just extra typing. A finished
-23-slide deck used exactly three.
+<div class="editorial-layout editorial-layout--lessons">
+  <div class="editorial-hero">
+    <h3>The one thing that mattered</h3>
+    <p>Everything else followed from it.</p>
+  </div>
+  <div class="editorial-stack">
+    <div class="editorial-item"><h3>A smaller lesson</h3><p>Worth a line.</p></div>
+    <div class="editorial-item"><h3>Another</h3><p>Also worth a line.</p></div>
+  </div>
+</div>
 :::
+
+## Three more, for the same reason
+{eyebrow="Directives"}
+
+`::: delta` for old against new, `::: principles` for do against avoid,
+`::: chart` for a bar chart. In each one the *relationship* between the items is
+what carries the meaning, and Markdown has no notation for a relationship.
+
+::: cols--2
+```markdown
+::: delta
+- Seven pages -> **One guided flow**
+- A PDF by e-mail -> **A link**
+:::
+
+::: principles
+### Do
+- Cite the source
+- Say what changed
+
+### Avoid
+- One line per slide
+:::
+```
+
+<div class="delta">
+  <div><div class="d-old">Seven pages</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>One guided flow</b></div></div>
+  <div><div class="d-old">A PDF by e-mail</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>A link</b></div></div>
+</div>
+<div class="principle-columns" style="margin-top:2cqh">
+  <div class="principle-group">
+    <div class="tl-head">Do</div>
+    <ul class="principle-list"><li>Cite the source</li><li>Say what changed</li></ul>
+  </div>
+  <div class="principle-group">
+    <div class="tl-head">Avoid</div>
+    <ul class="principle-list"><li>One line per slide</li><li>Unlabelled numbers</li></ul>
+  </div>
+</div>
+:::
+
+## A list of numbers becomes a chart
+{eyebrow="Directives"}
+
+The bars read the theme's own colour tokens as they are drawn, so a chart matches
+whatever theme is loaded without being told about it.
+
+::: cols--2
+```markdown
+::: chart max=220 values
+- W1: 40
+- W2: 95
+- W3: 120
+- W4: 60
+- W5: 150
+- W6: 205
+:::
+```
+
+::: chart max=220 values label="Commits per week, illustrative"
+- W1: 40
+- W2: 95
+- W3: 120
+- W4: 60
+- W5: 150
+- W6: 205
+:::
+:::
+
+## Where the shape already carries it
+{eyebrow="No directive needed"}
+
+An ordinary numbered list whose items lead with a bold phrase is a process, so it
+is set as one. No directive, and none wanted: four peers, a list of steps or a
+quotation as the takeaway are all shapes the parser can read.
+
+::: cols--2
+```markdown
+1. **Absprache** Agree the room and
+   the number of laptops.
+2. **Aufbau** Lay out the machines
+   and check the network.
+3. **Einlass** Doors close, IDs
+   checked.
+4. **Abbau** Pack down, count the
+   papers twice.
+```
+
+<div class="flow">
+  <div class="fcol">
+    <div class="fstep"><div class="step-num">1</div><h3>Absprache</h3><p>Agree the room and the number of laptops.</p></div>
+    <div class="fstep"><div class="step-num">2</div><h3>Aufbau</h3><p>Lay out the machines and check the network.</p></div>
+  </div>
+  <div class="fcol">
+    <div class="fstep"><div class="step-num">3</div><h3>Einlass</h3><p>Doors close, IDs checked.</p></div>
+    <div class="fstep"><div class="step-num">4</div><h3>Abbau</h3><p>Pack down, count the papers twice.</p></div>
+  </div>
+</div>
+:::
+
+> A finished 23-slide deck used three directives in total. If you are reaching for
+> one on every slide, the document probably has a shape you are fighting.
 
 ## Depth that stays off the path
 {eyebrow="Reveals"}
 
 A reveal is a slide the deck never pages to: a strip on the visible slide opens
 a full panel over it. Use it for the derivation, the caveat, the numbers behind
-a claim — the depth that would otherwise force an extra slide into the linear
-run for the one reader in ten who wants it.
+a claim. Without it, that material either goes on a slide everyone has to page
+past, or it goes nowhere.
 
 ::: cols--2
 ```markdown
@@ -276,24 +380,25 @@ number while making the deck worse.
 :::
 
 ## When not to use this
-{eyebrow="Honestly"}
+{eyebrow="Limits"}
 
 ::: cols--3
-### It fits content that is already document-shaped
-A retrospective, project documentation, a research summary, lecture notes, a
-report with numbers in it. Those sources arrive with sections, comparisons and
-figures to arrange densely, and arranging them densely is the whole job.
+### What it fits
+Content that is already document-shaped: a retrospective, project
+documentation, a research summary, lecture notes, a report with numbers in it.
+Those sources arrive with sections and comparisons to arrange densely, and
+arranging them densely is the work.
 
-### It is a poor fit for a performance talk
-A short spoken keynote driven by timing, delivery and question→answer beats.
-This was tried on a real one and it resisted both treatments: forced into dense
-slides it fought the dramaturgy, made sparse it produced empty frames. The
-dramaturgy lives in the speaking, and a deck built to be read cannot hold it.
+### What it does not
+A sparse spoken keynote, driven by timing and by question-then-answer beats.
+Tried on a real one, it resisted both treatments: dense, it fought the
+dramaturgy; sparse, it produced empty frames. The dramaturgy is in the speaking.
 
-### There is also no
-Animation model beyond click-to-reveal panels, and no speaker view. If you need
-presenter notes on a second screen, that is a different tool.
+### What is missing
+No animation beyond click-to-reveal panels. No speaker view, no presenter notes
+on a second screen, no `.pptx` export. Charts are bars and nothing else, and the
+only image effects are a lightbox and a fanned stack.
 :::
 
-> For a talk you will actually deliver, use [psi-slides](https://github.com/UBA-PSI/psi-slides) —
+> For a talk you will actually deliver, use [psi-slides](https://github.com/UBA-PSI/psi-slides) –
 > the sibling project. The line between the two is whether anyone is speaking.

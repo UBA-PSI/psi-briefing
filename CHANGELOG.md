@@ -4,7 +4,7 @@ Notable changes to psi-briefing, newest first. The shape of this file follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the version numbers
 follow [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.0 — first public release
+## 0.1.0 – first public release
 
 First release under the name `psi-briefing`. The project was developed under the
 working name `browserslides` and this is the same thing renamed, so if you have
@@ -14,7 +14,7 @@ prefix is `bf-`, and the framework files are `framework/briefing.css` and
 
 ### The framework
 
-- A deck is a 16:9 layout in **one self-contained HTML file** — no build step, no
+- A deck is a 16:9 layout in **one self-contained HTML file** – no build step, no
   server, no fonts to install. That constraint is the point rather than a
   limitation: a file you can email is a file that still opens in five years.
 - **Container-query scaling.** Every slide is a `container-type: size` box and
@@ -23,14 +23,14 @@ prefix is `bf-`, and the framework files are `framework/briefing.css` and
   landscape alike.
 - **Semantic design tokens.** Colours and fonts are custom properties with names
   like `--accent`, `--ink` and `--font-display`. A theme is a `:root { … }` block
-  that overrides them, which is why re-skinning a deck — including the generated
-  SVG charts, which read the tokens when they draw — is a one-file change. Two
+  that overrides them, which is why re-skinning a deck – including the generated
+  SVG charts, which read the tokens when they draw – is a one-file change. Two
   themes ship: `bamberg` and `midnight`.
 - 33 layout components, each catalogued with copy-paste markup in
   [`docs/cookbook.md`](docs/cookbook.md): title slides, section dividers,
   timelines, fact grids, bar charts, galleries, flow steps, editorial layouts,
   pipelines, before/after pairs.
-- A small runtime with **no dependencies** — navigation, page numbers, SVG bar
+- A small runtime with **no dependencies** – navigation, page numbers, SVG bar
   charts, cross-reference hover previews, lightboxes, image stacks and reveals.
   It reads declarative markup and generates the chrome; there is nothing to
   install and nothing to keep up to date.
@@ -38,7 +38,7 @@ prefix is `bf-`, and the framework files are `framework/briefing.css` and
   that sits outside the scroll path, for the detail one person in the room will
   ask about. A reveal is laid out by the same planner as a slide, so it gets
   headings, columns and a closing band rather than flat paragraphs, and the
-  audit measures it with the panel open — `display: none` has no geometry, so an
+  audit measures it with the panel open – `display: none` has no geometry, so an
   overfull reveal is otherwise invisible until it is clicked in front of an
   audience.
 - **Optional hyphenation**, off by default: `.bf-hyphens` on `<body>` or on a
@@ -77,7 +77,7 @@ prefix is `bf-`, and the framework files are `framework/briefing.css` and
 
 - [`tools/build-deck.sh`](tools/build-deck.sh) runs the release pipeline:
   optimise images, inline everything, then **verify that nothing external is
-  left**. The third step is why this is a script and not a paragraph of advice —
+  left**. The third step is why this is a script and not a paragraph of advice –
   the inliner leaves remote URLs alone by design, so a deck can come out looking
   finished and still need the network. Exit 2 names the offending references.
 - [`tools/optimise-images.mjs`](tools/optimise-images.mjs) re-encodes
@@ -102,7 +102,7 @@ prefix is `bf-`, and the framework files are `framework/briefing.css` and
 
 - [`skills/briefing/`](skills/briefing/) is a Claude Code skill: the component
   catalog, the starter markup, and an audit that opens a deck in a browser and
-  measures it — overflow, overlapping boxes, clipped and wrapped labels, dead
+  measures it – overflow, overlapping boxes, clipped and wrapped labels, dead
   space under a closing band, and text that has stopped scaling with the frame.
   Each check was calibrated against decks with the fault present and absent
   before it shipped, because the first version of a detector reports false
