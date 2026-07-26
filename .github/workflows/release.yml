@@ -93,16 +93,24 @@ jobs:
       # build-deck.sh exits non-zero if anything external survives inlining, so
       # this is belt and braces - but a release asset that silently needs the
       # network is the one failure nobody would notice until it mattered.
+      #
+      # It looks only at things the browser FETCHES: src=, a stylesheet <link>,
+      # url() and @import. Not <a href>. The first version of this check matched
+      # any href and failed on the tutorial, which links to psi-slides in the text
+      # of a slide - a hyperlink a reader may click is not a dependency, and a
+      # check that cannot tell the two apart would have blocked every release for
+      # a deck that was in fact perfectly self-contained.
       - name: The single-file decks really are self-contained
         run: |
           fail=0
+          pattern='src="(https?:)?//|<link[^>]+href="(https?:)?//|url\((https?:)?//|@import[^;]*(https?:)?//'
           for f in dist/example-deck.html dist/tutorial.html; do
-            if grep -qE '(src|href)="(https?:)?//' "$f"; then
-              echo "::error::$f still references something external" >&2
-              grep -nE '(src|href)="(https?:)?//' "$f" | head >&2
+            if grep -qEi "$pattern" "$f"; then
+              echo "::error::$f still fetches something external" >&2
+              grep -nEi "$pattern" "$f" | head >&2
               fail=1
             fi
-            echo "  $f  $(du -h "$f" | cut -f1)"
+            echo "  $f  $(du -h "$f" | cut -f1)  ok"
           done
           exit $fail
 
