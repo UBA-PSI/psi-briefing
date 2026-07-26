@@ -749,7 +749,7 @@ The `.detail-layer` should be the **next sibling** of its `.bottomline`. That is
 
 While a layer is open the deck's own keyboard navigation stands down – otherwise an arrow key pages to the next slide *behind* the overlay. Tab is kept inside the panel, Esc closes it (an image zoomed from inside the layer closes first), and focus returns to the strip that opened it. The strip carries `role="button"`, `aria-controls` and `aria-expanded`; the layer gets `role="dialog"` and `aria-modal`.
 
-From Markdown, `::: detail` does all of this – see [`markdown.md`](markdown.md).
+From Markdown, `::: detail` does all of this – see [`docs/markdown.md`](https://github.com/UBA-PSI/psi-briefing/blob/main/docs/markdown.md).
 
 ```html
 <div class="bottomline">

@@ -622,31 +622,28 @@
       which one lands better is <strong>a preference rather than a ranking</strong>. Some people
       read a running document and take it in. Others want the same content in
       frames they can scan, step through and come back to. Neither format is the
-      better one, but sending somebody the kind they did not want costs you their
-      attention.</p>
-    <p>This came out of a real case. The
+      better one. What matters is that the reader gets the version they will
+      actually read.</p>
+    <p>The first deck of this kind was a report from the
       <a href="https://psi.uni-bamberg.de/">Chair of Privacy and Security in
-      Information Systems</a> built the University of Bamberg an entry point for
-      prospective students in <strong>eleven weeks</strong>, with AI and human
-      review, then reported on it in 33 slides that people could read in their own
-      time. That deck is online as
+      Information Systems</a> on a student-orientation portal it had built, written
+      to be read rather than presented. It is online as
       <a href="https://web.psi.uni-bamberg.de/werkstattbericht-studienstart.html">Werkstattbericht
-      Studienstart</a>, in German only. psi-briefing is the machinery pulled out
-      of it afterwards.</p>
+      Studienstart</a>, in German only. psi-briefing is the layout machinery taken
+      out of it.</p>
     <p>Writing the document version is cheap, because you write it. Producing the
       deck usually is not, because somebody places boxes. This tool exists so that
       <strong>the second one costs about what the first one costs</strong>.</p>
 
     <h3>Convention over configuration</h3>
-    <p>The decisions it takes away from you are the reason it is quick. You set no
-      widths, place no boxes and fill in no template: the structure of
-      your Markdown picks the component for each slide, and the defaults are chosen so
-      that the ordinary cases come out well without being told anything.</p>
+    <p>It is quick because it decides most things for you. You set no widths,
+      place no boxes and fill in no template: <strong>the structure of your
+      Markdown picks the component</strong> for each slide, and the defaults are
+      set so that ordinary cases come out well with nothing specified.</p>
     <p><strong>What you give up is fine control.</strong> If one panel has to be exactly two
       centimetres narrower than its neighbour, this is the wrong tool and Keynote
-      is the right one. The bet is that most decks never need that, and that the
-      ones that do are better served by dragging things than by describing
-      them.</p>
+      is the right one. Most decks never need it, and the ones that do are easier
+      to build by hand than to describe.</p>
 
     <h3>An assistant can finish it, because the output is HTML</h3>
     <p>The file the converter writes is <strong>ordinary HTML with named
@@ -663,10 +660,11 @@
 <div class="wrap">
   <section>
     <h2>You write a document; it picks the layout</h2>
-    <p class="tight sub">The component is chosen from the shape of your text,
-      before anything is rendered. Four blocks of equal rank are four parallel
-      points, so they become a bordered grid; a quotation is the takeaway, so it
-      becomes the band at the bottom.</p>
+    <p class="tight sub">The converter reads how your Markdown is arranged and
+      picks the component from that. Four headings at the same level become a
+      bordered grid, because they are four points of equal weight. A quotation
+      becomes the band across the bottom, because that is where a slide's
+      conclusion goes.</p>
 
     <figure>
       <div class="demo">
@@ -701,10 +699,9 @@ Knows the system.
           </div>
         </div>
       </div>
-      <figcaption>The panel on the right is not a screenshot. It is a 16:9
-        container-query box sized in the same units a real slide uses, so it
-        rescales with this page exactly the way a deck rescales with its
-        window.</figcaption>
+      <figcaption>The panel on the right is live: a 16:9 box sized in the same
+        units a real slide uses, so it rescales with this page the way a deck
+        rescales with its window.</figcaption>
     </figure>
   </section>
 </div>
@@ -769,8 +766,8 @@ One check this cannot do without a browser: open the file and confirm
   performance.getEntriesByType('resource').filter(e =&gt; !e.name.startsWith('data:'))
 is empty, and that no image is broken.</code></pre>
     <p class="sub">That last check comes out empty on this page as well. The two
-      screenshots above and the favicon are <code>data:</code> URIs, so the only
-      thing the browser fetched to show you this document is the document.</p>
+      screenshots above and the favicon are <code>data:</code> URIs, so the
+      browser fetched nothing to show you this page but the page itself.</p>
   </section>
 </div>
 
@@ -831,9 +828,9 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
         <p>Every slide is a 16:9 box with <code>container-type: size</code>.
           Everything inside is measured in <code>cqw</code> and <code>cqh</code>
           – never px, never rem.</p>
-        <p>So the layout scales with the slide instead of being fixed to it. Every gap
-          and every type size keeps its proportion, which is what holds a deck
-          together on a 13-inch laptop and a 4K projector at once.</p>
+        <p>So the layout scales with the slide instead of being fixed to it. Every
+          gap and every type size keeps its proportion, so the same deck holds up
+          on a 13-inch laptop and on a projector.</p>
       </div>
       <div>
         <h3>Semantic design tokens</h3>
@@ -871,8 +868,8 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
         that runs on timing and on setting up a question before answering it. A
         conference keynote was built this way once and resisted both treatments:
         dense, the slides argued with the talk; sparse, they were empty frames
-        with one sentence on them. That argument lived in the speaking, and a
-        deck built to be read could not hold it.</p>
+        with one sentence on them. The argument was in what the speaker said, and
+        slides meant to be read on their own could not carry it.</p>
       <p>There is also no animation model beyond click-to-reveal panels, and no
         speaker view. For either, use
         <a href="https://github.com/UBA-PSI/psi-slides">psi-slides</a>.</p>
@@ -883,8 +880,8 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
     <h2>How it compares</h2>
     <p class="tight sub">Auto-layout from Markdown was not invented here. Below is
       the short version; the <a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/comparison.md">full
-      comparison</a> names the case where each alternative is the better choice,
-      because a comparison that never concedes anything tells you nothing.</p>
+      comparison</a> names the case where each alternative is the better
+      choice.</p>
 
     <div class="compare">
       <table>
@@ -903,14 +900,13 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
     </div>
 
     <h3>iA Presenter, in particular</h3>
-    <p><strong>iA Presenter</strong> made this idea mainstream and does the same
-      kind of thing: it analyses a slide’s content and picks a layout. The
-      difference is the default. There, the document is a script – an ordinary
-      paragraph is what you <em>say</em>, and you indent one to promote it onto
-      the slide, so what the audience sees is the exception you opt into. Here
-      there is no speaker, so there is nothing to demote: everything is on a
-      slide, and the engine asks what shape the content has rather than which
-      fragment to promote.</p>
+    <p><strong>iA Presenter</strong> does the same kind of thing: it analyses a
+      slide’s content and picks a layout. The difference is the default. There,
+      the document is a script – an ordinary paragraph is what you <em>say</em>,
+      and you indent one to promote it onto the slide, so what the audience sees
+      is the exception you opt into. Here there is no speaker and nothing to
+      demote: everything is on a slide, and the converter asks how the content is
+      arranged rather than which part of it to show.</p>
     <p>Which makes iA Presenter the closer relative of
       <a href="https://github.com/UBA-PSI/psi-slides">psi-slides</a>, not of this.
       If you are going to stand up and talk, it is a mature, well-designed

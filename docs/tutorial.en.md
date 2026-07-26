@@ -2,7 +2,9 @@
 
 *psi-briefing – a dependency-free framework for self-contained 16:9 HTML slide decks. [MIT-licensed](https://opensource.org/license/mit) (fonts excepted).*
 
-This walkthrough takes you from a blank file to a real presentation: a title slide, a content slide with live components, and a bar chart generated in the browser. By the end you'll know enough to build and share your own deck.
+This walkthrough takes you from a blank file to a finished deck: a title slide, a content slide with real components, and a bar chart drawn in the browser. By the end you will know enough to build and share your own.
+
+It builds the HTML by hand on purpose, so that you know what the classes are and can change any slide afterwards. If you would rather not write HTML at all, write the deck as Markdown and let `tools/md-to-deck.mjs` choose the components for you – see [`markdown.md`](markdown.md). Coming back here later is still worth it: the converter's output is exactly the markup this walkthrough teaches.
 
 ## What you'll build
 

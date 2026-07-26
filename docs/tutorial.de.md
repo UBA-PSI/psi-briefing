@@ -2,7 +2,9 @@
 
 *psi-briefing – ein Framework ohne Abhängigkeiten für in sich geschlossene 16:9-Foliendecks als HTML. [MIT-lizenziert](https://opensource.org/license/mit) (Fonts ausgenommen).*
 
-Diese Anleitung bringt dich von einer leeren Datei zu einer echten Präsentation: eine Titelfolie, eine Inhaltsfolie mit lebendigen Komponenten und ein Balkendiagramm, das direkt im Browser gezeichnet wird. Am Ende weißt du genug, um dein eigenes Deck zu bauen und weiterzugeben.
+Diese Anleitung bringt dich von einer leeren Datei zu einem fertigen Deck: eine Titelfolie, eine Inhaltsfolie mit echten Komponenten und ein Balkendiagramm, das direkt im Browser gezeichnet wird. Am Ende weißt du genug, um dein eigenes Deck zu bauen und weiterzugeben.
+
+Sie baut das HTML absichtlich von Hand, damit du die Klassen kennst und jede Folie hinterher ändern kannst. Wenn du gar kein HTML schreiben willst: schreib das Deck als Markdown und lass `tools/md-to-deck.mjs` die Komponenten wählen – siehe [`markdown.md`](markdown.md). Hierher zurückzukommen lohnt sich trotzdem, denn der Konverter erzeugt genau das Markup, das diese Anleitung erklärt.
 
 ## Was du baust
 
