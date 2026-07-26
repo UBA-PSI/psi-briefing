@@ -21,11 +21,16 @@
 #   release path to be the exception. The GitHub CLI is preinstalled on the runner.
 #
 # HOW TO CUT ONE
-#   1. bump "version" in package.json
+#   1. npm version <version> --no-git-tag-version
 #   2. add the matching section to CHANGELOG.md, headed "## <version> - <date>"
-#   3. git tag v<version> && git push origin v<version>
+#   3. gh workflow run release.yml     (a dry run: builds everything, no release)
+#   4. git tag -a v<version> && git push origin v<version>
 #   The guards below fail the run if 1 and 2 disagree with the tag, because a
 #   release whose metadata contradicts its tag is worse than no release.
+#
+#   The long version, including what to do when a guard fails: RELEASING.md at the
+#   root. Keep the two in step - this comment is the summary, that file is the
+#   reference.
 name: Release
 
 on:

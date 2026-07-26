@@ -201,6 +201,16 @@ catalog and the skill only save it the guessing.
 And because the output is ordinary HTML, the same is true afterwards: adjusting one
 slide by hand means editing one element, whether you do that or an assistant does.
 
+## For developers
+
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) – how to run it locally, and the conventions
+  that are not obvious from the code: no `px` inside a slide, no hard-coded grid
+  tracks, no dependencies.
+- [`RELEASING.md`](RELEASING.md) – what the three CI workflows do, how a release is
+  cut, and what each guard means when it fails.
+- [`docs/handoff-autolayout.md`](docs/handoff-autolayout.md) – what building a real
+  deck taught us about the framework, and what an auto-layout pass has to survive.
+
 ## License
 
 **MIT** – use it anywhere, including commercially; just keep the copyright notice. Full text in [LICENSE](LICENSE). Fonts are not covered by MIT: the default theme uses system fonts, and any fonts you embed carry their own licenses (see LICENSE).

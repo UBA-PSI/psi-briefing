@@ -121,6 +121,13 @@ The useful report says what you expected, what happened, and ideally the smalles
 in `SKILL.md` is worth more than a screenshot, because the interesting faults are
 the ones that look fine.
 
+## Releasing
+
+Maintainers only, and written down separately because it is the kind of process
+you do twice a year: [`RELEASING.md`](RELEASING.md) covers the three workflows,
+the four commands that cut a release, what each guard means when it fails, and
+why the archive comes from `git archive` of the tag rather than from the runner.
+
 ## Licence
 
 MIT, and by contributing you agree your contribution is licensed the same way.
