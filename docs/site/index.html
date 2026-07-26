@@ -59,10 +59,6 @@
     --rule:       #CFCFCE;
     --stage:      #c3d1dd;
     --stage-ink:  #33506b;
-    /* Secondary text on the stage. Derived from the stage's own hue rather than
-       being a grey: a low-chroma grey on a chromatic ground reads as washed out,
-       and it is the reason "muted text on a coloured panel" looks cheap. */
-    --stage-ink-soft: #4a6a84;
 
     /* Copse is the theme's display face. Here we take its own declared fallback
        rather than shipping a font file - the page may not fetch one.
@@ -78,6 +74,10 @@
        everywhere produces no rhythm, only regularity. */
     --s1: 0.25rem;  --s2: 0.5rem;   --s3: 0.75rem;  --s4: 1rem;
     --s5: 1.5rem;   --s6: 2rem;     --s7: 3rem;     --s8: 4.5rem;
+
+    /* How wide a figure, a table or a transcript may grow beyond the reading
+       column. Bounded by the viewport so the breakout never causes a scrollbar. */
+    --breakout: min(60rem, calc(100vw - 3rem));
   }
 
   @media (prefers-color-scheme: dark) {
@@ -96,7 +96,6 @@
       --rule:       #333c44;
       --stage:      #0d1a26;
       --stage-ink:  #cfe0ee;
-      --stage-ink-soft: #9db6cc;
     }
   }
 
@@ -113,28 +112,27 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* The page is wide; the SENTENCES are narrow. Capping the container at the
-     reading measure was the wrong lever: it starved the figures, and it clipped
-     the report transcript, which is 98 characters of fixed-width output and the
-     most useful thing on the page. So the container is 60rem and running text
-     carries its own 38rem cap, which at 17px is about 74 characters a line.
-     Text inside a card, a table cell or a code block is left alone: its box
-     already constrains it, and a second cap there would fight the component. */
+  /* One reading column, and the wide things break out of it.
+     Two earlier attempts were both wrong in opposite directions. A 37rem
+     container starved the figures and clipped the report transcript. A 60rem
+     container with a 38rem cap on the paragraphs fixed that and left a 350px
+     void down the right of every text section, because the text was capped but
+     still left-aligned inside a box twice its width.
+     So: the container IS the measure - 46rem is about 78 characters at 17px, so
+     paragraphs need no cap of their own - and the four things that genuinely
+     want more room widen symmetrically out of it with a negative inline margin.
+     No void, and the transcript still fits. */
   .wrap {
-    max-width: 60rem;
+    max-width: 46rem;
     margin: 0 auto;
     padding: 0 var(--s5) var(--s8);
   }
-  /* Note that figcaption is NOT in this group. It was, and the 0,1,3 selector
-     beat the ch-based rule below at 0,0,1, so the caption kept a 38rem cap that
-     is 86 characters at its smaller size. One cap per element. */
-  .wrap > section > p,
-  footer p { max-width: 38rem; }
+  /* (the breakout rule itself lives at the end of this stylesheet - see there) */
   /* A bordered box holding paragraphs is text, not a figure: widening the
      container ran these to 130 characters a line. Only the things that are
      genuinely wide - the demo, the screenshots, the tables, the code - keep the
      full width. */
-  .cta, .caveat, ul.links { max-width: 38rem; }
+
 
   /* Captions and link subtitles are set smaller than body text, so one rem cap
      cannot serve both: 40rem is 74 characters at 17px and 91 at 15px. ch is
@@ -166,7 +164,7 @@
     padding: var(--s7) var(--s5) var(--s6);
     margin-bottom: var(--s7);
   }
-  header.masthead .wrap { padding: 0; }
+  header.masthead .wrap { padding: 0; max-width: 46rem; }
 
   /* Text left, one real slide right. The slide is the argument: it shows Markdown
      on one side and the component it produced on the other, which states "this
@@ -184,12 +182,14 @@
      its own - the track has to be allowed to shrink first. */
   .hero-text, .hero-shot { min-width: 0; }
   @media (min-width: 46rem) {
-    .hero { grid-template-columns: 1fr 0.95fr; gap: var(--s6); align-items: center; }
-    .hero-text { order: 1; }
-    .hero-shot { order: 2; }
+    /* A generous gutter, because one side is running text and the other is a
+       bordered image: at var(--s6) the sentences ended flush against the frame.
+       No order declarations here - the DOM is already text then figure, and the
+       pair that used to reverse it for narrow screens sat after this block and
+       therefore won at every width. */
+    .hero { grid-template-columns: 1fr 0.92fr; gap: var(--s8); align-items: center; }
   }
-  .hero-text { order: 2; }
-  .hero-shot { order: 1; margin: 0; }
+  .hero-shot { margin: 0; }
   .hero-shot img {
     display: block;
     width: 100%;
@@ -201,7 +201,7 @@
     margin-top: var(--s2);
     font-size: 0.82rem;
     line-height: 1.45;
-    color: var(--stage-ink-soft);
+    color: var(--stage-ink);
   }
   .hero-cmd {
     margin: var(--s4) 0 0;
@@ -219,7 +219,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--stage-ink-soft);
+    color: var(--stage-ink);
     margin: 0 0 var(--s4);
   }
 
@@ -240,9 +240,8 @@
     margin: var(--s5) 0 0;
     font-size: 0.88rem;
     line-height: 1.5;
-    color: var(--stage-ink-soft);
+    color: var(--stage-ink);
   }
-  .aside-note a { color: var(--stage-ink); }
 
   /* ---------- sections ----------
      More space above a heading than below it. The other way round and every
@@ -251,15 +250,18 @@
 
   section { margin: 0 0 var(--s8); }
 
+  /* The steps have to be visible. h3 was 1.04rem against a 17px body, so a
+     subheading rendered SMALLER than the paragraph under it - the family change
+     from sans to serif was carrying the whole distinction on its own. */
   h2 {
-    font-size: 1.4rem;
+    font-size: 1.55rem;
     margin: 0 0 var(--s2);
     padding-top: var(--s4);
     border-top: 2px solid var(--accent);
   }
 
   h3 {
-    font-size: 1.04rem;
+    font-size: 1.22rem;
     margin: var(--s6) 0 var(--s1);
   }
 
@@ -375,17 +377,11 @@
 
   /* ---------- the call to action ---------- */
 
-  .cta {
-    margin: var(--s5) 0 0;
-    padding: var(--s4) var(--s4) var(--s3);
-    border: 1px solid var(--rule);
-    background: var(--muted-soft);
-  }
   .cta-row {
     display: flex;
     flex-wrap: wrap;
     gap: var(--s3);
-    margin: 0 0 var(--s3);
+    margin: var(--s5) 0 var(--s3);
   }
   .btn {
     display: inline-block;
@@ -401,8 +397,6 @@
   .btn--ghost { background: transparent; color: var(--accent); }
   .btn--ghost:hover { background: var(--accent-20); color: var(--ink); border-color: var(--accent-80); }
   @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
-  .cta p { margin: 0; font-size: 0.93rem; color: var(--ink-soft); }
-  .cta p + p { margin-top: var(--s2); }
 
   /* ---------- code ---------- */
 
@@ -529,6 +523,18 @@
     color: var(--ink-soft);
   }
   footer p { margin: 0 0 var(--s2); }
+
+  /* ---------- the breakout, last on purpose ----------
+     Every one of these components declares a `margin` shorthand of its own
+     further up, and a shorthand resets margin-inline to 0. Placed with the
+     container rule, this was silently cancelled for all of them: they took the
+     wider width and kept the column left edge, so they overhung the right and
+     put a scrollbar on the page at 1100px. Last in the sheet, the vertical
+     margins they set survive and only the horizontal ones are replaced. */
+  .demo, .shots-two, .compare, .wrap > section > pre, .hero {
+    width: var(--breakout);
+    margin-inline: calc((100% - var(--breakout)) / 2);
+  }
 </style>
 </head>
 <body>
@@ -559,6 +565,41 @@
     </div>
   </div>
 </header>
+
+<div class="wrap">
+  <section>
+    <h2>Some readers would rather have slides</h2>
+    <p class="tight sub">A report and a deck can carry the same argument, and
+      which one lands better is a preference rather than a ranking. Some people
+      read a running document and take it in. Others want the same content in
+      frames they can scan, step through and come back to. Neither format is the
+      better one, but sending somebody the kind they did not want costs you their
+      attention.</p>
+    <p>Writing the document version is cheap, because you write it. Producing the
+      deck usually is not, because somebody places boxes. This tool exists so
+      that the second one costs about what the first one costs.</p>
+
+    <h3>Convention over configuration</h3>
+    <p>The decisions it takes away from you are the reason it is quick. You set no
+      widths, place no boxes and fill in no template: the structure of your
+      Markdown picks the component for each slide, and the defaults are chosen so
+      that the ordinary cases come out well without being told anything.</p>
+    <p>What you give up is fine control. If one panel has to be exactly two
+      centimetres narrower than its neighbour, this is the wrong tool and Keynote
+      is the right one. The bet is that most decks never need that, and that the
+      ones that do are better served by dragging things than by describing
+      them.</p>
+
+    <h3>An assistant can finish it, because the output is HTML</h3>
+    <p>The file the converter writes is ordinary HTML with named classes, so
+      adjusting one slide by hand means editing one element. That also makes it
+      something you can hand to an LLM directly, with nothing to export or
+      convert first. The repository ships a
+      <a href="https://github.com/UBA-PSI/psi-briefing/tree/main/skills/briefing">Claude
+      Code skill</a> as well, so an assistant can build the deck from your notes
+      and then check it against the same rules a person would.</p>
+  </section>
+</div>
 
 <div class="wrap">
   <section>
@@ -614,8 +655,7 @@ Knows the system.
 <div class="wrap">
   <section>
     <h2>See it</h2>
-    <p class="tight sub">Both links open a real deck, not a picture of one. Save
-      either file and it still works with the network unplugged.</p>
+    <p class="tight sub">Two slides from the example deck, as they come out.</p>
 
 
     <div class="shots-two">
@@ -634,21 +674,31 @@ Knows the system.
           loaded without being told.</figcaption>
       </figure>
     </div>
-    <div class="cta">
-      <div class="cta-row">
-        <a class="btn" href="example-deck.html">The example deck</a>
-        <a class="btn btn--ghost" href="tutorial.html">The tutorial deck</a>
-      </div>
-      <p>The example is a project retrospective: figures, a generated chart, a
-        timeline, a reveal. The tutorial teaches the format by being written in
-        it, and shows the Markdown next to the result on every slide.</p>
-      <p>One HTML file each. No server, no fonts to install, no network.
-        <a href="examples/example-deck.html">The same example with its assets
-        linked</a> is how you work while writing.</p>
+    <div class="cta-row">
+      <a class="btn" href="example-deck.html">Open the example deck</a>
+      <a class="btn btn--ghost" href="tutorial.html">Open the tutorial deck</a>
     </div>
+    <p class="sub">One HTML file each, and both are the real thing rather than a
+      preview: save either and it still opens with the network unplugged. The
+      example is a project retrospective. The tutorial teaches the format by
+      being written in it, with the Markdown beside the result on every slide.</p>
+  </section>
+</div>
 
-    <p class="sub">The build step folds the CSS, the script and the images into
-      the file, then checks that nothing in it still points outward:</p>
+<div class="wrap">
+  <section>
+    <h2>Getting started</h2>
+    <p class="tight sub">Clone the repository and run the converter. Node 18 or
+      newer is the only thing it needs.</p>
+    <pre class="cmd"><code>git clone https://github.com/UBA-PSI/psi-briefing.git
+cd psi-briefing
+node tools/md-to-deck.mjs my-deck.md -o my-deck.html
+python3 -m http.server 8000        # then look at it</code></pre>
+    <p>There is no package to install, no lockfile and no release archive to
+      download. That last one is deliberate: the deck you build is the thing you
+      distribute, and it carries no trace of the tool that made it. When you want
+      that single file, the build step folds the stylesheet, the script and the
+      images in, then checks that nothing is left pointing outward:</p>
     <pre><code>$ tools/build-deck.sh examples/example-deck.html -o /tmp/deck.html
 3/3  verify       checking for anything still external
 
