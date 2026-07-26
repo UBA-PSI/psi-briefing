@@ -7,7 +7,7 @@ theme: bamberg
 css: [../framework/briefing.css, ../themes/bamberg.css]
 js: ../framework/briefing.js
 hyphenate: false
-takeaway: You write a document. The shape of the document picks the layout, before anything is rendered.
+takeaway: You write a document. Its shape picks the layout, and one command turns it into the deck.
 strip:
   - "1: file"
   - "0: dependencies"
@@ -15,29 +15,29 @@ strip:
 ---
 
 # How to write a briefing
+{#contents}
 
 # The document
 
 Three characters decide where slides begin. Everything else is ordinary Markdown.
 
 ## One file in, one deck out
-{eyebrow="The whole workflow"}
+{#report eyebrow="The whole workflow"}
 
-There is no project to set up and nothing to install. You write one Markdown
-file and run one command; you get one HTML file that links its stylesheet during
-development and can be folded into a single self-contained file for sending.
+Nothing to install and no project to set up. This is what the two commands
+printed for the file you are reading.
 
-::: cols--wide-left
-```bash
-node tools/md-to-deck.mjs tutorial.md -o tutorial.html
-python3 -m http.server 8000     # then look at it
-
-tools/build-deck.sh tutorial.html   # one shareable file
-```
-
-### What the report tells you
-Which rule fired on each slide, how full its content row is, what it corrected
-by itself, and which slides are thin in a way no tool can fix.
+::: html
+<pre class="md-code"><code>$ node tools/md-to-deck.mjs examples/tutorial.md -o examples/tutorial.html
+md-to-deck: 17 slides -&gt; examples/tutorial.html
+    9~  60 % gap 27 %  directive:cols--2                   A two-column table becomes a timeline
+   17   86 % gap  9 %  directive:cols--3                   When not to use this
+  typography: 10 marks normalised
+  layout: 1 correction(s) applied
+$ tools/build-deck.sh examples/tutorial.html
+built   examples/tutorial.self-contained.html
+        0.02 MB linked  -&gt;  0.13 MB self-contained
+        no external references: opens with no server and no network</code></pre>
 :::
 
 > The `.md` stays the source of truth. Re-running the converter overwrites the
@@ -46,9 +46,9 @@ by itself, and which slides are thin in a way no tool can fix.
 ## Where slides begin
 {eyebrow="Structure"}
 
-Divider numbering and the table of contents on the title slide are both derived
-from the `#` headings, so the two can never drift apart – the one piece of
-bookkeeping hand-written decks kept getting wrong.
+This file has four `#` headings after the title. They are the four numbered
+dividers you page through, and they are the contents list on
+[the title slide](#contents) – hover the link and count them.
 
 ::: cols--2
 ```markdown
@@ -71,8 +71,9 @@ from corrections.
 
 # Shape becomes layout
 
-The component is chosen from the structure of your text, before anything is
-rendered. Nothing measures a fill score and then stretches a box to improve it.
+The component is chosen from the structure of your text. It also rearranges what
+you wrote: more columns, fewer, an overfull prose slide split into two. It never
+pads, and a slide it cannot fix it names in the report.
 
 ## Four peers become a grid
 {eyebrow="Shape → component"}
@@ -107,31 +108,33 @@ Knows the system.
 ## A quotation becomes the closing band
 {eyebrow="Shape → component"}
 
-A blockquote is the slide's takeaway wherever it sat in your source, so it is
-pinned to the bottom as a highlighted band. It is also the honest fix for a
-slide that ends too high: it closes the frame *and* forces you to say what the
-slide was for.
+> Who leads is settled **before** the exam day. This blockquote is the first
+> block in the slide's source, above the two columns.
+
+A blockquote is the slide's takeaway, so it lands in the band at the bottom.
+Write it anywhere in the slide.
 
 ::: cols--2
 ```markdown
-Three roles, one rule: whoever leads
-is settled before the exam day.
-
 > Who leads is settled **before**
 > the exam day.
+
+Three roles, one rule: whoever
+leads is settled before the day.
 ```
 
 <div class="prose">
-  <p>Three roles, one rule: whoever leads is settled before the exam day.</p>
+  <p>Three roles, one rule: whoever leads is settled before the day.</p>
+  <p>The quotation went to the band at the foot of the slide, although it was
+  written above this column.</p>
 </div>
-<div class="punch">Who leads is settled <b>before</b> the exam day.</div>
 :::
 
 ## Numbers become numbers
 {eyebrow="Shape → component"}
 
 A short list whose every item reads `**value** – label`, with a digit in the
-value, is not a list. It is a row of figures, and it is set as one.
+value, comes out as a row of figures. The first one is set large.
 
 ::: cols--2
 ```markdown
@@ -150,13 +153,14 @@ value, is not a list. It is a row of figures, and it is set as one.
 ## A two-column table becomes a timeline
 {eyebrow="Shape → component"}
 
-The label track is sized to the longest label rather than to a number someone
-guessed, so a long label neither wraps nor gets clipped.
+No width is named in the table. The label column comes out as wide as its
+longest label.
 
 ::: cols--2
 ```markdown
 | When | What happens |
 | --- | --- |
+| The evening before | Laptops imaged |
 | −45 min | Room open, laptops out |
 | −10 min | Doors closed, IDs checked |
 | 0 | Exam starts |
@@ -164,6 +168,7 @@ guessed, so a long label neither wraps nor gets clipped.
 ```
 
 <ul class="tl">
+  <li><time>The evening before</time><span>Laptops imaged</span></li>
   <li><time>−45 min</time><span>Room open, laptops out</span></li>
   <li><time>−10 min</time><span>Doors closed, IDs checked</span></li>
   <li><time>0</time><span>Exam starts</span></li>
@@ -171,17 +176,18 @@ guessed, so a long label neither wraps nor gets clipped.
 </ul>
 :::
 
-# When inference is not enough
+# Asking for a component by name
 
-There is a pattern to it. Inference reads *shape*, and some components carry an
-intention that has no shape in Markdown.
+Write `::: name`, and the blocks under it become that component. Five of them
+appear in this part; every other component in the catalog is reached the same
+way.
 
-## Rank among peers has no notation
-{eyebrow="Directives"}
+## One block outranks the rest
+{eyebrow="::: editorial"}
 
-In Markdown five `###` blocks all look alike. That the first outranks the rest
-is a decision, not a structure, so no rule could recover it – and that is
-exactly when you reach for a directive.
+`::: editorial` promotes the first `###` block to the hero position and stacks
+the rest beside it. Use it when one point carries the slide and the others are
+footnotes to it.
 
 ::: cols--2
 ```markdown
@@ -209,12 +215,12 @@ Also worth a line.
 </div>
 :::
 
-## Three more, for the same reason
-{eyebrow="Directives"}
+## Old against new, do against avoid
+{eyebrow="::: delta · ::: principles"}
 
-`::: delta` for old against new, `::: principles` for do against avoid,
-`::: chart` for a bar chart. In each one the *relationship* between the items is
-what carries the meaning, and Markdown has no notation for a relationship.
+`::: delta` puts an arrow between the two halves of each item. `::: principles`
+sets one list against another under its own head. Both read their body as a
+list, so a longer one just grows downwards.
 
 ::: cols--2
 ```markdown
@@ -250,14 +256,15 @@ what carries the meaning, and Markdown has no notation for a relationship.
 :::
 
 ## A list of numbers becomes a chart
-{eyebrow="Directives"}
+{eyebrow="::: chart"}
 
-The bars read the theme's own colour tokens as they are drawn, so a chart matches
-whatever theme is loaded without being told about it.
+The six lines on the left are the chart on the right. `max=220` is the ceiling
+the bars are scaled against, `values` writes each number above its bar, and the
+bars take the theme's accent colour, the same one as the heading above them.
 
 ::: cols--2
 ```markdown
-::: chart max=220 values
+::: chart max=220 values label="Commits per week"
 - W1: 40
 - W2: 95
 - W3: 120
@@ -267,7 +274,7 @@ whatever theme is loaded without being told about it.
 :::
 ```
 
-::: chart max=220 values label="Commits per week, illustrative"
+::: chart max=220 values label="Commits per week"
 - W1: 40
 - W2: 95
 - W3: 120
@@ -280,49 +287,45 @@ whatever theme is loaded without being told about it.
 ## Where the shape already carries it
 {eyebrow="No directive needed"}
 
-An ordinary numbered list whose items lead with a bold phrase is a process, so it
-is set as one. No directive, and none wanted: four peers, a list of steps or a
-quotation as the takeaway are all shapes the parser can read.
+A numbered list whose items lead with a bold phrase comes out as numbered steps,
+two columns of them once there are four. No directive for this one.
 
 ::: cols--2
 ```markdown
-1. **Absprache** Agree the room and
-   the number of laptops.
-2. **Aufbau** Lay out the machines
-   and check the network.
+1. **Absprache** Agree room and
+   laptop count.
+2. **Aufbau** Lay out machines,
+   check network.
 3. **Einlass** Doors close, IDs
    checked.
-4. **Abbau** Pack down, count the
+4. **Abbau** Pack down, count
    papers twice.
 ```
 
 <div class="flow">
   <div class="fcol">
-    <div class="fstep"><div class="step-num">1</div><h3>Absprache</h3><p>Agree the room and the number of laptops.</p></div>
-    <div class="fstep"><div class="step-num">2</div><h3>Aufbau</h3><p>Lay out the machines and check the network.</p></div>
+    <div class="fstep"><div class="step-num">1</div><h3>Absprache</h3><p>Agree room and laptop count.</p></div>
+    <div class="fstep"><div class="step-num">2</div><h3>Aufbau</h3><p>Lay out machines, check network.</p></div>
   </div>
   <div class="fcol">
     <div class="fstep"><div class="step-num">3</div><h3>Einlass</h3><p>Doors close, IDs checked.</p></div>
-    <div class="fstep"><div class="step-num">4</div><h3>Abbau</h3><p>Pack down, count the papers twice.</p></div>
+    <div class="fstep"><div class="step-num">4</div><h3>Abbau</h3><p>Pack down, count papers twice.</p></div>
   </div>
 </div>
 :::
 
-> A finished 23-slide deck used three directives in total. If you are reaching for
-> one on every slide, the document probably has a shape you are fighting.
+> A finished 23-slide deck used three directives in total.
 
 ## Depth that stays off the path
-{eyebrow="Reveals"}
+{eyebrow="::: detail"}
 
 A reveal is a slide the deck never pages to: a strip on the visible slide opens
-a full panel over it. Use it for the derivation, the caveat, the numbers behind
-a claim. Without it, that material either goes on a slide everyone has to page
-past, or it goes nowhere.
+a full panel over it. Put the derivation there, or the numbers behind a claim,
+and the room only sees it if someone asks.
 
 ::: cols--2
 ```markdown
-::: detail line="**How this is counted.**"
-       more="Show the method"
+::: detail line="**The method.**" more="Show"
 ## How the range is derived
 
 ### Lower bound
@@ -334,50 +337,28 @@ Everything up to the next commit.
 ```
 
 ### Try the strip below
-It is a real reveal on this slide, written exactly like the code beside it. The
-panel has no page number and no nav dot, so paging through this deck will never
-land on it.
+The strip at the foot of this slide is a real reveal, written the same way as the
+snippet beside it. Its panel has no page number and no nav dot, so paging through
+this deck will never land on it.
 :::
 
-::: detail line="**How this reveal was made.**  Eleven lines of Markdown, same as the snippet on the left." more="Show the method"
+::: detail line="**How this reveal was made.**  Fifteen lines of Markdown, the same directive as the snippet on the left." more="Show the method"
 ## A reveal is a slide
 
-### It is planned like one
-The body goes through the same layout inference as any slide, so it can hold
-columns, a gallery, a chart, a closing band. A leading `##` becomes its
-heading.
+### What you write on the strip
+`line="…"` is the strip's own text: say what is behind it, not "click here".
+`more="…"` is the call to action on its right, and `eyebrow="…"` works as it does
+on a slide.
 
-### It is checked like one
-The report lists reveals separately, because they are the slides nobody
-proof-reads. An overfull one is invisible until someone clicks it in front of an
-audience.
+### What the panel can hold
+Everything after the leading `##` is laid out like a slide. The two panels you
+are reading are two `###` blocks, and the band below them is a `> blockquote`.
 
 > Press Escape, or use the close button. While this panel is open the deck's own
 > arrow keys stand down, so you cannot page away behind it.
 :::
 
-# What it decides for you
-
-## Corrections, and the ones it refuses to make
-{eyebrow="Auto-layout"}
-
-Every correction is printed in the report, and the repertoire is deliberately
-short. Three moves are excluded on principle, because each of them improves a
-number while making the deck worse.
-
-::: principles
-### It will
-- Use fewer or more columns than the first guess
-- Centre each column's content when one hangs higher than its neighbour
-- Widen the gutter where a figure faces text
-- Move images off the narrow side of a row
-- Split an overfull prose slide into two columns
-
-### It will not
-- **Stretch a container to close a gap.** Measured: median fill 74 % → 96 %, and the deck was visibly worse. A stretched bordered panel frames the empty space instead of removing it.
-- **Regroup equal-ranked cards.** Three thin columns stay three columns. They are parallel because you wrote them that way.
-- **Invent content.** A thin slide is reported, with the two honest fixes named.
-:::
+# Where this fits
 
 ## When not to use this
 {eyebrow="Limits"}

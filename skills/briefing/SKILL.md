@@ -231,7 +231,7 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
    Then run this audit in the page – it catches the three things eyeballing misses (dead space, overlap, overflow):
 
    ```js
-   const rep = { thin: [], overlap: [], overflow: [], deadBand: [],
+   const rep = { thin: [], overlap: [], overflow: [], deadBand: [], bandCollision: [],
                  revealOverflow: [], unscaledText: [] };
    document.querySelectorAll('section.frame').forEach((sec, i) => {
      const slide = sec.querySelector('.slide'), inner = sec.querySelector('.slide-inner');
@@ -246,7 +246,13 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
      if (slide.className.replace('slide', '').trim()) return;   // skip title/divider
      const top = inner.getBoundingClientRect().top;
      const end = foot ? foot.getBoundingClientRect().top : inner.getBoundingClientRect().bottom;
-     const band = inner.querySelector('.punch, .change-strip, .tracker');
+     // `:scope >` matters, and the reason is a false positive worth knowing
+     // about. A reveal's hidden .detail-layer can hold a .punch of its own, and
+     // a descendant selector finds it: display:none gives it an all-zero
+     // rectangle, so `band.top` comes back as 0 and every box on the slide
+     // measures as thousands of pixels "over the band". Restrict the search to
+     // the slide's own children, which is where a real closing band lives.
+     const band = inner.querySelector(':scope > .punch, :scope > .change-strip, :scope > .tracker');
      let ink = top;
      inner.querySelectorAll('*').forEach(el => {
        if (el.closest('.pagefoot')) return;
@@ -282,6 +288,33 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
          const above = Math.round((lo - rr.top) / (end - top) * 100);
          const below = Math.round((rr.bottom - hi) / (end - top) * 100);
          if (below >= 12 && below - above >= 8) rep.deadBand.push({ n, above, below });
+       }
+
+       // The band deceives the OVERFLOW check too, in the opposite direction.
+       // A row with `flex: 1` shrinks under pressure instead of pushing its
+       // siblings down, so when its content outgrows it the content spills over
+       // the band while the band itself never moves - and the deepest painted
+       // pixel therefore stays above the footer. The overflow check reads clean
+       // on a slide whose panel is sitting on top of its own closing line.
+       //
+       // Calibrated by growing one panel a sentence at a time and watching both
+       // checks (1600x900, a single .panel in a one-column row with a .punch):
+       //
+       //   10 sentences   overflow: clean        band: content 16px over
+       //   11 sentences   overflow: clean        band: content 75px over
+       //   12 sentences   overflow: 6px          band: content 105px over
+       //   14 sentences   overflow: 125px        band: content 224px over
+       //
+       // So the blind spot is about a band's height wide, and everything inside
+       // it is invisible to every other check here. Ask the direct question.
+       if (band) {
+         const bandTop = band.getBoundingClientRect().top;
+         const over = [...row.querySelectorAll('*')].filter(el => {
+           const r = el.getBoundingClientRect();
+           return r.height > 0 && r.bottom > bandTop + 1;
+         });
+         if (over.length) rep.bandCollision.push({ n,
+           by: Math.round(Math.max(...over.map(e => e.getBoundingClientRect().bottom)) - bandTop) });
        }
      }
    });
@@ -417,7 +450,22 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
      clippedLabels: [...document.querySelectorAll('.slide *')].filter(el =>
        !el.children.length && el.textContent.trim() && !el.closest('svg')
        && el.clientWidth > 0 && el.scrollWidth - el.clientWidth > 1
-     ).map(el => `${el.textContent.trim()} (${el.scrollWidth}px in ${el.clientWidth}px)`)
+     ).map(el => `${el.textContent.trim()} (${el.scrollWidth}px in ${el.clientWidth}px)`),
+
+     // Vertical clipping, which is the nastier half and was missing here.
+     // Any block with `overflow: hidden` that is allowed to shrink as a flex item
+     // will cut its own content off and report a box that fits the slide
+     // perfectly. Nothing else in this audit sees it: not overflow, not overlap,
+     // not thin. The tutorial shipped three slides whose code samples were
+     // missing their last lines by 42, 26 and 12 pixels, and it was found by
+     // reading a screenshot, not by measuring.
+     // The cure for the specific case was `flex: none` on `.md-code`, which
+     // converts the silent cut into an ordinary overflow. This check is the guard
+     // for the next component that grows an `overflow: hidden`.
+     clippedBoxes: [...document.querySelectorAll('.slide *')].filter(el => {
+       if (el.closest('svg') || getComputedStyle(el).overflow === 'visible') return false;
+       return el.clientHeight > 0 && el.scrollHeight - el.clientHeight > 1;
+     }).map(el => `${el.className || el.tagName}: ${el.scrollHeight - el.clientHeight}px of content cut off`)
    })
    ```
 7. **Make it self-contained (for sharing).** Fold the CSS/JS and images into the HTML so the deck is one file. With the repo checked out, `node tools/inline-deck.mjs deck.html -o deck.self-contained.html` does it; otherwise inline by hand – paste each stylesheet into a `<style>`, the runtime into a `<script>`, and replace every local `src="…"` with a `data:` URI. Fonts should already be embedded in the theme (see Typography).

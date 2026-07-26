@@ -452,6 +452,42 @@ closing one, which is the fault `deadBand` exists to find. The framework was
 right and the prose was wrong, so the prose changed. Worth noticing how close
 that came to a regression justified by a comment.
 
+## 6e. The band hides overflow as well as emptiness
+
+§6a recorded that a bottom-pinned `.punch` inflates a fill score, because the
+band's own bottom edge becomes the deepest ink. The same band hides the opposite
+fault, and that took longer to notice.
+
+A row with `flex: 1` shrinks under pressure rather than pushing its siblings
+down. So when the row's content outgrows the room the row was given, the content
+spills *over* the band while the band itself never moves, and the deepest painted
+pixel on the slide stays above the footer. **The overflow check reads clean on a
+slide whose panel is sitting on top of its own closing line.**
+
+Calibrated by growing one panel a sentence at a time at 1600 × 900, a single
+`.panel` in a one-column row with a `.punch` beneath it:
+
+| panel content | overflow check says | content over the band |
+| --- | --- | --- |
+| 10 sentences | clean | 16 px |
+| 11 sentences | clean | 75 px |
+| 12 sentences | 6 px | 105 px |
+| 14 sentences | 125 px | 224 px |
+
+The blind spot is about one band's height wide, and everything inside it is
+invisible to every other check in `SKILL.md`. `bandCollision` asks the direct
+question instead: does any painted box in the row reach past the top of the band.
+Zero hits across 50 slides in three finished decks, and it fires at 16 px where
+the overflow check is silent.
+
+Two lessons. **A fault that a bottom-pinned element can absorb needs its own
+check** — the band has now defeated three separate metrics in this project, and
+each time the fix was to stop measuring the slide as a whole and measure the
+relationship between two named boxes instead. And this one surfaced because an
+agent reported the fault it had introduced mid-task rather than only the state it
+left behind; asking for that explicitly is what turned a transient mistake into a
+permanent check.
+
 ## 7. If you change one thing, check these
 
 Run the audit in `SKILL.md` after any framework change, on **both**

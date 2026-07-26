@@ -55,16 +55,33 @@ jobs:
       # hard errors, so "exit 0" alone does not prove it produced a deck. The
       # section count is the cheapest assertion that it emitted slides rather
       # than a well-formed empty page.
+      #
+      # Both example decks go through it. The tutorial matters more than its slide
+      # count suggests: it is the only deck that exercises the raw-HTML escape
+      # hatch, fenced code inside a directive, and a nested chart directive, and
+      # all three have broken at least once. A converter change that silently
+      # loses half the tutorial's slides is exactly the failure this catches - it
+      # happened, when a raw HTML block ending flush against a `:::` line ate the
+      # fence terminator and the deck built 6 slides instead of 15.
       - name: Markdown converter still produces a deck
         run: |
-          node tools/md-to-deck.mjs examples/example-deck.md \
-            -o examples/example-deck-md.html
-          slides="$(grep -c '<section class="frame"' examples/example-deck-md.html)"
-          echo "converted deck has $slides slide(s)"
-          if [ "$slides" -lt 2 ]; then
-            echo "md-to-deck exited 0 but emitted almost no slides" >&2
-            exit 1
-          fi
+          fail=0
+          for src in examples/example-deck.md examples/tutorial.md; do
+            out="${src%.md}-ci.html"
+            node tools/md-to-deck.mjs "$src" -o "$out"
+            slides="$(grep -c '<section class="frame"' "$out")"
+            echo "$src -> $slides slide(s)"
+            # A deck that loses most of its slides still exits 0, so assert a
+            # floor rather than merely "more than one".
+            if [ "$slides" -lt 10 ]; then
+              echo "$src: expected at least 10 slides, got $slides" >&2
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ]
+          # The pipeline steps below expect these names.
+          cp examples/example-deck-ci.html examples/example-deck-md.html
+          cp examples/tutorial-ci.html examples/tutorial.html
 
       # The central promise is "one file, no network". build-deck.sh ends in a
       # verify step that asserts nothing external is left, and that verify step
@@ -87,8 +104,10 @@ jobs:
       # one: the converter emits its own markup, and a change there can produce
       # a deck that renders but no longer inlines cleanly. Both paths into the
       # pipeline have to stay buildable.
-      - name: Converted deck builds self-contained
-        run: tools/build-deck.sh examples/example-deck-md.html -o build/example-deck-md.html
+      - name: Converted decks build self-contained
+        run: |
+          tools/build-deck.sh examples/example-deck-md.html -o build/example-deck-md.html
+          tools/build-deck.sh examples/tutorial.html -o build/tutorial.html
 
   # ---------------------------------------------------------------------------
   # Separate job on purpose. A failing step aborts the rest of its job, and the

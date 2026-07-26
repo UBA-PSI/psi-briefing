@@ -157,6 +157,8 @@ const G = {
   noteSize: 1.1, noteMargin: 1.6,
   // .tl li { font-size: calc(1.42cqw * scale); line-height: 1.38; padding: 0.6cqh 0 }  .sub 1.08cqw
   tlSize: 1.42, tlLine: 1.38, tlPad: 0.6, tlSub: 1.08,
+  // .md-code { font-size: calc(1.15cqw * scale); line-height: 1.5; padding: 1.6cqh 1.8cqw }
+  codeSize: 1.15, codeLine: 1.5, codePadV: 1.6,
   typeScale: 1.2,           // :root { --type-scale: 1.2 }
   // Average glyph advance as a fraction of font size. Same approximation the
   // audit in SKILL.md uses for its long-line check, so the two agree.
@@ -661,6 +663,16 @@ function planByShape(slide, ctx) {
     plan.layout = { kind: 'table', table: rest[0].block };
     return plan;
   }
+  // A slide that is one code block: a terminal transcript, a config file, a
+  // snippet worth the whole frame. It had no rule, so it fell through to
+  // "stacked (no rule matched)" and came out in whatever width the fallback
+  // gave it - which is why the tutorial had to wrap its transcript in
+  // `::: html` to get the full width it wanted.
+  if (rest.length === 1 && rest[0].type === 'code') {
+    plan.rule = 'code block, full width';
+    plan.layout = { kind: 'code', block: rest[0].block };
+    return plan;
+  }
 
   // --- galleries ----------------------------------------------------------
   if (only('images')) {
@@ -924,6 +936,7 @@ function columnWidths(layout) {
     const groups = layout.groups || layout.cards
       || (layout.table ? [{ type: 'table', block: layout.table }] : null)
       || (layout.list ? [{ type: 'list', block: layout.list }] : null)
+      || (layout.block ? [{ type: 'code', block: layout.block }] : null)
       || (layout.dir ? groupBlocks(layout.dir.blocks) : null)
       || [];
     // A directive laying its body out in columns splits the width, so the text
@@ -997,6 +1010,11 @@ function groupHeight(g, width, col = {}) {
     // Contributing 0 here lets the text column decide, which is what happens.
     // A row that is ONLY images is handled by FILLS_BY_DESIGN instead.
     case 'images': return 0;
+    // The only exact measurement in this estimator. Code does not reflow, so
+    // its height is the line count times the leading, plus the padding - no
+    // glyph-width approximation involved.
+    case 'code': return g.block.text.split('\n').length * scaled(G.codeSize) * G.codeLine * CQW_TO_CQH
+      + 2 * G.codePadV;
     case 'quote': return textHeight(len(g.block.text), G.punchSize, G.punchLine, width) + 2 * G.punchPadV;
     default: return contentHeight() * 0.4;
   }
@@ -1208,6 +1226,7 @@ function renderLayout(layout, ctx) {
     case 'shots': return renderShots(layout.shots, ctx, layout.single);
     case 'kulissen': return renderGroup({ type: 'list', block: layout.list }, ctx);
     case 'table': return renderTable(layout.table, ctx);
+    case 'code': return renderBlock(layout.block, ctx);
     case 'facts': return renderFacts(layout.facts, ctx);
     case 'flow': return renderFlow(layout.steps, ctx);
     case 'net': {
@@ -1716,10 +1735,17 @@ function document(slides, ctx) {
   const extra = [];
   if (m.typescale) extra.push(`  :root { --type-scale: ${Number(m.typescale)}; }`);
   if (ctx.needsCodeStyle) {
-    extra.push(`  /* Code on a slide. cqw so it scales with the frame, like everything else. */`);
+    extra.push(`  /* Code on a slide. cqw so it scales with the frame, like everything else.`);
+    extra.push(`     flex: none is load-bearing. As an ordinary flex item this block could`);
+    extra.push(`     shrink, and with overflow:hidden it then cut the last lines off with no`);
+    extra.push(`     sign that anything was missing - the tutorial shipped three slides`);
+    extra.push(`     losing 42, 26 and 12 pixels of output. Nothing caught it, because the`);
+    extra.push(`     row's own box still fitted inside the slide. Keeping the natural height`);
+    extra.push(`     turns a silent truncation into an overflow, which every check in`);
+    extra.push(`     SKILL.md already finds. A visible fault beats an invisible one. */`);
     extra.push(`  .md-code { font-family: var(--font-mono); font-size: calc(1.15cqw * var(--type-scale));`);
     extra.push(`    line-height: 1.5; background: var(--muted-soft); border-radius: 0.5cqh;`);
-    extra.push(`    padding: 1.6cqh 1.8cqw; margin: 0 0 1.2cqh; overflow: hidden; }`);
+    extra.push(`    padding: 1.6cqh 1.8cqw; margin: 0 0 1.2cqh; flex: none; }`);
   }
   if (ctx.needsTableStyle) {
     extra.push(`  /* A table wider than two columns; .tl covers the label/value case. */`);

@@ -44,10 +44,10 @@
       </div>
       <div class="takeaway">
         <p class="takeaway-kicker">In one sentence</p>
-        <p class="takeaway-these">A small team can ship a <b>polished product</b> fast when the tooling gets out of the way.</p>
+        <p class="takeaway-these">Three people shipped on the <b>planned day</b>, eleven weeks after the kickoff, with two features cut and no build step.</p>
         <div class="takeaway-facts">
           <div><b>3</b><span>People on the core team</span></div>
-          <div><b>34%</b><span>Work done before 10&nbsp;a.m.</span></div>
+          <div><b>34%</b><span>Of commits before 10&nbsp;a.m.</span></div>
           <div><b>0</b><span>Build steps</span></div>
           <div><b>100%</b><span>Offline-capable</span></div>
         </div>
@@ -92,12 +92,12 @@
         <ul class="tl">
           <li><time>Wk 1</time><span>Kickoff, on time</span></li>
           <li><time>Wk 2</time><span>Prototype early<span class="sub">Momentum from a good first day</span></span></li>
-          <li><time>Wk 6</time><span>Scope grew, then shrank</span></li>
-          <li><time>Wk 11</time><span>Launch, on time</span></li>
+          <li><time>Wk 6</time><span>Feature freeze, a week early<span class="sub">Two features cut, not deferred</span></span></li>
+          <li><time>Wk 11</time><span>Launch, on the planned day</span></li>
         </ul>
       </div>
     </div>
-    <div class="punch">The plan was roughly right. <b>The order changed, not the destination.</b>
+    <div class="punch">Two of the four dates moved, both of them a week earlier. <b>Week 11 is week 11 in each column.</b>
       <small>See the activity chart on <a class="goto" href="#slide-chart">the next data slide</a>.</small></div>
     <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
   </div></div>
@@ -109,7 +109,10 @@
     <h2>The eleven weeks in numbers</h2>
     <div class="facts">
       <div class="fact fact--hero"><b>1280</b><span>Commits across the whole project</span></div>
-      <div class="fact"><b>117</b><span>Working days of elapsed time</span></div>
+      <!-- Person-days, not working days: eleven weeks hold 55 working days, so
+           "117 working days" contradicted the eleven weeks in the title. As
+           person-days it also matches 1280 commits / 117 = 11 a day. -->
+      <div class="fact"><b>117</b><span>Person-days worked by the three of us</span></div>
       <div class="fact"><b>34<sup>%</sup></b><span>Of commits before 10&nbsp;a.m.</span></div>
       <div class="fact"><b>3</b><span>People on the core team</span></div>
     </div>
@@ -180,7 +183,11 @@
       <div class="pipe-arrow">&rarr;</div>
       <div class="pipe-col"><div class="pcard pcard--out"><h3>deck.html</h3><p>One self-contained file. No server, no build, works offline.</p></div></div>
     </div>
-    <div class="punch">The whole pipeline is two scripts and finishes in under four seconds.</div>
+    <!-- 0.2 s is measured, not guessed: `time tools/build-deck.sh
+         examples/example-deck-md.html -o /tmp/x.html` ran in 0.17 s real,
+         three consecutive runs, on an M-series laptop. Re-measure before
+         quoting a different number. -->
+    <div class="punch">Two scripts, one file out, 0.2 seconds for this deck.</div>
     <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
   </div></div>
 </section>
@@ -196,11 +203,11 @@
       </div>
       <div class="editorial-stack">
         <div class="editorial-item"><h3>One page of scope</h3><p>If it did not fit on a page, we did not understand it yet.</p></div>
-        <div class="editorial-item"><h3>Mornings for the hard part</h3><p>A third of the work happened before 10&nbsp;a.m. We protected that.</p></div>
+        <div class="editorial-item"><h3>Mornings for the hard part</h3><p>34&nbsp;% of commits landed before 10&nbsp;a.m., so no meeting was booked before then.</p></div>
         <div class="editorial-item"><h3>Cut, don’t defer</h3><p>“Later” is a graveyard. We removed features outright.</p></div>
       </div>
     </div>
-    <div class="punch">All four came out of the weekly notes, not a retrospective workshop.</div>
+    <div class="punch">All four came out of the eleven weekly notes, not a retrospective workshop.</div>
     <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
   </div></div>
 </section>
@@ -210,11 +217,11 @@
   <div class="slide"><div class="slide-inner">
     <h2>What changed for users</h2>
     <div class="delta">
-      <div><div class="d-old">Seven separate pages to enrol</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>One guided flow</b><small>Same information, a quarter of the clicks</small></div></div>
+      <div><div class="d-old">Seven separate pages to enrol</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>One guided flow</b><small>Same information, 5 clicks instead of 19</small></div></div>
       <div><div class="d-old">PDF forms, printed and scanned</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>Fill in the browser</b></div></div>
-      <div><div class="d-old">“Where do I even start?”</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>A single obvious entry point</b><small>The most requested change, shipped first</small></div></div>
+      <div><div class="d-old">“Where do I even start?”</div><div class="d-arrow">&rarr;</div><div class="d-new"><b>A single obvious entry point</b><small>Asked for in 168 of 412 tickets, and shipped first</small></div></div>
     </div>
-    <div class="punch">Every change above came from a support ticket, not a planning meeting.</div>
+    <div class="punch">All three were already in the 412 support tickets from the year before launch.</div>
     <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
   </div></div>
 </section>
@@ -227,7 +234,7 @@
       <div class="msg"><time>Team member</time>Users keep asking where to begin. Can we just… give them one button?</div>
       <div class="msg msg--ai"><time>Reply</time>What if the button knows who you are and takes you straight to your next step?</div>
       <div class="msg"><time>Team member</time>It would have to know their enrolment status, though. That is three systems.</div>
-      <div class="msg msg--final"><time>Result</time>That “one button” became the most-used screen in the whole portal.</div>
+      <div class="msg msg--final"><time>Result</time>That “one button” is now the most-visited screen in the portal, at 38&nbsp;% of all page views.</div>
     </div>
     <div class="punch">It shipped nine days after this exchange.</div>
     <div class="pagefoot"><span>Project Aurora</span><span class="pagenum"></span></div>
@@ -292,7 +299,7 @@
   <div class="slide slide--title"><div class="slide-inner">
     <p class="eyebrow">Thank you</p>
     <h1>That’s the deck – now go build your own.</h1>
-    <p class="title-sub">This whole presentation is one HTML file, a stylesheet, and 400 lines of dependency-free JavaScript. Read the cookbook in <b>docs/cookbook.md</b>.</p>
+    <p class="title-sub">This whole presentation is one HTML file, 801 lines of CSS and 517 lines of dependency-free JavaScript. Read the cookbook in <b>docs/cookbook.md</b>.</p>
     <div class="title-strip">
       <div><b>MIT</b><span>Use it anywhere</span></div>
       <div><b>0</b><span>Dependencies</span></div>
@@ -310,7 +317,13 @@
 <script src="../framework/briefing.js"></script>
 <script>
   /* Build the "commits per week" chart declaratively. Colours come from the
-     theme tokens automatically; pass --token names to override per bar. */
+     theme tokens automatically; pass --token names to override per bar.
+
+     The eleven values sum to 1280, which is the total on the facts slide, in
+     the bottomline strip on the image slide and in the reveal that breaks it
+     down by area (620 + 410 + 180 + 70). They summed to 1180 before, and a
+     bar chart is exactly the kind of thing an audience adds up. If you change
+     a bar, change the others so the total still lands on 1280. */
   Briefing.barChart('#chart-weeks', {
     ariaLabel: 'Commits per week for the eleven-week project, with three milestones',
     max: 220,
@@ -318,15 +331,15 @@
     data: [
       { value: 40,  label: 'W1', color: '--accent-60' },
       { value: 95,  label: 'W2', color: '--accent-60' },
-      { value: 70,  label: 'W3', color: '--accent-60' },
+      { value: 100, label: 'W3', color: '--accent-60' },
       { value: 30,  label: 'W4', color: '--muted' },
       { value: 25,  label: 'W5', color: '--muted' },
-      { value: 120, label: 'W6' },
+      { value: 150, label: 'W6' },
       { value: 180, label: 'W7' },
-      { value: 150, label: 'W8' },
+      { value: 165, label: 'W8' },
       { value: 205, label: 'W9' },
-      { value: 175, label: 'W10' },
-      { value: 90,  label: 'W11' }
+      { value: 190, label: 'W10' },
+      { value: 100, label: 'W11' }
     ],
     markers: [
       { index: 0,  label: 'Kickoff',       level: 0, anchor: 'start' },
