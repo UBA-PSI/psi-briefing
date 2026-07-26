@@ -397,17 +397,45 @@ function parseBlocks(lines, start = 0, stopAtFence = false) {
       continue;
     }
 
-    // Raw HTML block: from a line starting with a tag to the next blank line —
-    // or to a directive fence, which is the part that had to be added. A `:::`
-    // line is never HTML, and without stopping at it a raw block that ends
-    // flush against the fence swallowed the terminator: the directive then
-    // absorbed the whole rest of the document, and the deck silently lost half
-    // its slides. Requiring a blank line before `:::` would have been a rule
-    // nobody could infer from the error.
+    // Raw HTML block: from a line starting with a tag to the end of that element,
+    // or to a blank line if the element closed on its own line, or to a directive
+    // fence.
+    //
+    // The fence stop had to be added because a raw block ending flush against
+    // `:::` swallowed the terminator: the directive then absorbed the rest of the
+    // document and the deck silently lost half its slides. A `:::` line is never
+    // HTML, and requiring a blank line before it would have been a rule nobody
+    // could infer from the error.
+    //
+    // The element stop had to be added for the opposite failure. Ending at the
+    // first blank line is right for a block of sibling tags, but wrong inside one:
+    // a <pre> transcript with a blank line in it got cut at that line, and the
+    // remainder was parsed as Markdown - which joined the lines into a paragraph
+    // that then ran off the slide. That is what the tutorial's converter-output
+    // slide was doing. So while an element is still open, a blank line is content.
     if (/^</.test(trimmed)) {
       const body = [];
-      while (i < lines.length && lines[i].trim() && !/^:::/.test(lines[i].trim())) {
+      const tagName = (trimmed.match(/^<([a-zA-Z][\w-]*)/) || [])[1]?.toLowerCase();
+      const open = tagName ? new RegExp(`<${tagName}(?=[\\s/>])`, 'gi') : null;
+      const close = tagName ? new RegExp(`</${tagName}\\s*>`, 'gi') : null;
+      // Only track depth when the element demonstrably closes further on. A void
+      // tag (<img>) or an unclosed one must keep the old blank-line behaviour,
+      // or a single <img> line would swallow the rest of the section.
+      let track = false;
+      if (close) {
+        for (let j = i; j < lines.length && !/^:::/.test(lines[j].trim()); j += 1) {
+          if (lines[j].match(close)) { track = true; break; }
+        }
+      }
+      let depth = 0;
+      while (i < lines.length && !/^:::/.test(lines[i].trim())) {
+        if (!lines[i].trim() && depth === 0) break;
+        if (track) {
+          depth += (lines[i].match(open) || []).length;
+          depth -= (lines[i].match(close) || []).length;
+        }
         body.push(lines[i]); i += 1;
+        if (track && depth <= 0) break;
       }
       blocks.push({ type: 'raw', text: body.join('\n') });
       continue;
