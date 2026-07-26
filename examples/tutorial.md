@@ -1,13 +1,13 @@
 ---
 title: How to write a briefing
-subtitle: A briefing that teaches its own format. Every slide shows the Markdown that produced it.
+subtitle: This deck is one Markdown file. Every slide shows the Markdown that produced it.
 footer: psi-briefing · tutorial
 lang: en
 theme: bamberg
 css: [../framework/briefing.css, ../themes/bamberg.css]
 js: ../framework/briefing.js
 hyphenate: false
-takeaway: You write a document. Its shape picks the layout, and one command turns it into the deck.
+takeaway: Write an ordinary Markdown document, run one command, and the converter picks a layout for every slide.
 strip:
   - "1: file"
   - "0: dependencies"
@@ -19,23 +19,23 @@ strip:
 
 # The document
 
-Three characters decide where slides begin. Everything else is ordinary Markdown.
+`#`, `##` and `---` are what decide where a slide begins. Everything else in the
+file is ordinary Markdown.
 
 ## One file in, one deck out
 {#report eyebrow="The whole workflow"}
 
-Nothing to install and no project to set up. This is what the two commands
-printed for the file you are reading.
+Nothing to install and no project to set up. Below is what the two commands
+printed when this deck was built from `examples/tutorial.md`.
 
 ::: html
 <pre class="md-code"><code>$ node tools/md-to-deck.mjs examples/tutorial.md -o examples/tutorial.html
 md-to-deck: 17 slides -&gt; examples/tutorial.html
-    9~  60 % gap 27 %  directive:cols--2                   A two-column table becomes a timeline
-   17   86 % gap  9 %  directive:cols--3                   When not to use this
-  typography: 10 marks normalised
-  layout: 1 correction(s) applied
+   12   98 %          directive:cols--2                   Old against new, do against avoid
+    9~  66 % gap 21 %  directive:cols--2                   A two-column table becomes a timeline
+  typography: 9 marks normalised
+
 $ tools/build-deck.sh examples/tutorial.html
-built   examples/tutorial.self-contained.html
         0.02 MB linked  -&gt;  0.13 MB self-contained
         no external references: opens with no server and no network</code></pre>
 :::
@@ -46,8 +46,8 @@ built   examples/tutorial.self-contained.html
 ## Where slides begin
 {eyebrow="Structure"}
 
-This file has four `#` headings after the title. They are the four numbered
-dividers you page through, and they are the contents list on
+This file has four `#` headings after the title. Each one becomes a numbered
+divider slide, and the four of them together are the contents list on
 [the title slide](#contents) – hover the link and count them.
 
 ::: cols--2
@@ -64,23 +64,23 @@ dividers you page through, and they are the contents list on
 ```
 
 ### The attribute line
-One optional `{…}` directly under a heading. `{#anchor}` to link to the slide,
-`{eyebrow="…"}` for a kicker, `{.center}`, `{hyphenate}`, `{keep}` to exempt it
-from corrections.
+A heading may take one `{…}` line under it. `{#anchor}` gives the slide an id so
+another slide can link to it, `{eyebrow="…"}` puts a small line above the title,
+`{.center}` centres the content, `{keep}` leaves this slide's layout untouched.
 :::
 
-# Shape becomes layout
+# How the layout is chosen
 
-The component is chosen from the structure of your text. It also rearranges what
-you wrote: more columns, fewer, an overfull prose slide split into two. It never
-pads, and a slide it cannot fix it names in the report.
+The converter reads the structure of your Markdown and picks a component for each
+slide. It also adjusts what you wrote: more columns or fewer, or an overfull
+prose slide split into two. It never invents text to fill a gap, and every slide
+it could not fix is named in the report it prints.
 
-## Four peers become a grid
-{eyebrow="Shape → component"}
+## Four equal blocks become a grid
 
-Four `###` blocks of equal rank are four parallel points, so they become a
-bordered 2×2 grid. Two become two columns, three become three, five to eight
-become two columns of stacked cards.
+Four `###` blocks at the same level become a bordered 2×2 grid. Two become two
+columns, three become three, and five to eight become two columns of stacked
+cards.
 
 ::: cols--2
 ```markdown
@@ -106,13 +106,13 @@ Knows the system.
 :::
 
 ## A quotation becomes the closing band
-{eyebrow="Shape → component"}
 
 > Who leads is settled **before** the exam day. This blockquote is the first
-> block in the slide's source, above the two columns.
+> block in the slide's source, written above the two columns beside it.
 
-A blockquote is the slide's takeaway, so it lands in the band at the bottom.
-Write it anywhere in the slide.
+A `> blockquote` becomes the highlighted band across the bottom of the slide. It
+can sit anywhere in the slide's source, first block or last, and still ends up
+down there.
 
 ::: cols--2
 ```markdown
@@ -130,11 +130,11 @@ leads is settled before the day.
 </div>
 :::
 
-## Numbers become numbers
-{eyebrow="Shape → component"}
+## Three numbers become a row of figures
 
-A short list whose every item reads `**value** – label`, with a digit in the
-value, comes out as a row of figures. The first one is set large.
+A short list in which every item reads `**value** – label`, and the value
+contains a digit, comes out as a row of figures. The first item is set largest,
+so lead with the number you most want read.
 
 ::: cols--2
 ```markdown
@@ -151,10 +151,10 @@ value, comes out as a row of figures. The first one is set large.
 :::
 
 ## A two-column table becomes a timeline
-{eyebrow="Shape → component"}
 
-No width is named in the table. The label column comes out as wide as its
-longest label.
+A table of two columns becomes this label-and-text list. You set no widths
+anywhere: the label column on the left comes out as wide as its longest label,
+and no wider. A table of three or more columns stays an ordinary table instead.
 
 ::: cols--2
 ```markdown
@@ -178,16 +178,18 @@ longest label.
 
 # Asking for a component by name
 
-Write `::: name`, and the blocks under it become that component. Five of them
-appear in this part; every other component in the catalog is reached the same
-way.
+Some layouts cannot be read off Markdown, so you name them with a directive:
+`::: name` on its own line, the blocks that belong to it below, then `:::` to
+close. Five directives appear in this part; the rest of the catalog works the
+same way.
 
 ## One block outranks the rest
 {eyebrow="::: editorial"}
 
-`::: editorial` promotes the first `###` block to the hero position and stacks
-the rest beside it. Use it when one point carries the slide and the others are
-footnotes to it.
+`::: editorial` gives the first `###` block a large panel of its own and stacks
+the others beside it as smaller cards. Use it when one point carries the slide.
+Markdown has no way to show that one of five blocks outranks the others, which is
+why this layout has to be asked for by name.
 
 ::: cols--2
 ```markdown
@@ -219,8 +221,8 @@ Also worth a line.
 {eyebrow="::: delta · ::: principles"}
 
 `::: delta` puts an arrow between the two halves of each item. `::: principles`
-sets one list against another under its own head. Both read their body as a
-list, so a longer one just grows downwards.
+sets two bullet lists side by side, each under its own heading. Both bodies are
+plain Markdown lists.
 
 ::: cols--2
 ```markdown
@@ -258,9 +260,10 @@ list, so a longer one just grows downwards.
 ## A list of numbers becomes a chart
 {eyebrow="::: chart"}
 
-The six lines on the left are the chart on the right. `max=220` is the ceiling
-the bars are scaled against, `values` writes each number above its bar, and the
-bars take the theme's accent colour, the same one as the heading above them.
+The six bullet lines on the left produced the chart on the right. `max=220` sets
+the top of the scale the bars are measured against, `values` prints each number
+above its bar, and the bars take the theme's accent colour, the same one as the
+heading above them.
 
 ::: cols--2
 ```markdown
@@ -284,11 +287,12 @@ bars take the theme's accent colour, the same one as the heading above them.
 :::
 :::
 
-## Where the shape already carries it
+## Numbered steps need no directive
 {eyebrow="No directive needed"}
 
-A numbered list whose items lead with a bold phrase comes out as numbered steps,
-two columns of them once there are four. No directive for this one.
+A numbered list whose items start with a bold phrase becomes numbered steps, in
+two columns once there are four. Nothing to name here: the numbering already
+says what these are.
 
 ::: cols--2
 ```markdown
@@ -314,48 +318,52 @@ two columns of them once there are four. No directive for this one.
 </div>
 :::
 
-> A finished 23-slide deck used three directives in total.
+> A finished 23-slide briefing on exam invigilation names a component three
+> times in all.
 
-## Depth that stays off the path
+## Extra detail behind a click
 {eyebrow="::: detail"}
 
-A reveal is a slide the deck never pages to: a strip on the visible slide opens
-a full panel over it. Put the derivation there, or the numbers behind a claim,
-and the room only sees it if someone asks.
+`::: detail` adds a clickable strip along the bottom of a slide, and clicking it
+covers the slide with a full panel. Put a derivation or the numbers behind a
+claim in there. The reader who wants that much can open it, and the reader who
+does not is never held up by it.
 
 ::: cols--2
 ```markdown
-::: detail line="**The method.**" more="Show"
-## How the range is derived
+::: detail line="**How this panel was made.**" more="Show the method"
+## What a reveal is made of
 
-### Lower bound
-Sessions with two commits or more.
+### The strip
+What `line` and `more` write on it.
 
-### Upper bound
-Everything up to the next commit.
+### The panel
+Laid out exactly like a slide.
 :::
 ```
 
-### Try the strip below
-The strip at the foot of this slide is a real reveal, written the same way as the
-snippet beside it. Its panel has no page number and no nav dot, so paging through
-this deck will never land on it.
+### The strip below is real
+The Markdown beside this paragraph is what produced it, with the two panel texts
+shortened and the closing quotation left out. Click the strip and read what
+opens.
 :::
 
-::: detail line="**How this reveal was made.**  Fifteen lines of Markdown, the same directive as the snippet on the left." more="Show the method"
-## A reveal is a slide
+::: detail line="**How this panel was made.**" more="Show the method"
+## What a reveal is made of
 
-### What you write on the strip
-`line="…"` is the strip's own text: say what is behind it, not "click here".
-`more="…"` is the call to action on its right, and `eyebrow="…"` works as it does
-on a slide.
+### The strip
+`line="…"` is the text on the strip itself: say what is behind it rather than
+"click here". `more="…"` labels the button on its right, and `eyebrow="…"` works
+as it does on a slide.
 
-### What the panel can hold
-Everything after the leading `##` is laid out like a slide. The two panels you
-are reading are two `###` blocks, and the band below them is a `> blockquote`.
+### The panel
+Everything after the leading `##` is laid out exactly like a slide. The two
+panels you are reading are two `###` blocks, and the band below them is a
+`> blockquote`. This panel has no page number and no navigation dot, so paging
+from slide to slide never lands on it.
 
-> Press Escape, or use the close button. While this panel is open the deck's own
-> arrow keys stand down, so you cannot page away behind it.
+> Press Escape, or use the close button. While the panel is open, the arrow keys
+> belong to it, so the deck cannot scroll away underneath.
 :::
 
 # Where this fits
@@ -365,21 +373,24 @@ are reading are two `###` blocks, and the band below them is a `> blockquote`.
 
 ::: cols--3
 ### What it fits
-Content that is already document-shaped: a retrospective, project
-documentation, a research summary, lecture notes, a report with numbers in it.
-Those sources arrive with sections and comparisons to arrange densely, and
-arranging them densely is the work.
+Material already written as a document: a retrospective, project documentation,
+a research summary, lecture notes, a report with numbers in it. Such a source
+arrives with its own sections and comparisons, and the job is getting all of
+them onto slides without dropping any of it on the way.
 
 ### What it does not
-A sparse spoken keynote, driven by timing and by question-then-answer beats.
-Tried on a real one, it resisted both treatments: dense, it fought the
-dramaturgy; sparse, it produced empty frames. The dramaturgy is in the speaking.
+A spoken keynote of one line per slide, where the timing and the order of
+question and answer carry the talk. That was tried on a real one. Filling the
+slides worked against the timing, and keeping them sparse gave a deck of
+near-empty frames. For that kind of talk the pacing is the design, and no
+converter can supply it.
 
 ### What is missing
-No animation beyond click-to-reveal panels. No speaker view, no presenter notes
-on a second screen, no `.pptx` export. Charts are bars and nothing else, and the
-only image effects are a lightbox and a fanned stack.
+No animation beyond the click-to-open panels. No speaker view, no presenter
+notes on a second screen, no `.pptx` export. Charts are bars and nothing else,
+and the only image effects are a lightbox and a fanned stack.
 :::
 
 > For a talk you will actually deliver, use [psi-slides](https://github.com/UBA-PSI/psi-slides) –
-> the sibling project. The line between the two is whether anyone is speaking.
+> the sibling project. The line between the two is whether anyone will be in the
+> room speaking.

@@ -488,6 +488,32 @@ agent reported the fault it had introduced mid-task rather than only the state i
 left behind; asking for that explicitly is what turned a transient mistake into a
 permanent check.
 
+## 6f. A known weakness in the estimator, left in place on purpose
+
+The tutorial's last slide is a `::: cols--3` of three text cards. The report flags
+it `!` — "will not fit" — while the browser measures 25 px of headroom at 1600 ×
+900 and 16 px at 1024 × 768. The flag is wrong, and it is wrong every time the
+deck is built.
+
+It was tempting to shorten a card until the number came right. That is the same
+mistake as padding a slide to raise a fill score, run backwards: changing content
+that is fine in order to satisfy a measurement that is not. So the content stands
+and the flag is documented here instead.
+
+Where to look, for whoever picks this up: a *directive* named `cols--3` does not
+reach the `kind === 'cols'` branch of `columnWidths`. It falls to the generic one,
+which infers the column count from the group count and computes the width itself.
+Three narrow columns are also where the average-glyph-width approximation is
+weakest, since the error compounds per line and there are more lines per column.
+Both effects push the same way, which is why the flag is confidently wrong rather
+than slightly wrong.
+
+The lesson is about the flag rather than the arithmetic. `~` means "look at this",
+and being wrong occasionally costs nothing. `!` claims a slide is broken, and one
+that cries wolf on every build teaches the reader to ignore it — which is exactly
+what a detector must never do (§2). If this cannot be made accurate, `!` should
+become `~` for the layouts where the estimate is known to be unreliable.
+
 ## 7. If you change one thing, check these
 
 Run the audit in `SKILL.md` after any framework change, on **both**

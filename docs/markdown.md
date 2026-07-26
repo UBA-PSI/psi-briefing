@@ -220,8 +220,8 @@ closing band. Reveals are corrected like slides and reported separately:
        fix   short row (31 %) -> cols--center; balances the gap, does not fill it
 ```
 
-They are listed on their own because they are the slides nobody proof-reads –
-an overfull reveal is invisible until someone clicks it in front of an audience.
+They are listed on their own because nobody proof-reads them: a reveal that does
+not fit is invisible until a reader opens it, and by then the deck has shipped.
 
 More than one reveal per slide is fine; each strip opens its own panel.
 

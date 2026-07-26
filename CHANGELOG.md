@@ -35,8 +35,8 @@ prefix is `bf-`, and the framework files are `framework/briefing.css` and
   It reads declarative markup and generates the chrome; there is nothing to
   install and nothing to keep up to date.
 - **Reveals.** A clickable strip at the foot of a slide opens a full-slide panel
-  that sits outside the scroll path, for the detail one person in the room will
-  ask about. A reveal is laid out by the same planner as a slide, so it gets
+  that sits outside the scroll path, for the detail a reader may want and the
+  rest will not. A reveal is laid out by the same planner as a slide, so it gets
   headings, columns and a closing band rather than flat paragraphs, and the
   audit measures it with the panel open – `display: none` has no geometry, so an
   overfull reveal is otherwise invisible until it is clicked in front of an

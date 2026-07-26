@@ -1021,12 +1021,15 @@ function groupHeight(g, width, col = {}) {
 }
 
 // A reveal is held to a lower bar than a slide, and the reason is not laziness.
-// The 85 % target exists because a slide is projected in front of a room and
-// empty space on it is wasted space nobody chose. A reveal is opened by one
-// reader who asked a specific question; its job is to answer that question
-// completely and then get out of the way. Those are different jobs, and one
-// threshold serving both was an assumption nobody had examined. This one is set
-// low enough that only a genuinely empty panel trips it.
+// Every slide is on the path a reader has to walk, so a thin one costs them
+// something whether they wanted it or not, and the 85 % target is about that
+// cost. A reveal is opened only by the reader who asked for it, and its job is
+// to answer that one question and then get out of the way. Those are different
+// jobs, and one threshold serving both was an assumption nobody had examined.
+// This one is set low enough that only a genuinely empty panel trips it.
+// (An earlier version of this comment justified the difference by a slide being
+// "projected in front of a room". Nothing here is projected in front of a room;
+// that is the sibling project. The threshold was right, the reasoning was not.)
 const REVEAL_FILL = 60;
 
 // ---------------------------------------------------------------------------
@@ -1837,10 +1840,10 @@ function printReport(report, ctx, outPath, n) {
     }
   }
   if (ctx.reveals.length) {
-    w.write(`\n  reveals (a .bottomline strip opens these; they are not in the scroll path).\n` +
-      `  Judged loosely: a reveal answers one question on demand for one reader,\n` +
-      `  where a slide has to earn its projector space in front of a room. Only a\n` +
-      `  genuinely empty one (under ${REVEAL_FILL} %) is flagged.\n`);
+    w.write(`\n  reveals - a strip on a slide opens these, and paging never lands on them.\n` +
+      `  Judged loosely: a reveal answers one question for the reader who asked it,\n` +
+      `  where every slide has to be worth the space it takes from all of them.\n` +
+      `  Only a genuinely empty one (under ${REVEAL_FILL} %) is flagged.\n`);
     for (const r of ctx.reveals) {
       const flag = r.est.overflow > 104 ? '!' : r.est.row < REVEAL_FILL ? '~' : ' ';
       w.write(`   ${flag} ${String(Math.min(r.est.row, 100)).padStart(3)} %  ` +

@@ -739,7 +739,7 @@ An inline link that previews and jumps to another slide. Give the target `<secti
 
 ### Bottom-line + detail layer (the "reveal")
 
-A clickable strip that opens a full-slide panel which is **not in the scroll path**: the layer has no `.frame`, no page number and no nav dot, so paging through the deck never lands on it. That is the whole point – it lets a slide carry depth that would otherwise force an extra slide into the linear run for the one person in ten who wants it.
+A clickable strip that opens a full-slide panel which is **not in the scroll path**: the layer has no `.frame`, no page number and no nav dot, so paging through the deck never lands on it. That is the whole point – it lets a slide carry material a reader may want and most will not, without spending a slide of the main sequence on it.
 
 **Use when:** a claim needs its derivation, its caveat or its raw numbers available on demand – and would be worse for having them on screen by default.
 
