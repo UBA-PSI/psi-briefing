@@ -185,7 +185,7 @@ Fill the vertical space and keep density high; after building, verify no slide o
 Do **not** fix that by giving `.panel` / `.shots` / `.col` children a `flex:1` of their own. It scores well on any fill metric and looks worse: a bordered panel stretched to full height just frames the emptiness, and stretched images crop badly and can shove their text sibling off the slide. Fix it with content instead:
 
 - **more real content** on the slide (usually the source was over-compressed) – the best answer;
-- a closing **`.punch`** line, which has `margin-top:auto`, so it pins to the bottom, closes the band, and states the takeaway;
+- a closing **`.punch`** line, which lands at the bottom, closes the band, and states the takeaway. It is pushed down by the `flex: 1` on the `.cols` / `.flow` above it, not by a margin of its own – so after a `.kulissen` list or a `.doc` it follows the text instead, which is right: pinned under a short list it would *open* a dead band;
 - **bigger images** – a `.shots` grid on the narrow side of `cols--wide-left` renders postage stamps; prefer `cols--2`;
 - **merge two thin slides** into one dense one;
 - `cols--center` only as a last resort – it balances the whitespace rather than filling it.
@@ -737,11 +737,19 @@ An inline link that previews and jumps to another slide. Give the target `<secti
 <section class="frame" id="slide-chart"> … </section>
 ```
 
-### Bottom-line + detail layer
+### Bottom-line + detail layer (the "reveal")
 
-A clickable strip that opens a full-slide deep-dive overlay. Put the `.detail-layer` right after the `.bottomline` (or anywhere in the same `.slide`). Open by click/Enter/Space; close with the `.layer-close` button or Esc.
+A clickable strip that opens a full-slide panel which is **not in the scroll path**: the layer has no `.frame`, no page number and no nav dot, so paging through the deck never lands on it. That is the whole point — it lets a slide carry depth that would otherwise force an extra slide into the linear run for the one person in ten who wants it.
 
-**Use when:** offering optional detail without leaving the slide.
+**Use when:** a claim needs its derivation, its caveat or its raw numbers available on demand — and would be worse for having them on screen by default.
+
+A layer is a slide in every respect except reachability, so **build it like one**: an `.eyebrow`, an `h2`, `.cols` or a `.net`, a closing `.punch`. What you must not do is drop bare `<p>` elements in — they fall back to 16px and stop scaling with the frame. Wrap text in `.prose`.
+
+The `.detail-layer` should be the **next sibling** of its `.bottomline`. That is how the runtime pairs them, and it is the only unambiguous way when a slide carries more than one reveal. If they are separated, the *n*th strip takes the *n*th layer and the console says so; earlier versions silently opened the slide's first layer, so two strips on one slide both showed the same panel.
+
+While a layer is open the deck's own keyboard navigation stands down — otherwise an arrow key pages to the next slide *behind* the overlay. Tab is kept inside the panel, Esc closes it (an image zoomed from inside the layer closes first), and focus returns to the strip that opened it. The strip carries `role="button"`, `aria-controls` and `aria-expanded`; the layer gets `role="dialog"` and `aria-modal`.
+
+From Markdown, `::: detail` does all of this — see [`markdown.md`](markdown.md).
 
 ```html
 <div class="bottomline">
@@ -749,7 +757,7 @@ A clickable strip that opens a full-slide deep-dive overlay. Put the `.detail-la
   <span class="more">Details &rarr;</span>
 </div>
 <div class="detail-layer">
-  <button class="layer-close">Close &times;</button>
+  <button type="button" class="layer-close">Close &times;</button>
   <p class="eyebrow">Deep dive</p>
   <h2>Where the 1&nbsp;280 commits went</h2>
   <div class="net" style="margin-top:2cqh">
@@ -894,7 +902,7 @@ All wired up automatically by `browserslides.js` on load.
 
 - **Navigation:** `→` / `↓` / `PageDown` / `Space` go to the next slide; `←` / `↑` / `PageUp` go back; `Home` jumps to the first slide, `End` to the last. Keys are ignored while typing in an input/textarea. Navigation is smooth-scroll unless the user prefers reduced motion.
 - **Nav dots:** one dot per slide in the `.dots` rail; the active slide's dot is highlighted (tracked via `IntersectionObserver`). Click a dot to jump.
-- **Detail layers:** click, Enter, or Space on a `.bottomline` opens its `.detail-layer`; the `.layer-close` button or **Esc** closes any open layer. Focus moves to the close button on open.
+- **Detail layers:** click, Enter, or Space on a `.bottomline` opens its `.detail-layer`; the `.layer-close` button or **Esc** closes it. Focus moves into the panel on open and back to the strip on close, Tab stays inside the panel, and the deck's own arrow/Space navigation is suspended while a layer is open.
 - **Cross-reference previews:** hovering an `a.goto` on the desktop shows a live mini-clone of the target slide; clicking jumps. On touch devices the first tap previews and the second tap jumps. Scrolling dismisses a preview.
 - **Zoomable images:** clicking an `img.zoomable` opens a full-viewport lightbox; click it or press **Esc** to close.
 - **In-slide lightboxes:** a `.shot-link[data-shot]` opens the matching `.shot-layer` overlay; click the layer or press **Esc** to close.

@@ -208,6 +208,10 @@
          advanced the deck: that handler calls preventDefault, but preventDefault
          does not stop the event bubbling here. */
       if (ev.defaultPrevented) return;
+      /* An overlay is up: the keys belong to it, not to the deck. Without this,
+         ArrowRight scrolled the deck to the next slide BEHIND an open detail
+         layer, which stayed open on a slide you were no longer looking at. */
+      if (overlayOpen()) return;
       const cur = activeIndex();
       if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(ev.key) && cur < frames.length - 1) {
         ev.preventDefault(); frames[cur + 1].scrollIntoView({ behavior: smooth() });
@@ -218,24 +222,108 @@
     });
   }
 
-  /* Detail layers behind .bottomline strips */
+  /* True while anything is covering the slide. The deck's own keyboard handler
+     stands down for as long as this holds. */
+  function overlayOpen() {
+    return !!document.querySelector(".detail-layer.open, .shot-layer.open, .zoom-ov");
+  }
+
+  /* ======================================================================
+     DETAIL LAYERS — the "reveal" behind a .bottomline strip
+
+     A .detail-layer is a full-slide panel (position:absolute; inset:0) that is
+     NOT part of the scroll path: it has no frame, no page number and no nav
+     dot, so it cannot be reached by paging through the deck. That is the point.
+     Use it for the depth that would otherwise force a slide nobody needs to see
+     in the linear run - a derivation, a caveat, the numbers behind a claim.
+
+     One trigger opens one layer. The pairing is by DOM position: the layer is
+     the trigger's next sibling. If it is not, the nth trigger in the slide takes
+     the nth layer, and anything left ambiguous gets a console warning rather
+     than a silently wrong panel - the old code fell back to the slide's FIRST
+     layer, so on a slide with two reveals both buttons opened the same one.
+     ====================================================================== */
+  let layerUid = 0;
+
   function initDetailLayers() {
-    document.querySelectorAll(".bottomline").forEach((b) => {
-      b.setAttribute("role", "button");
-      b.tabIndex = 0;
-      b.addEventListener("click", () => {
+    document.querySelectorAll(".slide").forEach((slide) => {
+      const triggers = [...slide.querySelectorAll(".bottomline")];
+      const layers = [...slide.querySelectorAll(".detail-layer")];
+
+      triggers.forEach((b, i) => {
         const sib = b.nextElementSibling;
-        const layer = sib && sib.classList && sib.classList.contains("detail-layer") ? sib : b.closest(".slide").querySelector(".detail-layer");
-        if (layer) { layer.classList.add("open"); layer.querySelector(".layer-close")?.focus(); }
+        let layer = sib && sib.classList && sib.classList.contains("detail-layer") ? sib : layers[i];
+        if (!layer) {
+          console.warn("browserslides: .bottomline with no .detail-layer to open", b);
+          return;
+        }
+        if (layer !== sib) {
+          console.warn("browserslides: .detail-layer is not the next sibling of its " +
+            ".bottomline; paired by position instead. Put them next to each other.", b);
+        }
+        if (!layer.id) layer.id = `bs-layer-${++layerUid}`;
+        layer.setAttribute("role", "dialog");
+        layer.setAttribute("aria-modal", "true");
+        /* So the panel itself can take focus when it holds no close button. */
+        if (!layer.hasAttribute("tabindex")) layer.tabIndex = -1;
+        b.setAttribute("role", "button");
+        b.setAttribute("aria-controls", layer.id);
+        b.setAttribute("aria-expanded", "false");
+        b.tabIndex = 0;
+
+        const open = () => {
+          layer.classList.add("open");
+          b.setAttribute("aria-expanded", "true");
+          layerOpener.set(layer, b);
+          (layer.querySelector(".layer-close") || layer).focus();
+        };
+        b.addEventListener("click", open);
+        b.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); open(); }
+        });
       });
-      b.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); b.click(); } });
     });
+
     document.querySelectorAll(".layer-close").forEach((x) => {
-      x.addEventListener("click", () => x.closest(".detail-layer").classList.remove("open"));
+      x.addEventListener("click", () => closeLayer(x.closest(".detail-layer")));
     });
     document.addEventListener("keydown", (ev) => {
-      if (ev.key === "Escape") document.querySelectorAll(".detail-layer.open").forEach((l) => l.classList.remove("open"));
+      if (ev.key !== "Escape") return;
+      /* Escape closes the TOPMOST overlay only. An image zoomed from inside a
+         layer is above it, so that one goes first and the layer stays. */
+      if (document.querySelector(".zoom-ov")) return;
+      document.querySelectorAll(".detail-layer.open").forEach(closeLayer);
     });
+
+    /* Keep Tab inside an open layer. Without it, tabbing walks out of the panel
+       into the links of the slide underneath, which is invisible and confusing:
+       the focus ring disappears behind an opaque overlay. */
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Tab") return;
+      const layer = document.querySelector(".detail-layer.open");
+      if (!layer) return;
+      const stops = [...layer.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null);
+      if (!stops.length) { ev.preventDefault(); return; }
+      const first = stops[0], last = stops[stops.length - 1];
+      if (!layer.contains(document.activeElement)) { ev.preventDefault(); first.focus(); return; }
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    });
+  }
+
+  const FOCUSABLE = 'a[href], button, [tabindex]:not([tabindex="-1"]), input, select, textarea';
+  const layerOpener = new WeakMap();
+
+  function closeLayer(layer) {
+    if (!layer) return;
+    layer.classList.remove("open");
+    const opener = layerOpener.get(layer);
+    if (opener) {
+      opener.setAttribute("aria-expanded", "false");
+      /* Focus goes back where it came from, or the reader is dumped at the top
+         of the document with no idea which strip they just closed. */
+      opener.focus();
+    }
   }
 
   /* Cross-reference links: hover shows a mini preview, click jumps.

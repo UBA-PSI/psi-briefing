@@ -611,13 +611,19 @@ function planByShape(slide, ctx) {
     plan.layout = { kind: 'directive', dir: rest[0].block };
     return plan;
   }
-  // Directives that only ever produce a trailing line are pulled out of the
-  // layout so they do not become a column of their own.
-  const TRAILING = new Set(['note', 'source', 'punch', 'punch--accent', 'lede']);
+  // Directives that are chrome rather than content are pulled out of the layout
+  // so they do not become a column of their own. `detail` belongs here for a
+  // reason worth stating: a reveal is a strip at the bottom of the slide plus a
+  // hidden panel, so as a *group* it would have taken half the row - which on
+  // the example deck's chart slide silently demoted a full-width .chartbox to
+  // one column of two and dropped its row fill from 100 % to 59 %.
+  const TRAILING = new Set(['note', 'source', 'punch', 'punch--accent', 'lede', 'detail']);
+  plan.details = [];
   for (let i = rest.length - 1; i >= 0; i -= 1) {
     const g = rest[i];
     if (g.type === 'directive' && TRAILING.has(g.block.name)) {
-      if (g.block.name === 'note' || g.block.name === 'source') plan.note = plainText(g.block.blocks);
+      if (g.block.name === 'detail') plan.details.unshift(g.block);
+      else if (g.block.name === 'note' || g.block.name === 'source') plan.note = plainText(g.block.blocks);
       else if (g.block.name === 'lede') plan.lede = plan.lede || plainText(g.block.blocks);
       else plan.punch = plan.punch || plainText(g.block.blocks);
       rest.splice(i, 1);
@@ -987,6 +993,15 @@ function groupHeight(g, width, col = {}) {
     default: return contentHeight() * 0.4;
   }
 }
+
+// A reveal is held to a lower bar than a slide, and the reason is not laziness.
+// The 85 % target exists because a slide is projected in front of a room and
+// empty space on it is wasted space nobody chose. A reveal is opened by one
+// reader who asked a specific question; its job is to answer that question
+// completely and then get out of the way. Those are different jobs, and one
+// threshold serving both was an assumption nobody had examined. This one is set
+// low enough that only a genuinely empty panel trips it.
+const REVEAL_FILL = 60;
 
 // ---------------------------------------------------------------------------
 // 8. Corrections.
@@ -1363,13 +1378,49 @@ function renderDirective(d, ctx) {
       ctx.charts.push({ id, data, args: d.args });
       return `<div class="chartbox" id="${id}"></div>`;
     }
+    // A reveal: a clickable strip plus a full-slide panel that is NOT in the
+    // scroll path. The body goes through the same planner as a real slide, so a
+    // reveal can hold columns, a gallery, a chart, a closing band - whatever its
+    // shape implies. It used to be rendered with renderBlocks, which meant flat
+    // h3/p markup and, worse, bare <p> elements: those fall back to 16px and do
+    // not scale with the frame, the one trap the framework warns about loudest.
     case 'detail': {
-      const line = d.args.line ? String(d.args.line) : 'Details';
+      const line = d.args.line ? String(d.args.line) : (ctx.lang === 'en' ? 'Details' : 'Details');
+      const more = d.args.more ? String(d.args.more) : (ctx.lang === 'en' ? 'Details' : 'Mehr');
+      // A reveal inside a reveal has nowhere to go: the runtime opens one layer
+      // over the slide, not a layer over a layer. Drop it rather than emit
+      // markup that silently never opens.
+      const blocks = [...d.blocks].filter((b) => {
+        if (b.type === 'directive' && b.name === 'detail') {
+          ctx.warnings.push({ slide: `::: detail (${line})`, msg: 'a reveal cannot contain a reveal - dropped' });
+          return false;
+        }
+        return true;
+      });
+
+      // A leading `##` inside the fence is the reveal's own heading, set as an
+      // h2 like any slide's. Without this it fell through to an h3 in the body.
+      let heading = null;
+      if (blocks[0] && blocks[0].type === 'heading' && blocks[0].level <= 2) {
+        heading = blocks.shift().text;
+      }
+      const layerSlide = {
+        kind: 'content', heading,
+        attrs: { classes: [], eyebrow: d.args.eyebrow },
+        blocks,
+      };
+      const plan = planSlide(layerSlide, ctx);
+      plan.fixes = [];
+      // Corrections apply here too: a reveal can be overfull or thin like any
+      // other slide, and it is the slide nobody proof-reads.
+      const est = correct(layerSlide, plan, ctx);
+      ctx.reveals.push({ heading: heading || line, est, rule: plan.rule, fixes: plan.fixes });
+
       return `<div class="bottomline"><span>${inline(line, ctx)}</span>` +
-        `<span class="more">${ctx.lang === 'en' ? 'Details' : 'Mehr'} &rarr;</span></div>\n` +
-        `<div class="detail-layer">\n  <button class="layer-close">` +
+        `<span class="more">${inline(more, ctx)} &rarr;</span></div>\n` +
+        `<div class="detail-layer">\n  <button type="button" class="layer-close">` +
         `${ctx.lang === 'en' ? 'Close' : 'Schließen'} &times;</button>\n` +
-        `${indent(renderBlocks(d.blocks, ctx), 2)}\n</div>`;
+        `${indent(slideBody(layerSlide, plan, ctx), 2)}\n</div>`;
     }
     default: {
       // Unknown name -> a div with that class. Covers the rest of the catalog
@@ -1407,20 +1458,31 @@ function emitSlide(slide, plan, ctx) {
 
   if (slide.kind === 'title') inner = titleInner(slide, ctx);
   else if (slide.kind === 'divider') inner = dividerInner(slide, ctx);
-  else {
-    const parts = [];
-    if (slide.attrs.eyebrow) parts.push(`<p class="eyebrow">${inline(String(slide.attrs.eyebrow), ctx)}</p>`);
-    if (slide.heading) parts.push(`<h2>${inline(slide.heading, ctx)}</h2>`);
-    if (plan.lede) parts.push(`<p class="lede">${inline(plan.lede, ctx)}</p>`);
-    const body = renderLayout(plan.layout, ctx);
-    if (body) parts.push(body);
-    if (plan.note) parts.push(`<p class="gallery-note">${inline(plan.note, ctx)}</p>`);
-    if (plan.punch) parts.push(`<div class="punch${ctx.punchTone}">${inline(plan.punch, ctx)}</div>`);
-    inner = parts.join('\n');
-  }
+  else inner = slideBody(slide, plan, ctx);
 
   return `<section class="frame"${id}>\n  <div class="${cls.join(' ')}"${langAttr}><div class="slide-inner">\n` +
     `${indent(inner, 4)}\n${indent(foot, 4)}\n  </div></div>\n</section>`;
+}
+
+// The content sequence of a slide: eyebrow, heading, lede, body, note, band.
+// Factored out because a `::: detail` layer is a slide in every respect except
+// that it is not in the scroll path, and it should be built the same way -
+// otherwise a reveal gets flat h3/p markup while the slide it hangs off gets
+// columns and panels.
+function slideBody(slide, plan, ctx) {
+  const parts = [];
+  if (slide.attrs.eyebrow) parts.push(`<p class="eyebrow">${inline(String(slide.attrs.eyebrow), ctx)}</p>`);
+  if (slide.heading) parts.push(`<h2>${inline(slide.heading, ctx)}</h2>`);
+  if (plan.lede) parts.push(`<p class="lede">${inline(plan.lede, ctx)}</p>`);
+  const body = renderLayout(plan.layout, ctx);
+  if (body) parts.push(body);
+  if (plan.note) parts.push(`<p class="gallery-note">${inline(plan.note, ctx)}</p>`);
+  if (plan.punch) parts.push(`<div class="punch${ctx.punchTone}">${inline(plan.punch, ctx)}</div>`);
+  // Reveal strips go last: the band is the slide's last word, the strip is an
+  // affordance for the reader who wants more. Same order the hand-built decks
+  // use (there the strip always follows the caption).
+  for (const d of plan.details || []) parts.push(renderDirective(d, ctx));
+  return parts.join('\n');
 }
 
 function footer(slide, ctx) {
@@ -1539,6 +1601,9 @@ function main(argv) {
     punchTone: /accent/.test(String(meta.punch || '')) ? ' punch--accent' : '',
     dividers: slides.filter((s) => s.kind === 'divider').map((s) => s.heading),
     gotoTargets: new Set(), charts: [], usedClasses: new Set(),
+    // Reveals are slides too, and they are the ones nobody proof-reads, so the
+    // report lists them separately rather than not at all.
+    reveals: [],
     typoFixes: 0, strayQuotes: 0, fixCount: 0,
     fix: opts.fix, targetFill: Number(meta.fill) || 85,
     needsCodeStyle: false, needsTableStyle: false,
@@ -1694,6 +1759,18 @@ function printReport(report, ctx, outPath, n) {
       w.write(`  ${banded.length} slide(s) end in a band with a gap above it: ` +
         `${banded.map((r) => r.n).join(', ')}\n` +
         `  In a browser these will measure ~97 % ink fill. They are not full.\n`);
+    }
+  }
+  if (ctx.reveals.length) {
+    w.write(`\n  reveals (a .bottomline strip opens these; they are not in the scroll path).\n` +
+      `  Judged loosely: a reveal answers one question on demand for one reader,\n` +
+      `  where a slide has to earn its projector space in front of a room. Only a\n` +
+      `  genuinely empty one (under ${REVEAL_FILL} %) is flagged.\n`);
+    for (const r of ctx.reveals) {
+      const flag = r.est.overflow > 104 ? '!' : r.est.row < REVEAL_FILL ? '~' : ' ';
+      w.write(`   ${flag} ${String(Math.min(r.est.row, 100)).padStart(3)} %  ` +
+        `${(r.rule || '').padEnd(34)}${r.heading.replace(/<[^>]*>/g, '').slice(0, 40)}\n`);
+      for (const f of r.fixes) w.write(`       fix   ${f}\n`);
     }
   }
   if (ctx.typoFixes) w.write(`  typography: ${ctx.typoFixes} marks normalised\n`);

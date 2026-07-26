@@ -400,7 +400,15 @@ h2 {
 .tl time { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .tl .sub { display: block; font-size: calc(1.08cqw * var(--type-scale)); color: var(--muted); margin-top: 0.25cqh; line-height: 1.32; }
 
-/* Highlighted call-out strip */
+/* Highlighted call-out strip.
+   NOTE, because the docs used to say otherwise: .punch does NOT carry
+   margin-top:auto. It ends up at the bottom of the slide because the .cols or
+   .flow above it has flex:1 and eats the free space, pushing the band down. On
+   a slide whose body is a .kulissen list or a .doc there is no such sibling and
+   the band simply follows the text - which is the RIGHT behaviour: a band
+   pinned below a short list would open the dead band rather than close it, and
+   that is the fault the audit's deadBand check exists to find. The fixed
+   margin-top is therefore deliberate, not an oversight. */
 .punch { background: var(--highlight-soft); padding: 2.2cqh 2.2cqw; font-size: calc(1.5cqw * var(--type-scale)); line-height: 1.5; margin-top: 2.4cqh; border-radius: 0.5cqh; }
 .punch b { color: var(--highlight-ink-em); }
 /* Two tones for the closing band, same construction in both: a pale fill with

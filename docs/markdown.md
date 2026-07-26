@@ -178,8 +178,52 @@ Purpose-built ones, which read their body as a list:
 | `::: statement kicker="Act 2"` | one line, set large |
 | `::: quote by="**Emerson**, attributed"` | a full-bleed quote |
 | `::: punch`, `::: punch--accent`, `::: lede`, `::: note`, `::: source` | one line each |
-| `::: detail line="…"` | a clickable strip plus a deep-dive layer |
+| `::: detail line="…" more="…"` | a reveal: a clickable strip plus a full-slide layer that is not in the scroll path (see below) |
 | `::: html` | passed through untouched |
+
+### Reveals: `::: detail`
+
+A reveal is a slide the deck never pages to. A clickable strip sits on the
+visible slide; clicking it covers that slide with a full panel holding the
+depth — the derivation, the caveat, the numbers behind the claim. The panel has
+no page number and no nav dot, so running through the deck never lands on it.
+
+```markdown
+## Wie viel Aktivität steckt darin?
+Commit-Zeitstempel ergeben 162 bis 399 Stunden Aktivitätsfenster.
+
+::: detail line="**Wie geschätzt wird.** Zwei Verfahren, eine Spanne." more="Wie geschätzt wird"
+## Wie die Spanne entsteht
+
+### Untere Grenze
+Nur Sitzungen mit mindestens zwei Commits, Lücken über 90 Minuten geschnitten.
+
+### Obere Grenze
+Jede Sitzung wird bis zum nächsten Commit als aktiv gezählt.
+
+> Beide Verfahren sind Schätzungen. Keine Arbeitszeiterfassung.
+:::
+```
+
+`line` is the strip's own text — say what is behind it, not "click here".
+`more` is the call to action on the right (default *Mehr* / *Details*).
+`eyebrow` works as on a slide.
+
+**The body is planned exactly like a slide.** A leading `##` becomes the panel's
+`h2`; everything after it goes through the same shape inference, so the two
+`###` blocks above become two panel columns and the blockquote becomes the
+closing band. Reveals are corrected like slides and reported separately:
+
+```
+  reveals (a .bottomline strip opens these; they are not in the scroll path):
+   ~  31 %  2 cards -> two columns            Wie die Spanne entsteht
+       fix   short row (31 %) -> cols--center; balances the gap, does not fill it
+```
+
+They are listed on their own because they are the slides nobody proof-reads —
+an overfull reveal is invisible until someone clicks it in front of an audience.
+
+More than one reveal per slide is fine; each strip opens its own panel.
 
 An **unknown** directive name becomes `<div class="that-name">` with its body
 rendered inside, so any component in the catalog is reachable without teaching

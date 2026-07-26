@@ -78,6 +78,33 @@ Context, cadence, and the numbers behind the eleven weeks.
 - W11: 120
 :::
 
+::: detail line="**What counts as a commit here.** Merges excluded, generated files excluded." more="How this is counted"
+## How a commit is counted
+
+### What is in
+Commits on `main`, and on any branch that eventually reached `main` — a branch
+that was abandoned still cost the time it took, but it did not ship, so it is
+not in this number. One commit per author per push, which means a pair
+programming session shows up once rather than twice.
+
+Reverts count as commits. Undoing work is work, and a week with three reverts
+in it was a real week — flattening that would make week five look calmer than
+it was.
+
+### What is out
+Merge commits, because a merge is bookkeeping rather than a change. Anything
+touching only `dist/` or a lockfile, for the same reason. And the two history
+rewrites in week six, which would otherwise have shown up as 300 commits on a
+single afternoon.
+
+Together that is roughly 9 % of the raw count — enough to matter if you compare
+this chart against a number someone else counted differently, and the reason
+this panel exists at all rather than a footnote nobody reads.
+
+> Counted the other way — every commit object in the repository — the same
+> eleven weeks come to 1 407. Pick one definition and stay with it.
+:::
+
 > The lull in weeks four and five was the scope argument, not a holiday.
 
 # How it was built

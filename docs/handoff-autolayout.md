@@ -386,6 +386,72 @@ nothing about how many lines it holds. The real check in `SKILL.md` uses
 `Range.getClientRects()` line tops and reported none. If you re-implement a
 detector from memory to run it quickly, you are testing your memory.
 
+## 6d. Reveals: the slides no metric was looking at
+
+A `.detail-layer` is a full-slide panel outside the scroll path — the mechanism
+the retro decks used for optional depth. The markup and the runtime were both
+already here; what was missing was everything around them.
+
+**A reveal was not built like a slide, even though it is one.** From Markdown,
+`::: detail` rendered its body with `renderBlocks`: flat `h3`/`p`, no shape
+inference, and — worst — bare `<p>` elements, which fall back to 16 px and stop
+scaling with the frame. The framework's loudest documented trap, in the one place
+nobody looks. The body now goes through the same planner as a slide, so a reveal
+gets its `h2`, its columns, its closing band. The fix was mostly *factoring*: the
+sequence eyebrow → heading → lede → body → note → band is now one function used
+by both, which is why the two cannot drift apart again.
+
+**Every audit check walked straight past them.** `display: none` has no geometry,
+so an overfull reveal was invisible until someone clicked it in front of an
+audience. The new check opens each layer, measures, and restores it. Two things
+about that check are worth keeping:
+
+- Measure the deepest painted **descendant**, not the direct children. The
+  components inside are `flex: 1` / `1fr`, so their boxes never exceed the layer
+  however much text they hold — text overflows inside a `.net` cell while the
+  `.net` box reports a perfect fit. Children said 0 on a layer that was 10 px
+  over; descendants found it.
+- To ask "does this text scale?", **halve the container and look**. A cq-based
+  size follows it, a hard-coded px does not. The first version guessed from class
+  names instead (`<p>` with no `.prose` ancestor) and reported four false
+  positives on perfectly good `.net p` markup. Verified against a planted bare
+  `<p>`: one hit at 16 px unchanged, nine other elements clean.
+
+**A reveal is chrome, not a column.** Because `::: detail` was a group like any
+other, it took half the row on the example deck's chart slide — demoting a
+full-width `.chartbox` to one column of two and dropping the row from 100 % to
+59 %. It is now pulled out of the layout like `note` and `source`. The general
+shape: a directive that renders *around* the body must never be planned *as* the
+body, and the symptom is a fill number that moves when you add chrome.
+
+**One threshold was serving two different jobs.** The reveal came out at 78 % row
+fill and the report flagged it, so the first instinct was to add sentences until
+the number went up — which is exactly the behaviour §1 exists to forbid, applied
+to a doc example. The 85 % target exists because a slide is projected in front of
+a room and empty space on it is space nobody chose. A reveal is opened by one
+reader who asked one question; its job is to answer it and get out of the way.
+Different jobs, so reveals are now judged at 60 %. The lesson is not the number:
+it is that reaching for content to satisfy a metric is a signal to go and look at
+whether the metric applies.
+
+**Interaction bugs the reveal work surfaced.** An arrow key paged the deck
+*behind* an open layer, which then stayed open on a slide nobody was looking at —
+the deck's key handler now stands down while any overlay is up. Tab walked out of
+the panel into the invisible slide underneath. Focus never came back to the strip
+on close. And on a slide with two reveals, both strips opened the first layer,
+because the pairing fell back to `slide.querySelector('.detail-layer')`; the
+retro deck happened to be immune only because its markup interleaves them.
+
+**And a documentation claim that was simply false.** Both `SKILL.md` and the
+cookbook stated that `.punch` carries `margin-top: auto`. It does not, and never
+did: the band is pushed down by the `flex: 1` on the `.cols` above it. The first
+instinct was to add the missing `auto` and make the docs true — but that would be
+wrong. After a `.kulissen` list or a `.doc` there is no `flex: 1` sibling, and a
+band floated to the bottom of a short list *opens* a dead band rather than
+closing one, which is the fault `deadBand` exists to find. The framework was
+right and the prose was wrong, so the prose changed. Worth noticing how close
+that came to a regression justified by a comment.
+
 ## 7. If you change one thing, check these
 
 Run the audit in `SKILL.md` after any framework change, on **both**
@@ -393,6 +459,16 @@ Run the audit in `SKILL.md` after any framework change, on **both**
 deck matters: it is the documentation, and it silently drifted out of compliance
 with its own rules once already (six slides under the fill threshold, thirteen
 eyebrows on fourteen slides, an "announcing" label the skill explicitly bans).
+
+Run `tools/sync-assets.sh --check` too. Half of a framework change is invisible
+while a deck links a stale copy of it.
+
+And **open the reveals.** Nothing about them is on screen by default, so the eye
+misses them as reliably as the metrics did. `test-aufsicht/reveal.html` covers
+two on one slide, `reveal-overfull.html` is the deliberately overfull one the
+`revealOverflow` check is calibrated against, and `reveal-bad.html` holds the two
+mispaired-markup cases that must produce console warnings rather than a silently
+wrong panel.
 
 Then look at three or four slides. Every fault in this document that a metric
 missed was found by looking.

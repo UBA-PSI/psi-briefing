@@ -36,7 +36,7 @@ The default result of a first draft is slides whose content sits in the top half
 Fix it with content, in this order:
 
 1. **Add real content.** Thin slides usually mean the source was over-compressed. Go back and take more from it – the detail you cut, the image you skipped. This is almost always the right answer.
-2. **End the slide with a `.punch`.** It carries `margin-top:auto`, so it pins to the bottom and closes the dead band – *and* it forces you to state the slide's takeaway, which is good slidedoc practice anyway. The densest-reading slides in a well-built deck usually end this way.
+2. **End the slide with a `.punch`.** It lands at the bottom and closes the dead band – *and* it forces you to state the slide's takeaway, which is good slidedoc practice anyway. The densest-reading slides in a well-built deck usually end this way. Note the mechanism, because it has a condition: the band is pushed down by the `flex: 1` on the `.cols` / `.flow` above it, **not** by a `margin-top: auto` of its own. On a slide whose body is a `.kulissen` list or a `.doc` there is no such sibling, so the band follows the text instead of pinning – which is right, since a band floated below a short list would *open* a dead band rather than close one.
 3. **Give images more room.** A `.shots` grid inside the narrow side of `cols--wide-left` renders postage stamps. Use `cols--2`, or put the images on the wide side.
 4. **Merge two thin slides** into one dense one. Fewer, fuller slides beat more, emptier ones.
 5. **`cols--center`** only when the content is genuinely short and you have nothing honest to add. It *balances* whitespace rather than removing it – a last resort, not a fix.
@@ -229,7 +229,8 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
    Then run this audit in the page – it catches the three things eyeballing misses (dead space, overlap, overflow):
 
    ```js
-   const rep = { thin: [], overlap: [], overflow: [], deadBand: [] };
+   const rep = { thin: [], overlap: [], overflow: [], deadBand: [],
+                 revealOverflow: [], unscaledText: [] };
    document.querySelectorAll('section.frame').forEach((sec, i) => {
      const slide = sec.querySelector('.slide'), inner = sec.querySelector('.slide-inner');
      const foot = sec.querySelector('.pagefoot'), n = i + 1;
@@ -282,8 +283,59 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
        }
      }
    });
-   rep;   // want: thin/overlap/overflow/deadBand all empty
+
+   // Reveals (.detail-layer) are off the scroll path, so every check above walks
+   // straight past them: display:none has no geometry. They are also the slides
+   // nobody proof-reads - an overfull one is invisible until it is clicked in
+   // front of an audience. Open each in turn, measure, put it back.
+   [...document.querySelectorAll('.detail-layer')].forEach((layer, i) => {
+     const was = layer.classList.contains('open');
+     layer.classList.add('open');
+     const name = layer.id || `layer ${i + 1}`;
+     const end = layer.getBoundingClientRect().bottom
+               - parseFloat(getComputedStyle(layer).paddingBottom);
+     // Measure the deepest PAINTED DESCENDANT, not the direct children. The
+     // components inside are flex:1 / grid 1fr, so their own boxes never exceed
+     // the layer however much text they hold - text overflows inside a .net cell
+     // while the .net box reports a perfect fit. Checking children found 0 on a
+     // layer that was 10px over; checking descendants found it.
+     let deep = 0;
+     layer.querySelectorAll('*').forEach(el => {
+       if (el.classList.contains('layer-close')) return;
+       const r = el.getBoundingClientRect(); if (!r.height) return;
+       const c = getComputedStyle(el);
+       const paints = c.backgroundColor !== 'rgba(0, 0, 0, 0)' || c.borderTopWidth !== '0px'
+                   || el.tagName === 'IMG' || (!el.children.length && el.textContent.trim());
+       if (paints) deep = Math.max(deep, r.bottom);
+     });
+     if (deep > end + 2) rep.revealOverflow.push({ layer: name, over: Math.round(deep - end) });
+
+     // Does the text actually scale? Halve the container and look: a cq-based
+     // size follows it, a hard-coded px does not. This is the direct test, and
+     // it replaces guessing from class names - `.net p` and `.fstep p` carry no
+     // .prose ancestor and are perfectly fine, so a class-based filter reported
+     // four false positives on correct markup. Verified against a planted bare
+     // <p>: one hit, 16px unchanged, nine other elements clean.
+     const slide = layer.closest('.slide');
+     const probe = [...layer.querySelectorAll('p, li, h2, h3, span, td, figcaption')]
+       .filter(el => el.textContent.trim() && !el.classList.contains('layer-close'));
+     const before = probe.map(el => getComputedStyle(el).fontSize);
+     const w0 = slide.style.width;
+     slide.style.width = Math.round(slide.clientWidth * 0.5) + 'px';
+     const after = probe.map(el => getComputedStyle(el).fontSize);
+     slide.style.width = w0;
+     probe.forEach((el, k) => {
+       if (before[k] === after[k]) rep.unscaledText.push(
+         `${name}: ${el.tagName}${el.className ? '.' + el.className : ''} ${before[k]}`);
+     });
+
+     if (!was) layer.classList.remove('open');
+   });
+
+   rep;   // want: every list empty
    ```
+
+   That last probe is worth running over the **slides** too, not just the layers — swap `.detail-layer` for `.slide` and drop the open/close. A bare `<p>` is the framework's loudest trap: it falls back to 16px and stops tracking the frame, so it looks right on your screen and wrong on the projector.
 
    Aim for **≥85 % ink fill** on content slides; treat anything under that as a slide needing more content (see "Filling the frame"). Note that measuring alone is not enough – always *look* at a few slides too, because a stretched-but-empty box scores well and reads badly. Screenshot **individual slides** (`.slide` elements), not `fullPage`: scroll-snap makes full-page captures stitch duplicated frames.
 
@@ -432,9 +484,11 @@ Copy the matching block from `references/components.md`. Pick by intent:
 | Fanned photo stack (click to pin) | `.stack-stage` + `.stack-card.stack-p1…p4` |
 | Render a spec as a document | `.doc` + `.doc-head`, `.doc-body`, `.doc-sect` |
 | Plain list, denser | `.kulissen`, `.kulissen--dicht/--mittel/--rollen` |
-| Deep-dive behind a slide | `.bottomline` → `.detail-layer` + `.layer-close` (Esc closes) |
+| A reveal: depth off the scroll path | `.bottomline` → `.detail-layer` + `.layer-close`, as **next siblings** (Markdown: `::: detail`) |
 | Jump to another slide w/ preview | `<a class="goto" href="#slide-id">` (hover previews, click jumps) |
 | Zoom an image | add class `zoomable` to an `<img>` |
+
+**A reveal is a slide, so build it like one.** A `.detail-layer` is a full-slide panel outside the scroll path — no page number, no nav dot, unreachable by paging. Use it for depth that would otherwise force a slide into the linear run for the one reader in ten who wants it: a derivation, a caveat, the numbers behind a claim. Inside the layer, use the same components you would on a slide (`h2`, `.cols`, `.net`, a closing `.punch`) and never a bare `<p>` — those fall back to 16px and stop scaling. The layer must be the **next sibling** of its strip; on a slide with two reveals that is the only unambiguous pairing, and the runtime warns when it has to guess. The layer is also the slide nobody proof-reads, so check it for overflow explicitly — the audit only sees what is on screen.
 
 **Narrative / talk components** (for argument-driven talks – questions, reveals, a running thesis, cited studies):
 
