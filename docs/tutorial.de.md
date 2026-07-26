@@ -1,6 +1,6 @@
 # Bau dein erstes Deck in 15 Minuten
 
-*browserslides – ein Framework ohne Abhängigkeiten für in sich geschlossene 16:9-Foliendecks als HTML. [MIT-lizenziert](https://opensource.org/license/mit) (Fonts ausgenommen).*
+*psi-briefing – ein Framework ohne Abhängigkeiten für in sich geschlossene 16:9-Foliendecks als HTML. [MIT-lizenziert](https://opensource.org/license/mit) (Fonts ausgenommen).*
 
 Diese Anleitung bringt dich von einer leeren Datei zu einer echten Präsentation: eine Titelfolie, eine Inhaltsfolie mit lebendigen Komponenten und ein Balkendiagramm, das direkt im Browser gezeichnet wird. Am Ende weißt du genug, um dein eigenes Deck zu bauen und weiterzugeben.
 
@@ -32,7 +32,7 @@ Leg eine Datei `mein-deck.html` neben den Ordnern `framework/` und `themes/` an 
 
 <!-- 1) das Framework, dann 2) ein Theme. Die Reihenfolge zählt: Das Theme
      überschreibt nur Tokens, muss also an zweiter Stelle stehen. -->
-<link rel="stylesheet" href="framework/browserslides.css">
+<link rel="stylesheet" href="framework/briefing.css">
 <link rel="stylesheet" href="themes/bamberg.css">
 </head>
 <body>
@@ -41,7 +41,7 @@ Leg eine Datei `mein-deck.html` neben den Ordnern `framework/` und `themes/` an 
 <section class="frame">
   <div class="slide"><div class="slide-inner">
     <p class="eyebrow">Mein erstes Deck</p>
-    <h2>Hallo, browserslides</h2>
+    <h2>Hallo, psi-briefing</h2>
     <div class="pagefoot"><span>Mein Deck</span><span class="pagenum"></span></div>
   </div></div>
 </section>
@@ -50,7 +50,7 @@ Leg eine Datei `mein-deck.html` neben den Ordnern `framework/` und `themes/` an 
 <nav class="dots" aria-label="Folien-Navigation"></nav>
 <div class="hint">↓ scrollen · → weiter · Taste drücken</div>
 
-<script src="framework/browserslides.js"></script>
+<script src="framework/briefing.js"></script>
 </body>
 </html>
 ```
@@ -84,7 +84,7 @@ Gib dem Deck einen Auftakt. Eine Titelfolie ist eine normale Folie mit der zusä
   <div class="slide slide--title"><div class="slide-inner">
     <p class="eyebrow">Retrospektive · 2026</p>
     <h1>Ein Portal in elf Wochen live</h1>
-    <p class="title-sub">Ein durchgespieltes Beispiel mit browserslides</p>
+    <p class="title-sub">Ein durchgespieltes Beispiel mit psi-briefing</p>
     <div class="title-strip">
       <div><b>11</b><span>Wochen</span></div>
       <div><b>1&nbsp;280</b><span>Commits</span></div>
@@ -172,11 +172,11 @@ Zuerst der Container. Er braucht eine `id`, damit das Skript ihn findet:
 </section>
 ```
 
-Dann, *nach* `<script src="framework/browserslides.js"></script>`, dein eigener Skriptblock:
+Dann, *nach* `<script src="framework/briefing.js"></script>`, dein eigener Skriptblock:
 
 ```html
 <script>
-  Browserslides.barChart('#chart-wochen', {
+  Briefing.barChart('#chart-wochen', {
     ariaLabel: 'Commits pro Woche über elf Wochen, mit drei Meilensteinen',
     max: 220,
     gridlines: [0, 55, 110, 165, 220],
@@ -220,7 +220,7 @@ Ein **Theme ist nichts als ein `:root { … }`-Block, der Design-Tokens übersch
 **Probier sofort einen anderen Look.** Tausch den Theme-`<link>`:
 
 ```html
-<link rel="stylesheet" href="framework/browserslides.css">
+<link rel="stylesheet" href="framework/briefing.css">
 <link rel="stylesheet" href="themes/midnight.css">   <!-- war: themes/bamberg.css -->
 ```
 
@@ -258,8 +258,8 @@ Während du baust, sind drei verlinkte Dateien praktisch. Um das Deck *jemandem 
 
 Das Rezept:
 
-1. **CSS einbetten** – füg `browserslides.css` und dein Theme in einen `<style>`-Block im `<head>` ein und ersetz damit die beiden `<link>`s.
-2. **JS einbetten** – füg `browserslides.js` in einen `<script>`-Block ein und ersetz damit `<script src=…>`.
+1. **CSS einbetten** – füg `briefing.css` und dein Theme in einen `<style>`-Block im `<head>` ein und ersetz damit die beiden `<link>`s.
+2. **JS einbetten** – füg `briefing.js` in einen `<script>`-Block ein und ersetz damit `<script src=…>`.
 3. **Schriften und Bilder als base64 einbetten** – statt eine `.woff2` oder eine `.png` zu verlinken, kodierst du sie und legst sie als `data:`-URI direkt ins CSS/HTML.
 
 Machst du das, hat die Datei null externe Verweise: Sie geht aus `file://` auf, vom Stick, von überall, für immer, ohne Netz.

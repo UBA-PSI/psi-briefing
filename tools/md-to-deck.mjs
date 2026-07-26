@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// md-to-deck.mjs — turn a Markdown document into a browserslides deck.
+// md-to-deck.mjs — turn a Markdown document into a psi-briefing deck.
 //
-// Part of the browserslides toolchain (MIT - see LICENSE). Dependency-free: Node built-ins
+// Part of the psi-briefing toolchain (MIT - see LICENSE). Dependency-free: Node built-ins
 // only (fs, path). Requires Node 18+ (ESM).
 //
 // WHY THIS EXISTS
@@ -9,7 +9,7 @@
 //   catalog and getting the markup right. This tool infers the component from
 //   the *shape* of the content instead: three equal-ranked ### blocks become a
 //   three-column panel row, four become a .net grid, a blockquote becomes the
-//   closing .punch band. You write a document; you get a slidedoc.
+//   closing .punch band. You write a document; you get a briefing.
 //
 //   The inference happens before anything is rendered, which is deliberate.
 //   docs/handoff-autolayout.md records that layout chosen by optimising a fill
@@ -23,14 +23,14 @@
 //   node tools/md-to-deck.mjs deck.md [-o deck.html] [--no-fix] [--quiet]
 //   node tools/md-to-deck.mjs --help
 //
-// The output is ordinary browserslides HTML, meant to be readable and
+// The output is ordinary psi-briefing HTML, meant to be readable and
 // hand-editable afterwards. Run tools/build-deck.sh on it to get a single
 // self-contained file.
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 
-const HELP = `md-to-deck.mjs — Markdown (plus HTML where you need it) -> a browserslides deck
+const HELP = `md-to-deck.mjs — Markdown (plus HTML where you need it) -> a psi-briefing deck
 
 USAGE
   node tools/md-to-deck.mjs <input.md> [-o <output.html>] [options]
@@ -98,7 +98,7 @@ FRONTMATTER KEYS
   hyphenate  true|false (default false). Hyphenates running text using the
              browser's dictionary for the deck's lang. Worth turning on for
              German in narrow columns; leave off for wide measures.
-  assets (dir holding browserslides.css/js, default framework/ + themes/),
+  assets (dir holding briefing.css/js, default framework/ + themes/),
   css / js (explicit paths, override assets+theme), strip (title-slide
   numbers, "17: Schritte am Prüfungstag"), takeaway, typescale, hint,
   rotatehint (true|false), fill (target row fill in %, default 85),
@@ -118,7 +118,7 @@ TYPOGRAPHY
 `;
 
 // ---------------------------------------------------------------------------
-// Geometry. Every number here is read off framework/browserslides.css; the
+// Geometry. Every number here is read off framework/briefing.css; the
 // comment names the rule it comes from. The estimator is only as honest as
 // these, so keep them in sync if the CSS changes.
 // ---------------------------------------------------------------------------
@@ -877,7 +877,7 @@ function selfCentring(layout) {
 }
 
 // Components whose height is the space they are given, not the text they hold.
-// Verified against framework/browserslides.css rather than assumed, because
+// Verified against framework/briefing.css rather than assumed, because
 // getting this list wrong in the optimistic direction is the dangerous
 // mistake - it makes the estimator under-report thin slides:
 //   .facts / .shots / .net  flex:1 + grid-auto-rows:1fr  -> fill
@@ -1446,7 +1446,7 @@ function emitSlide(slide, plan, ctx) {
   // does not hyphenate, or off for the one slide whose short labels look wrong
   // broken. `{hyphenate}` / `{hyphenate=off}`.
   if (slide.attrs.hyphenate !== undefined) {
-    cls.push(truthy(slide.attrs.hyphenate) ? 'bs-hyphens' : 'bs-nohyphens');
+    cls.push(truthy(slide.attrs.hyphenate) ? 'bf-hyphens' : 'bf-nohyphens');
   }
 
   // A slide quoting another language needs its own lang, or the browser
@@ -1660,9 +1660,9 @@ function document(slides, ctx) {
   const assets = m.assets ? String(m.assets).replace(/\/?$/, '/') : null;
   const theme = m.theme ? String(m.theme) : 'bamberg';
   const css = m.css ? (Array.isArray(m.css) ? m.css : [m.css])
-    : assets ? [`${assets}browserslides.css`, `${assets}${theme}.css`]
-    : ['framework/browserslides.css', `themes/${theme}.css`];
-  const js = m.js ? String(m.js) : assets ? `${assets}browserslides.js` : 'framework/browserslides.js';
+    : assets ? [`${assets}briefing.css`, `${assets}${theme}.css`]
+    : ['framework/briefing.css', `themes/${theme}.css`];
+  const js = m.js ? String(m.js) : assets ? `${assets}briefing.js` : 'framework/briefing.js';
 
   const extra = [];
   if (m.typescale) extra.push(`  :root { --type-scale: ${Number(m.typescale)}; }`);
@@ -1691,7 +1691,7 @@ function document(slides, ctx) {
     // literal "</script" before any JavaScript is read, so a chart label
     // containing one ends the block early and dumps the rest as text. Escaping
     // "<" as < keeps the JSON valid and the string identical.
-    return `  Browserslides.barChart('#${c.id}', ${JSON.stringify(cfg).replace(/</g, '\\u003c')});`;
+    return `  Briefing.barChart('#${c.id}', ${JSON.stringify(cfg).replace(/</g, '\\u003c')});`;
   });
 
   const hint = ctx.meta.hint ?? (ctx.lang === 'en' ? '↓ scroll · → next' : '↓ scrollen · → weiter');
@@ -1714,7 +1714,7 @@ function document(slides, ctx) {
      converter overwrites this file, so keep the .md as the source of truth. -->
 ${css.map((h) => `<link rel="stylesheet" href="${h}">`).join('\n')}
 ${extra.length ? `<style>\n${extra.join('\n')}\n</style>\n` : ''}</head>
-<body${ctx.hyphens ? ' class="bs-hyphens"' : ''}>
+<body${ctx.hyphens ? ' class="bf-hyphens"' : ''}>
 
 ${slides.join('\n\n')}
 

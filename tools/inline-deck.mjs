@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // inline-deck.mjs — fold a linked slide deck into ONE self-contained HTML file.
 //
-// Part of the browserslides toolchain (MIT - see LICENSE). Dependency-free: uses only
+// Part of the psi-briefing toolchain (MIT - see LICENSE). Dependency-free: uses only
 // Node.js built-ins (fs, path, url). Requires Node 18+ (ESM).
 //
 // What it does, for a deck that LINKS to its assets during development:

@@ -1,0 +1,127 @@
+# CI for psi-briefing.
+#
+# Part of the psi-briefing toolchain (MIT - see LICENSE).
+#
+# Every check below stands for a fault that actually cost this project time.
+# Nothing here is defensive decoration; if a step looks cheap, that is because
+# the fault it catches was cheap to catch and expensive to miss.
+#
+# The framework has no npm dependencies and there is no package.json, so there
+# is deliberately no install step: `npm ci` would fail, and adding a lockfile
+# just to satisfy a CI convention would contradict the one property the project
+# is built on.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  toolchain:
+    name: Deck toolchain
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 20 rather than "latest": the tools state node 18+ as their floor, and a
+      # pinned LTS keeps a runner-side node upgrade from being indistinguishable
+      # from a real regression. No cache: there is nothing to install.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # The repository keeps duplicate copies of framework/briefing.{css,js},
+      # themes/*.css and docs/cookbook.md so that skills/briefing/ is
+      # self-contained. Copies drift silently, and the drift is not a cosmetic
+      # problem: a deck that links a stale copy shows the OLD behaviour, so you
+      # end up debugging the change instead of the copy. That cost two rounds of
+      # debugging while .cols--figure was being added. This step is first because
+      # a stale copy invalidates the reasoning behind every check after it.
+      #
+      # test-aufsicht/ is gitignored and therefore absent here; the script
+      # already treats a missing copy as "nothing to compare", not as drift.
+      - name: Duplicated copies are in step with their originals
+        run: tools/sync-assets.sh --check
+
+      # md-to-deck.mjs writes its report to stderr and only exits non-zero on
+      # hard errors, so "exit 0" alone does not prove it produced a deck. The
+      # section count is the cheapest assertion that it emitted slides rather
+      # than a well-formed empty page.
+      - name: Markdown converter still produces a deck
+        run: |
+          node tools/md-to-deck.mjs examples/example-deck.md \
+            -o examples/example-deck-md.html
+          slides="$(grep -c '<section class="frame"' examples/example-deck-md.html)"
+          echo "converted deck has $slides slide(s)"
+          if [ "$slides" -lt 2 ]; then
+            echo "md-to-deck exited 0 but emitted almost no slides" >&2
+            exit 1
+          fi
+
+      # The central promise is "one file, no network". build-deck.sh ends in a
+      # verify step that asserts nothing external is left, and that verify step
+      # was silently broken for months: it blanked whole <script> elements
+      # instead of just their content, which destroyed the src attribute it was
+      # supposed to inspect, so a deck loading a remote script passed. Asserting
+      # exit 0 here is what keeps that from happening unnoticed again.
+      #
+      # Exit codes: 0 built and verified, 1 usage/input error, 2 built but still
+      # depends on something external. Only 0 is acceptable.
+      #
+      # A bare runner has neither cwebp nor magick, so stage 1 warns and skips
+      # the image re-encoding. That is a size optimisation, not a correctness
+      # step, and the script is explicit that it still produces a valid file -
+      # so the missing encoder must not be treated as a failure.
+      - name: Hand-built example deck builds self-contained
+        run: tools/build-deck.sh examples/example-deck.html -o build/example-deck.html
+
+      # Run the pipeline on the converted deck too, not only on the hand-built
+      # one: the converter emits its own markup, and a change there can produce
+      # a deck that renders but no longer inlines cleanly. Both paths into the
+      # pipeline have to stay buildable.
+      - name: Converted deck builds self-contained
+        run: tools/build-deck.sh examples/example-deck-md.html -o build/example-deck-md.html
+
+  # ---------------------------------------------------------------------------
+  # Separate job on purpose. A failing step aborts the rest of its job, and the
+  # naming sweep must not be able to hide a broken build (or the reverse).
+  naming:
+    name: Old name does not creep back
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The project was renamed browserslides -> psi-briefing for its first
+      # public release. Renames leak back in through copy-pasted snippets,
+      # generated files that were regenerated from an old template, and the
+      # duplicated skill assets above. This grep is the whole guard.
+      #
+      # window.Browserslides was the old runtime global and bs-hyphens /
+      # bs-nohyphens / bs-hyphenate / bs-equalised the old class prefix; both
+      # are already gone, so any hit is a regression rather than leftover work.
+      #
+      # One path is excluded, and only one: CHANGELOG.md has to name the old
+      # spelling, because its whole job is to tell a reader who knew the project
+      # as "browserslides" that this is the same thing. A migration note would
+      # earn the same exemption. Nothing else does - docs/handoff-autolayout.md,
+      # for instance, is NOT excluded: it mentions the framework by name in
+      # ordinary prose, which is exactly what should have been renamed.
+      - name: No tracked file mentions the old name
+        run: |
+          if git grep -nE 'browserslides|window\.Browserslides|bs-hyphens|bs-nohyphens|bs-hyphenate|bs-equalised' \
+               -- ':!CHANGELOG.md'; then
+            echo >&2
+            echo "The lines above still carry the pre-rename name." >&2
+            echo "Rename them to psi-briefing / briefing before merging." >&2
+            exit 1
+          fi
+          echo "no occurrences of the old name"

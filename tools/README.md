@@ -1,4 +1,4 @@
-# browserslides tools
+# psi-briefing tools
 
 Small, dependency-free scripts (Node.js 18+, ESM, built-ins only — the one
 exception is the WebP encode step, which shells out to `cwebp` or `magick`).
@@ -15,9 +15,9 @@ exception is the WebP encode step, which shells out to `cwebp` or `magick`).
 The development decks in `examples/` deliberately **link** to their assets:
 
 ```html
-<link rel="stylesheet" href="../framework/browserslides.css">
+<link rel="stylesheet" href="../framework/briefing.css">
 <link rel="stylesheet" href="../themes/bamberg.css">
-<script src="../framework/browserslides.js"></script>
+<script src="../framework/briefing.js"></script>
 ```
 
 That is convenient while you edit, but it needs a folder of files and a server.
@@ -29,7 +29,7 @@ embedded. These tools do that.
 1. **Write** the deck — as Markdown through `md-to-deck.mjs`, or by hand from
    the catalog in `docs/cookbook.md`.
 2. **Look at it** over `python3 -m http.server`, and run the audit from
-   `skills/browserslides/SKILL.md`.
+   `skills/briefing/SKILL.md`.
 3. *(once per theme)* **Embed fonts**: run `embed-fonts.mjs` and paste its
    output into your theme, so the fonts travel with the deck.
 4. **Ship one file**: `tools/build-deck.sh deck.html`. That runs the image and
@@ -83,9 +83,9 @@ warns, skips that step, and still produces a valid file.
 ## `sync-assets.sh`
 
 `framework/` and `themes/` are the originals, but two directories hold copies —
-`skills/browserslides/references/assets/` so the skill is self-contained, and
+`skills/briefing/references/assets/` so the skill is self-contained, and
 `test-aufsicht/assets/` so the local test decks link without a path prefix.
-`docs/cookbook.md` and `skills/browserslides/references/components.md` are the
+`docs/cookbook.md` and `skills/briefing/references/components.md` are the
 same arrangement for the catalog.
 
 ```bash
@@ -181,7 +181,7 @@ stderr and the original tag is kept, so the run never fails on a missing asset.
 Document order of styles and scripts is preserved. A one-line summary
 (bytes in → bytes out) is printed to stderr.
 
-Because the browserslides framework CSS/JS is already dependency-free, an
+Because psi-briefing's CSS and runtime is already dependency-free, an
 inlined example deck is a genuinely standalone file: no server, no build, works
 from `file://` and offline.
 

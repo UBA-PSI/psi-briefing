@@ -1,6 +1,6 @@
-# browserslides — Claude skill
+# psi-briefing — Claude skill
 
-Packages the [browserslides](../../README.md) framework as a skill so Claude Code (or any Claude Agent SDK / Claude.ai setup that loads skills) can author self-contained HTML slide decks for you.
+Packages the [psi-briefing](../../README.md) framework as a skill so Claude Code (or any Claude Agent SDK / Claude.ai setup that loads skills) can author self-contained HTML slide decks for you.
 
 ## What it does
 
@@ -16,35 +16,35 @@ Describe a talk — an outline, a set of notes, a retrospective — and Claude w
 
 **Claude Code (personal):**
 ```bash
-cp -R skills/browserslides ~/.claude/skills/browserslides
+cp -R skills/briefing ~/.claude/skills/briefing
 ```
 
 **Claude Code (per project):**
 ```bash
 mkdir -p .claude/skills
-cp -R skills/browserslides .claude/skills/browserslides
+cp -R skills/briefing .claude/skills/briefing
 ```
 
-**Claude Agent SDK:** point your skills directory at `skills/`, or copy `browserslides/` into the skills path your agent loads.
+**Claude Agent SDK:** point your skills directory at `skills/`, or copy `briefing/` into the skills path your agent loads.
 
-Then start (or restart) your session and ask, e.g. *"build me a browserslides deck for my project retrospective."* The skill triggers on requests to create slide decks / presentations / talks as HTML.
+Then start (or restart) your session and ask, e.g. *"build me a psi-briefing deck for my project retrospective."* The skill triggers on requests to create slide decks / presentations / talks as HTML.
 
 ## What's inside
 
 ```
-browserslides/
+briefing/
 ├── SKILL.md                    # the skill instructions Claude reads
 ├── README.md                   # this file
 └── references/
     ├── starter.html            # minimal working deck to copy
     ├── components.md           # full component catalog (mirror of docs/cookbook.md)
     └── assets/
-        ├── browserslides.css   # framework core
-        ├── browserslides.js    # runtime
+        ├── briefing.css   # framework core
+        ├── briefing.js    # runtime
         ├── bamberg.css         # blue/yellow theme
         └── midnight.css        # dark theme
 ```
 
-Keep `references/assets/` in sync with the framework if you update it (`cp framework/* themes/* skills/browserslides/references/assets/`).
+Keep `references/assets/` in sync with the framework if you update it (`cp framework/* themes/* skills/briefing/references/assets/`).
 
 Licensed **MIT**, like the rest of the project (fonts excepted — see the root LICENSE).

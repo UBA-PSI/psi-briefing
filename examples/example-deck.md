@@ -1,12 +1,12 @@
 ---
 title: "Project Aurora: shipping a portal in eleven weeks"
-subtitle: A worked example of writing a browserslides deck in Markdown
+subtitle: A worked example of writing a psi-briefing deck in Markdown
 eyebrow: Retrospective · Example deck
 footer: Project Aurora · example deck
 lang: en
 theme: bamberg
-css: [../framework/browserslides.css, ../themes/bamberg.css]
-js: ../framework/browserslides.js
+css: [../framework/briefing.css, ../themes/bamberg.css]
+js: ../framework/briefing.js
 strip:
   - "11: Weeks"
   - "1 280: Commits"

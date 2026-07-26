@@ -1,7 +1,7 @@
 # Handoff: what laying out a real deck taught us, and what auto-layout has to survive
 
 Written after rebuilding a real 17-step procedure (the psi-exam invigilation
-document, 23 slides, 20 photographs) as a browserslides deck. Everything below
+document, 23 slides, 20 photographs) as a psi-briefing deck. Everything below
 came out of that build. Nothing here is speculation about what might go wrong;
 each item is a fault that actually occurred, with the measurement that found it.
 

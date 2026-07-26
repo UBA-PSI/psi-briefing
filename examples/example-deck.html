@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Project Aurora – a browserslides example deck</title>
+<title>Project Aurora – a psi-briefing example deck</title>
 
 <!-- 1) the framework, 2) a theme (only token overrides). Swap the theme line
      to themes/midnight.css to see the same deck go dark. For distribution you
      would inline these three files into the HTML to get one self-contained
      document – see docs/tutorial.en.md. -->
-<link rel="stylesheet" href="../framework/browserslides.css">
+<link rel="stylesheet" href="../framework/briefing.css">
 <link rel="stylesheet" href="../themes/bamberg.css">
 
 <style>
@@ -35,7 +35,7 @@
     <div class="title-grid">
       <div class="title-left">
         <h1>Project&nbsp;Aurora: shipping a portal in eleven weeks</h1>
-        <p class="title-sub">A worked example of the browserslides framework</p>
+        <p class="title-sub">A worked example of the psi-briefing framework</p>
         <div class="title-strip">
           <div><b>11</b><span>Weeks</span></div>
           <div><b>1&nbsp;280</b><span>Commits</span></div>
@@ -54,7 +54,7 @@
         <p class="takeaway-note">Everything on these slides is placeholder content.</p>
       </div>
     </div>
-    <div class="pagefoot"><span>Project Aurora · browserslides example</span><span class="pagenum"></span></div>
+    <div class="pagefoot"><span>Project Aurora · psi-briefing example</span><span class="pagenum"></span></div>
   </div></div>
 </section>
 
@@ -298,7 +298,7 @@
       <div><b>0</b><span>Dependencies</span></div>
       <div><b>16:9</b><span>Any screen</span></div>
     </div>
-    <div class="pagefoot"><span>browserslides · MIT</span><span class="pagenum"></span></div>
+    <div class="pagefoot"><span>psi-briefing · MIT</span><span class="pagenum"></span></div>
   </div></div>
 </section>
 
@@ -307,11 +307,11 @@
 <div class="hint">↓ scroll · → next · press a key</div>
 <div id="rotate-hint"><div class="rh-icon">📱</div><h2>Turn your phone</h2><p>This deck is designed for landscape. Rotate your device, or tap to dismiss.</p><button class="rh-btn">Show anyway</button></div>
 
-<script src="../framework/browserslides.js"></script>
+<script src="../framework/briefing.js"></script>
 <script>
   /* Build the "commits per week" chart declaratively. Colours come from the
      theme tokens automatically; pass --token names to override per bar. */
-  Browserslides.barChart('#chart-weeks', {
+  Briefing.barChart('#chart-weeks', {
     ariaLabel: 'Commits per week for the eleven-week project, with three milestones',
     max: 220,
     gridlines: [0, 55, 110, 165, 220],

@@ -1,0 +1,83 @@
+# Publishes the example deck to GitHub Pages as a live demo.
+#
+# The single-file demo is rebuilt from examples/example-deck.md rather than
+# copied from a tracked HTML output, so it can never be stale relative to the
+# source. That also makes this job a de-facto build check: a change to the
+# example, to md-to-deck.mjs, to the inliner, or to a stylesheet that breaks
+# the pipeline fails here. build-deck.sh's own verify step exits non-zero if
+# anything external survives inlining, so "no network needed" is asserted on
+# every push, not just promised in the README.
+#
+# There are no runtime or build dependencies and no lockfile, so there is no
+# install step: `npm ci` would fail, and a cache would have nothing to cache.
+# package.json exists only for metadata and script aliases. Node is needed
+# solely to run tools/.
+#
+# Requires Settings -> Pages -> Source: "GitHub Actions" to be enabled once.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel a deploy midway; queue instead.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Markdown -> linked deck. The output is gitignored on purpose: the .md
+      # is the source of truth, this file is a build product.
+      - name: Convert the example Markdown to a deck
+        run: node tools/md-to-deck.mjs examples/example-deck.md -o examples/example-deck-md.html
+
+      # Linked deck -> one self-contained file, then verified. The image step
+      # needs cwebp or magick and is skipped gracefully when neither is on the
+      # runner; the example carries no bitmaps, so nothing is lost.
+      - name: Build the single-file demo
+        run: |
+          mkdir -p _site
+          tools/build-deck.sh examples/example-deck-md.html -o _site/example-deck.html
+
+      # The hand-built deck ships too. It is hand-maintained source, not build
+      # output, so copying it cannot go stale - but it *links* its assets
+      # (../framework/, ../themes/), so it has to keep its directory depth and
+      # the two asset directories have to come along. That is ~110 kB for a
+      # second demo that shows the linked authoring mode next to the shareable
+      # artefact, and it fails loudly here if a referenced asset ever moves.
+      - name: Assemble the site
+        run: |
+          mkdir -p _site/examples _site/framework _site/themes
+          cp docs/site/index.html _site/index.html
+          cp examples/example-deck.html _site/examples/
+          cp framework/briefing.css framework/briefing.js _site/framework/
+          cp themes/bamberg.css themes/midnight.css _site/themes/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

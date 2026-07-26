@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>psi-briefing — briefings you can read without a meeting</title>
+<meta name="description" content="A dependency-free framework for text-dense 16:9 slides that live in a single self-contained HTML file.">
+<!-- Favicon as a data URI, so the page really makes zero requests: a 16:9 frame
+     in the theme's accent blue with the highlight band along the bottom. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300457D'/%3E%3Crect x='5' y='7' width='22' height='18' fill='%23ffffff'/%3E%3Crect x='8' y='11' width='16' height='2' fill='%2300457D'/%3E%3Crect x='8' y='15' width='11' height='2' fill='%236690B1'/%3E%3Crect x='8' y='20' width='16' height='3' fill='%23FFD300'/%3E%3C/svg%3E">
+<!--
+  This page has no external requests of any kind: no CDN, no web fonts, no
+  analytics, no images. That is the whole thesis of the framework it advertises,
+  so the landing page had better hold to it too. Palette and type stack are the
+  real tokens from themes/bamberg.css.
+-->
+<style>
+  :root {
+    /* themes/bamberg.css, verbatim */
+    --accent:      #00457D;
+    --accent-80:   #336A97;
+    --accent-60:   #6690B1;
+    --accent-20:   #CCDAE5;
+    --highlight:      #FFD300;
+    --highlight-soft: #FFF6CC;
+    --paper:      #ffffff;
+    --ink:        #1a1a1a;
+    --ink-soft:   #4a4a48;
+    --muted:      #878783;
+    --muted-soft: #E7E7E6;
+    --rule:       #CFCFCE;
+    --stage:      #c3d1dd;
+    --stage-ink:  #33506b;
+
+    /* Copse is the theme's display face; on the web page we take its declared
+       fallback rather than shipping a font file. */
+    --font-display: Georgia, "Times New Roman", serif;
+    --font-body:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono:    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --accent:      #7FB0D6;
+      --accent-80:   #6690B1;
+      --accent-60:   #4d7592;
+      --accent-20:   #1c3346;
+      --highlight:      #FFD300;
+      --highlight-soft: #3a3410;
+      --paper:      #14181c;
+      --ink:        #e8eaec;
+      --ink-soft:   #b9bfc4;
+      --muted:      #8b9298;
+      --muted-soft: #232a30;
+      --rule:       #333c44;
+      --stage:      #0d1a26;
+      --stage-ink:  #8aa5bd;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 0 1.4rem 5rem;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:hover { color: var(--ink); }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+
+  /* ---------- masthead ---------- */
+
+  header.masthead {
+    background: var(--stage);
+    color: var(--stage-ink);
+    border-bottom: 1px solid var(--rule);
+    padding: 3.2rem 1.4rem 2.6rem;
+    margin-bottom: 3rem;
+  }
+  header.masthead .wrap { padding-bottom: 0; }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--stage-ink);
+    opacity: 0.8;
+    margin: 0 0 1rem;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 7vw, 3rem);
+    margin: 0 0 0.9rem;
+    color: var(--stage-ink);
+  }
+
+  .lede {
+    font-size: clamp(1.05rem, 3.6vw, 1.25rem);
+    line-height: 1.45;
+    margin: 0;
+    max-width: 34rem;
+    color: var(--stage-ink);
+  }
+  .lede strong { font-weight: 600; }
+
+  .aside-note {
+    margin: 1.4rem 0 0;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--stage-ink);
+    opacity: 0.85;
+    max-width: 34rem;
+  }
+
+  /* ---------- sections ---------- */
+
+  section { margin: 0 0 3.2rem; }
+
+  h2 {
+    font-size: 1.35rem;
+    margin: 0 0 0.2rem;
+    padding-top: 1.1rem;
+    border-top: 2px solid var(--accent);
+  }
+  h2 .num {
+    display: inline-block;
+    min-width: 1.6em;
+    color: var(--muted);
+    font-size: 0.8em;
+  }
+
+  h3 {
+    font-size: 1.02rem;
+    margin: 1.6rem 0 0.2rem;
+  }
+
+  p { margin: 0.7rem 0; }
+  p.tight { margin-top: 0.2rem; }
+
+  .sub { color: var(--ink-soft); }
+
+  /* ---------- the call to action ---------- */
+
+  .cta {
+    margin: 1.4rem 0 0;
+    padding: 1.3rem 1.4rem;
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--highlight);
+    background: var(--muted-soft);
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin: 0 0 0.9rem;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.55rem 1.1rem;
+    background: var(--accent);
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 0.95rem;
+    border: 1px solid var(--accent);
+  }
+  .btn:hover { background: var(--accent-80); color: var(--paper); border-color: var(--accent-80); }
+  .btn--ghost {
+    background: transparent;
+    color: var(--accent);
+  }
+  .btn--ghost:hover { background: var(--accent-20); color: var(--ink); border-color: var(--accent-80); }
+  .cta p { margin: 0; font-size: 0.93rem; color: var(--ink-soft); }
+  .cta p + p { margin-top: 0.5rem; }
+
+  /* ---------- code ---------- */
+
+  pre, code { font-family: var(--font-mono); }
+  pre {
+    margin: 1rem 0;
+    padding: 0.95rem 1.1rem;
+    background: var(--muted-soft);
+    border: 1px solid var(--rule);
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    tab-size: 2;
+  }
+  pre code { font-size: inherit; }
+  p code, li code {
+    background: var(--muted-soft);
+    padding: 0.1em 0.32em;
+    font-size: 0.88em;
+    border-radius: 2px;
+  }
+  .cmd {
+    background: var(--paper);
+    border-left: 3px solid var(--accent);
+  }
+  figcaption {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin: 0.1rem 0 0;
+  }
+  figure { margin: 1.2rem 0; }
+
+  /* ---------- the two ideas ---------- */
+
+  .pair {
+    display: grid;
+    gap: 0;
+    border: 1px solid var(--rule);
+    margin: 1.2rem 0 0;
+  }
+  @media (min-width: 40rem) {
+    .pair { grid-template-columns: 1fr 1fr; }
+    .pair > div + div { border-left: 1px solid var(--rule); border-top: 0; }
+  }
+  .pair > div { padding: 1.1rem 1.15rem; }
+  .pair > div + div { border-top: 1px solid var(--rule); }
+  .pair h3 { margin: 0 0 0.35rem; font-size: 1rem; }
+  .pair p { margin: 0; font-size: 0.93rem; color: var(--ink-soft); }
+  .pair p + p { margin-top: 0.5rem; }
+
+  /* ---------- the honest caveat ---------- */
+
+  .caveat {
+    padding: 1.2rem 1.3rem;
+    background: var(--highlight-soft);
+    border: 1px solid var(--highlight);
+  }
+  .caveat p { margin: 0; }
+  .caveat p + p { margin-top: 0.6rem; }
+
+  /* ---------- links out ---------- */
+
+  ul.links {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    border-top: 1px solid var(--rule);
+  }
+  ul.links li {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.6rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.7rem;
+  }
+  ul.links a { font-weight: 600; text-decoration: none; }
+  ul.links a:hover { text-decoration: underline; }
+  ul.links span { color: var(--ink-soft); font-size: 0.9rem; }
+
+  footer.foot {
+    border-top: 2px solid var(--accent);
+    padding-top: 1rem;
+    font-size: 0.86rem;
+    color: var(--muted);
+  }
+  footer.foot p { margin: 0.3rem 0; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">psi-briefing</p>
+    <h1>Briefings you can read without a meeting.</h1>
+    <p class="lede">A dependency-free framework for <strong>text-dense 16:9 slides meant to be read</strong> —
+      the whole deck is one self-contained HTML file that works offline, with no server,
+      no build step and nothing to install.</p>
+    <p class="aside-note">The genre is the one Nancy Duarte calls Slidedocs® — a document that
+      happens to be shaped like slides, and that carries its argument without a presenter
+      standing next to it.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="see-it">
+    <h2><span class="num">1</span>See it</h2>
+    <p class="tight">The demo is not a screenshot of the artefact. It <em>is</em> the artefact.</p>
+
+    <div class="cta">
+      <div class="cta-row">
+        <a class="btn" href="example-deck.html">Open the example deck →</a>
+        <a class="btn btn--ghost" href="example-deck.html" download="example-deck.html">Download the single file</a>
+      </div>
+      <p>One <code>.html</code> file, ~130 kB, fonts and styles and runtime all inside it.
+        Save it, pull the network cable, double-click it: same deck. Mail it to somebody and
+        they get the whole thing, not a link that rots.</p>
+      <p>Arrow keys or swipe to move; <code>?</code> for the keys. Built on this site from
+        <code>examples/example-deck.md</code> on every push, so what you are reading is never
+        older than the source.</p>
+    </div>
+
+    <p class="sub" style="font-size:0.9rem">While you are authoring you would rather not re-inline on every
+      save, so a deck can link its assets instead — that mode is here too:
+      <a href="examples/example-deck.html">the hand-built deck with linked CSS and JS</a>.
+      One command folds it into the file above.</p>
+  </section>
+
+  <section id="how">
+    <h2><span class="num">2</span>How you write one</h2>
+    <p class="tight">You write Markdown. The converter reads the <em>shape</em> of what you wrote and
+      infers the layout — because the shape already carries the meaning. Four <code>###</code> blocks
+      under a slide are four peers, so they become a bordered 2×2 grid. A <code>&gt;</code> blockquote
+      is the takeaway, so it becomes the highlighted band pinned to the bottom.</p>
+
+<figure>
+<pre><code>## Four areas of work
+
+### Frontend
+The guided flow and the component library. 620 commits,
+and the only part users ever see.
+
+### Backend
+Enrolment logic and the data model. 410 commits.
+
+### Content
+Copy, translations, and the weekly notes.
+
+### Infra
+Deploy scripts and the font-embedding pipeline.
+
+&gt; Nobody owned a layer exclusively — **everyone shipped end to end.**</code></pre>
+<figcaption>Four peers → a 2×2 grid. The blockquote → the closing band. No layout markup written by hand.</figcaption>
+</figure>
+
+    <p>Then one command:</p>
+<pre class="cmd"><code>node tools/md-to-deck.mjs deck.md -o deck.html</code></pre>
+    <p class="sub">It also reports, per slide, how much of the frame the content actually fills —
+      the failure mode of this genre is a thin slide, and a number is harder to argue with
+      than a feeling. When you want the shareable single file,
+      <code>tools/build-deck.sh deck.html</code> inlines everything and then <em>verifies</em>
+      that nothing external survived.</p>
+  </section>
+
+  <section id="ideas">
+    <h2><span class="num">3</span>The two ideas that do the work</h2>
+    <div class="pair">
+      <div>
+        <h3>Container-query scaling</h3>
+        <p>Every slide is a 16:9 box with <code>container-type: size</code>. Everything inside it —
+          type, spacing, rules, charts — is measured in <code>cqw</code> and <code>cqh</code>,
+          1% of the slide's width and height. Never <code>px</code>, never <code>rem</code>.</p>
+        <p>So the layout is not pixel-fixed, it is proportion-perfect: identical on a 13″ laptop,
+          a 4K projector, and a phone held sideways. There is no responsive breakpoint work to do,
+          because there is nothing to break.</p>
+      </div>
+      <div>
+        <h3>Semantic design tokens</h3>
+        <p>Every colour and face is a custom property with a meaning rather than a value:
+          <code>--accent</code>, <code>--ink</code>, <code>--highlight</code>,
+          <code>--font-display</code>.</p>
+        <p>A theme is therefore nothing but a <code>:root { … }</code> override — one file, no
+          component touched. The SVG charts the runtime draws read the same tokens at draw time,
+          so they re-skin with everything else instead of drifting out of palette.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="not">
+    <h2><span class="num">4</span>When <em>not</em> to use it</h2>
+    <div class="caveat">
+      <p>This framework is a <strong>poor fit for a sparse performance talk</strong> — a short spoken
+        keynote driven by timing, delivery, and question→answer beats. Forcing that talk into dense
+        slides fights its dramaturgy; stripping the slides bare just yields empty ones. It shines
+        where the source is already document-shaped: retrospectives, project documentation, research
+        summaries, whitepapers, lecture notes, data-driven reports.</p>
+      <p>If you are giving a talk rather than sending a document, use the sibling project instead:
+        <a href="https://github.com/UBA-PSI/psi-slides"><strong>psi-slides</strong></a> is the spoken
+        medium — one Markdown source producing a projection, a presenter cockpit, a reading document
+        and a handout.</p>
+    </div>
+  </section>
+
+  <section id="read">
+    <h2><span class="num">5</span>Read further</h2>
+    <ul class="links">
+      <li><a href="https://github.com/UBA-PSI/psi-briefing">The repository</a>
+        <span>source, themes, the authoring skill</span></li>
+      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/markdown.md">docs/markdown.md</a>
+        <span>every inference the converter makes, and how to override it</span></li>
+      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/cookbook.md">docs/cookbook.md</a>
+        <span>the component catalogue: grids, charts, timelines, reveals</span></li>
+      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/LICENSE">MIT licence</a>
+        <span>use it, fork it, re-theme it</span></li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    <p>psi-briefing — by Dominik Herrmann, Privacy and Security in Information Systems,
+      University of Bamberg. MIT licensed.</p>
+    <p>Slidedocs® is a registered trademark of Duarte Press, LLC; this project is not
+      affiliated with or endorsed by Duarte.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

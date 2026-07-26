@@ -1,11 +1,13 @@
 ---
-name: browserslides
-description: Build polished 16:9 presentation decks as a single self-contained HTML file – no framework, no build step, no dependencies. Use when the user wants to create a slide deck, presentation, talk, or retrospective as HTML/in the browser, wants slides that scale to any screen, mentions "browserslides", or wants to turn notes/an outline into slides. Assembles slides from a component catalog, themes them with design tokens, and can inline everything into one shareable file.
+name: briefing
+description: Build a briefing – text-dense 16:9 slides meant to be read rather than presented – as one self-contained HTML file, with no framework, build step or dependencies. Use when the user wants a deck, presentation, retrospective, report or handout as HTML/in the browser, wants slides that scale to any screen, wants to turn notes or an outline into slides, or mentions "psi-briefing" or "briefing deck". Assembles slides from a component catalog or infers them from Markdown, themes them with design tokens, and inlines everything into one shareable file.
 ---
 
-# browserslides
+# psi-briefing
 
-A dependency-free framework for presentation decks that live in one self-contained HTML file and scale pixel-perfectly to any screen. This skill lets you author such decks reliably.
+A dependency-free framework for **briefings**: decks that live in one self-contained HTML file, scale proportionally to any screen, and are dense enough to read without anyone standing next to them. This skill lets you author them reliably.
+
+The name is the positioning. A briefing is what you send to someone who could not attend – so the deck has to carry itself, which is why the default style here is text-dense rather than sparse. For a talk you will actually *deliver*, see the sibling project [psi-slides](https://github.com/UBA-PSI/psi-slides).
 
 ## The two ideas that make it work
 
@@ -14,13 +16,13 @@ A dependency-free framework for presentation decks that live in one self-contain
 
 ## First: does the content fit this framework?
 
-browserslides shines for **reference / report content meant to be read** – retrospectives, project documentation, research summaries, whitepapers, lecture notes, data-driven decks. That is where slidedocs work: the source already has sections, data, comparisons, definitions to arrange densely.
+psi-briefing shines for **reference / report content meant to be read** – retrospectives, project documentation, research summaries, whitepapers, lecture notes, data-driven decks. Those sources already have sections, data, comparisons and definitions to arrange densely, which is exactly what there is to arrange.
 
 It is a **poor fit for a sparse performance talk** – a short spoken keynote driven by timing, delivery, and question→answer beats. Forcing such a talk into dense slides fights its dramaturgy; making it sparse just yields empty slides. If the user brings that kind of content, say so and suggest either a genuinely document-shaped source, or a different tool.
 
-## Default style: slidedoc, not sparse slides
+## Default style: text-dense, not sparse
 
-Unless the user asks for a sparse "presentation" look, **build slidedocs** (in the Duarte sense): text-dense slides that *fill the frame* with well-arranged blocks – the reading-oriented look of the original retro decks. Draw generously on the source material; a near-empty slide with one line is usually wrong for this framework.
+Unless the user asks for a sparse "presentation" look, **build text-dense slides that *fill the frame*** with well-arranged blocks – the reading-oriented look of the original retro decks. Draw generously on the source material; a near-empty slide with one line is usually wrong for this framework.
 
 - Reach first for the text-block layouts: `.cols` grids holding `.prose` and `.panel` blocks, plus `.editorial-layout`, `.principle-columns`, `.twocol`, `.net`, `.cardcol`, `.facts`, `.kulissen`, `.delta`.
 - Free paragraphs **must** be wrapped in `.prose` (a bare `<p>` falls back to 16px and won't scale).
@@ -99,7 +101,7 @@ Straight quotes stay straight inside code: a `<script>` block, a class name, a f
 
 **Dashes.** Use the en dash `–` for parenthetical breaks, spaced in German (`Wort – Wort`), and unspaced for ranges (`2–3`, `1994–2003`). **Never use the em dash `—`**; it is wrong in German typography and a tired tic everywhere else. Hyphens stay hyphens (`E-Prüfung`).
 
-**Hyphenation** is off by default, which is right for a wide measure – a hyphenated ragged edge is busier for nothing gained. It becomes worth having in a **narrow** German column (a `.net` cell, a `.cardcol` card, one third of a `cols--3` row), where a single `Prüfungsaufsicht` on a line leaves a hole nothing else can close. Turn it on with `.bs-hyphens` on `<body>` or on one `.slide`; `.bs-nohyphens` opts a slide back out of a deck-wide setting; `.bs-hyphenate` does one element. From Markdown: `hyphenate: true` in the frontmatter, `{hyphenate}` per slide. Two things have to be right. The browser chooses its dictionary from the nearest `lang` attribute, so `<html lang>` must be set **and correct** – a wrong `lang` breaks German at English break points, which is worse than no hyphenation at all. And display type stays out of it: `h1`, `h2` and `.editorial-hero h3` are balanced, not hyphenated, as are `nowrap` label atoms like `.tl time`.
+**Hyphenation** is off by default, which is right for a wide measure – a hyphenated ragged edge is busier for nothing gained. It becomes worth having in a **narrow** German column (a `.net` cell, a `.cardcol` card, one third of a `cols--3` row), where a single `Prüfungsaufsicht` on a line leaves a hole nothing else can close. Turn it on with `.bf-hyphens` on `<body>` or on one `.slide`; `.bf-nohyphens` opts a slide back out of a deck-wide setting; `.bf-hyphenate` does one element. From Markdown: `hyphenate: true` in the frontmatter, `{hyphenate}` per slide. Two things have to be right. The browser chooses its dictionary from the nearest `lang` attribute, so `<html lang>` must be set **and correct** – a wrong `lang` breaks German at English break points, which is worse than no hyphenation at all. And display type stays out of it: `h1`, `h2` and `.editorial-hero h3` are balanced, not hyphenated, as are `nowrap` label atoms like `.tl time`.
 
 **Type size.** `--type-scale` in `:root` multiplies every body and label size at once (display sizes stay fixed). Slides are read from across a room – err large. If a slide only fits at a smaller size, the slide has too much on it; split it rather than shrinking the type.
 
@@ -196,7 +198,7 @@ Full control, and the only option for a slide that needs an unusual layout.
 skill's own files): write the deck as a document and let the converter pick the
 components from the shape of the content – three `###` blocks become three
 columns, four become a `.net` grid, a `> blockquote` becomes the closing
-`.punch`. It emits ordinary browserslides HTML that you then hand-tune, so the
+`.punch`. It emits ordinary psi-briefing HTML that you then hand-tune, so the
 two ways compose rather than compete.
 
 Prefer Markdown when the source is already document-shaped (a report, notes, a
@@ -210,7 +212,7 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
 
 ## Workflow
 
-1. **Scaffold.** Copy `references/starter.html` and `references/assets/` (browserslides.css, browserslides.js, and a theme) into the deck's folder. During authoring, keep the CSS/JS *linked* (readable); inline only at the end. Browsers cache linked assets aggressively – if an edit to the CSS/JS seems to have no effect, add a `?v=N` query to the `<link>`/`<script>` and bump it, rather than debugging a stale file.
+1. **Scaffold.** Copy `references/starter.html` and `references/assets/` (briefing.css, briefing.js, and a theme) into the deck's folder. During authoring, keep the CSS/JS *linked* (readable); inline only at the end. Browsers cache linked assets aggressively – if an edit to the CSS/JS seems to have no effect, add a `?v=N` query to the `<link>`/`<script>` and bump it, rather than debugging a stale file.
 2. **Structure the talk.** One `<section class="frame">` per slide. Give the deck a shape: title → section dividers (`.slide--divider`, big number) → content → closing. Keep divider numbering and any table of contents in sync.
 3. **Build each slide** by copying a component from the catalog below; `references/components.md` has the full markup for every one. Match the exact class names. Every slide follows the skeleton:
    ```html
@@ -222,7 +224,7 @@ not replace them. `docs/markdown.md` in the repo is the authoring reference.
    </div></div></section>
    ```
    `.slide-inner` is a flex column; components with `flex:1; min-height:0` fill the remaining height. `.pagenum` auto-fills to "n / total".
-4. **Add the chrome once**, at the end of `<body>`: `<nav class="dots">`, `<div class="hint">`, optional `#rotate-hint`, then `<script src="…/browserslides.js">`, then any `Browserslides.barChart(...)` calls.
+4. **Add the chrome once**, at the end of `<body>`: `<nav class="dots">`, `<div class="hint">`, optional `#rotate-hint`, then `<script src="…/briefing.js">`, then any `Briefing.barChart(...)` calls.
 5. **Theme it.** Pick `bamberg.css` (blue/yellow) or `midnight.css` (dark), or make one: copy a theme, change `--accent` + the `--accent-80/60/40/20` tint ramp, `--accent-ink`, and `--font-display`/`--font-body`. Fonts default to the system stack.
 6. **Verify in a browser.** Serve with `python3 -m http.server` and load it (Playwright/Chrome blocks `file://` for local assets). Check: one `<section>` per slide, exactly one SVG per chart box, page numbers count correctly, no broken images.
 
@@ -472,7 +474,7 @@ Copy the matching block from `references/components.md`. Pick by intent:
 | Big numbers | `.facts` + `.fact`, `.fact--hero`, `<sup>` |
 | Two timelines / plan vs reality | `.twocol` + `.tl` + `time` + `.sub` |
 | Highlighted takeaway line | `.punch` (warm) or `.punch--accent` (cool); one tone per deck |
-| Bar chart (generated) | `.chartbox#id` + `Browserslides.barChart('#id', {...})` |
+| Bar chart (generated) | `.chartbox#id` + `Briefing.barChart('#id', {...})` |
 | Numbered process | `.flow` + `.fcol` + `.fstep` + `.step-num` |
 | Grid of 4 cards | `.net` (bordered) or `.cardcol` (stacked) |
 | Magazine hero + list | `.editorial-layout` + `.editorial-hero` + `.editorial-stack`/`.editorial-item` |
@@ -505,7 +507,7 @@ Copy the matching block from `references/components.md`. Pick by intent:
 ### barChart config (the only JS you normally write)
 
 ```js
-Browserslides.barChart('#chart-id', {
+Briefing.barChart('#chart-id', {
   data: [{ value: 40, label: 'W1', color: '--accent-60', tooltip: '<b>W1</b> 40' }, …],
   max: 220,                       // optional; auto from data otherwise
   gridlines: [0, 55, 110, 165, 220],
@@ -529,7 +531,7 @@ Bar/marker `color` accepts a raw colour **or** a `--token` name (recommended, so
 ## Files in this skill
 
 - `references/starter.html` – a minimal working deck to copy.
-- `references/assets/` – `browserslides.css`, `browserslides.js`, `bamberg.css`, `midnight.css`.
+- `references/assets/` – `briefing.css`, `briefing.js`, `bamberg.css`, `midnight.css`.
 - `references/components.md` – the full component catalog with copy-paste snippets.
 
-That is everything the skill needs; it does not depend on the repo or on any other skill. The [psi-browserslides](https://github.com/) repo adds optional extras – `docs/tutorial.{en,de}.md`, and `tools/embed-fonts.mjs` / `tools/inline-deck.mjs`, which automate the font-embedding and inlining steps this file describes by hand.
+That is everything the skill needs; it does not depend on the repo or on any other skill. The [psi-briefing](https://github.com/) repo adds optional extras – `docs/tutorial.{en,de}.md`, and `tools/embed-fonts.mjs` / `tools/inline-deck.mjs`, which automate the font-embedding and inlining steps this file describes by hand.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # build-deck.sh – turn a linked development deck into one shareable file.
 #
-# Part of the browserslides toolchain (MIT - see LICENSE).
+# Part of the psi-briefing toolchain (MIT - see LICENSE).
 #
 # The pipeline is short but the order matters, and the last step is the one
 # people skip: a deck can come out of the inliner looking finished and still

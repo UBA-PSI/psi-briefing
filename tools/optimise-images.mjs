@@ -2,7 +2,7 @@
 // optimise-images.mjs – re-encode a deck's images to WebP at the size the
 // slides actually use, before inline-deck.mjs turns them into data: URIs.
 //
-// Part of the browserslides toolchain (MIT - see LICENSE). Node.js built-ins only for
+// Part of the psi-briefing toolchain (MIT - see LICENSE). Node.js built-ins only for
 // everything except the encode step, which shells out to `cwebp` or `magick`
 // (see ENCODERS). Requires Node 18+ (ESM).
 //

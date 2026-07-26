@@ -1,6 +1,6 @@
 # Build your first deck in 15 minutes
 
-*browserslides – a dependency-free framework for self-contained 16:9 HTML slide decks. [MIT-licensed](https://opensource.org/license/mit) (fonts excepted).*
+*psi-briefing – a dependency-free framework for self-contained 16:9 HTML slide decks. [MIT-licensed](https://opensource.org/license/mit) (fonts excepted).*
 
 This walkthrough takes you from a blank file to a real presentation: a title slide, a content slide with live components, and a bar chart generated in the browser. By the end you'll know enough to build and share your own deck.
 
@@ -32,7 +32,7 @@ Create a file called `my-deck.html` next to the `framework/` and `themes/` folde
 
 <!-- 1) the framework, then 2) a theme. Order matters: the theme only
      overrides tokens, so it must come second. -->
-<link rel="stylesheet" href="framework/browserslides.css">
+<link rel="stylesheet" href="framework/briefing.css">
 <link rel="stylesheet" href="themes/bamberg.css">
 </head>
 <body>
@@ -41,7 +41,7 @@ Create a file called `my-deck.html` next to the `framework/` and `themes/` folde
 <section class="frame">
   <div class="slide"><div class="slide-inner">
     <p class="eyebrow">My first deck</p>
-    <h2>Hello, browserslides</h2>
+    <h2>Hello, psi-briefing</h2>
     <div class="pagefoot"><span>My deck</span><span class="pagenum"></span></div>
   </div></div>
 </section>
@@ -50,7 +50,7 @@ Create a file called `my-deck.html` next to the `framework/` and `themes/` folde
 <nav class="dots" aria-label="Slide navigation"></nav>
 <div class="hint">↓ scroll · → next · press a key</div>
 
-<script src="framework/browserslides.js"></script>
+<script src="framework/briefing.js"></script>
 </body>
 </html>
 ```
@@ -84,7 +84,7 @@ Give the deck an opening. A title slide is a normal slide with the extra class `
   <div class="slide slide--title"><div class="slide-inner">
     <p class="eyebrow">Retrospective · 2026</p>
     <h1>Shipping a portal in eleven weeks</h1>
-    <p class="title-sub">A worked example built with browserslides</p>
+    <p class="title-sub">A worked example built with psi-briefing</p>
     <div class="title-strip">
       <div><b>11</b><span>Weeks</span></div>
       <div><b>1&nbsp;280</b><span>Commits</span></div>
@@ -172,11 +172,11 @@ First, the container. It needs an `id` so the script can find it:
 </section>
 ```
 
-Then, *after* `<script src="framework/browserslides.js"></script>`, add your own script block:
+Then, *after* `<script src="framework/briefing.js"></script>`, add your own script block:
 
 ```html
 <script>
-  Browserslides.barChart('#chart-weeks', {
+  Briefing.barChart('#chart-weeks', {
     ariaLabel: 'Commits per week over eleven weeks, with three milestones',
     max: 220,
     gridlines: [0, 55, 110, 165, 220],
@@ -220,7 +220,7 @@ A **theme is nothing but a `:root { … }` block that overrides design tokens** 
 **Try a different look instantly.** Swap the theme `<link>`:
 
 ```html
-<link rel="stylesheet" href="framework/browserslides.css">
+<link rel="stylesheet" href="framework/briefing.css">
 <link rel="stylesheet" href="themes/midnight.css">   <!-- was: themes/bamberg.css -->
 ```
 
@@ -257,8 +257,8 @@ While you're building, three linked files is convenient. To *hand the deck to so
 
 The recipe:
 
-1. **Inline the CSS** – paste `browserslides.css` and your theme into a `<style>` block in the `<head>`, replacing the two `<link>`s.
-2. **Inline the JS** – paste `browserslides.js` into a `<script>` block, replacing `<script src=…>`.
+1. **Inline the CSS** – paste `briefing.css` and your theme into a `<style>` block in the `<head>`, replacing the two `<link>`s.
+2. **Inline the JS** – paste `briefing.js` into a `<script>` block, replacing `<script src=…>`.
 3. **Embed fonts and images as base64** – instead of linking a `.woff2` or a `.png`, encode it and drop it straight into the CSS/HTML as a `data:` URI.
 
 Do that and the file has zero external references: it opens from `file://`, from a stick, from anywhere, forever, with no network.

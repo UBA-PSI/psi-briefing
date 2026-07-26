@@ -1,0 +1,26 @@
+{
+  "name": "psi-briefing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Self-contained 16:9 briefing decks: one HTML file, container-query scaling, no runtime dependencies.",
+  "license": "MIT",
+  "author": "Dominik Herrmann",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UBA-PSI/psi-briefing.git"
+  },
+  "homepage": "https://github.com/UBA-PSI/psi-briefing#readme",
+  "bugs": {
+    "url": "https://github.com/UBA-PSI/psi-briefing/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build:example": "node tools/md-to-deck.mjs examples/example-deck.md -o examples/example-deck-md.html",
+    "build:self-contained": "tools/build-deck.sh examples/example-deck.html -o examples/example-deck.self-contained.html",
+    "sync:assets": "tools/sync-assets.sh",
+    "check:assets": "tools/sync-assets.sh --check"
+  }
+}

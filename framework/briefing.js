@@ -1,9 +1,9 @@
 /* ==========================================================================
-   browserslides — runtime
+   psi-briefing — runtime
    Zero dependencies. Drop this in at the end of <body>. It wires up the deck
    chrome (nav dots, keyboard, page numbers, detail layers, cross-reference
    previews, lightboxes, image stacks, the portrait hint) and exposes a small
-   charting helper on window.Browserslides.
+   charting helper on window.Briefing.
 
    MIT License — see LICENSE. Copyright (c) 2026 Dominik Herrmann.
    ========================================================================== */
@@ -159,7 +159,7 @@
        Left undeclared, hyphenation simply does not happen - the safe failure.
        So: say something, but do not invent an answer. */
     if (!document.documentElement.lang) {
-      console.warn("browserslides: <html> has no lang attribute. Set it - " +
+      console.warn("psi-briefing: <html> has no lang attribute. Set it - " +
         "hyphenation and screen readers both depend on it.");
     }
     const frames = [...document.querySelectorAll(".frame")];
@@ -254,14 +254,14 @@
         const sib = b.nextElementSibling;
         let layer = sib && sib.classList && sib.classList.contains("detail-layer") ? sib : layers[i];
         if (!layer) {
-          console.warn("browserslides: .bottomline with no .detail-layer to open", b);
+          console.warn("psi-briefing: .bottomline with no .detail-layer to open", b);
           return;
         }
         if (layer !== sib) {
-          console.warn("browserslides: .detail-layer is not the next sibling of its " +
+          console.warn("psi-briefing: .detail-layer is not the next sibling of its " +
             ".bottomline; paired by position instead. Put them next to each other.", b);
         }
-        if (!layer.id) layer.id = `bs-layer-${++layerUid}`;
+        if (!layer.id) layer.id = `bf-layer-${++layerUid}`;
         layer.setAttribute("role", "dialog");
         layer.setAttribute("aria-modal", "true");
         /* So the panel itself can take focus when it holds no close button. */
@@ -476,7 +476,7 @@
 
   function equaliseRows() {
     document.querySelectorAll(".cols").forEach((row) => {
-      row.classList.remove("bs-equalised");
+      row.classList.remove("bf-equalised");
       // Only level panels that ARE their column. A column stacking prose over a
       // panel must keep its natural height, or the panel would be forced to the
       // full column height and overrun the text above it.
@@ -486,7 +486,7 @@
       if (panels.length < 2 || panels.length !== row.children.length) return;
       const heights = panels.map((p) => p.getBoundingClientRect().height);
       const max = Math.max(...heights), min = Math.min(...heights);
-      if (max > 0 && (max - min) / max <= EQUALISE_TOLERANCE) row.classList.add("bs-equalised");
+      if (max > 0 && (max - min) / max <= EQUALISE_TOLERANCE) row.classList.add("bf-equalised");
     });
   }
 
@@ -513,5 +513,5 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
-  window.Browserslides = { barChart, token, svgEl, barPath, attachTooltip };
+  window.Briefing = { barChart, token, svgEl, barPath, attachTooltip };
 })();

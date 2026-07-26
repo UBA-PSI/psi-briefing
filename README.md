@@ -1,12 +1,18 @@
-# browserslides
+# psi-briefing
 
-**Dependency-free presentation decks that live in a single, self-contained HTML file and scale pixel-perfectly to any screen.**
+**Briefings you can read without a meeting — text-dense 16:9 slides in a single, self-contained HTML file.**
 
-No framework, no build step, no server, no fonts to install. One `.html` file you open in a browser – on a 13″ laptop, a 4K projector, or a phone in landscape – and it looks identical everywhere.
+A briefing is what you send to the people who could not attend, so the deck has to carry itself: dense enough to read alone, and one `.html` file you can put in an email. No framework, no build step, no server, no fonts to install. Open it on a 13″ laptop, a 4K projector or a phone in landscape and it looks identical everywhere, because nothing inside it is measured in pixels.
 
 *Made by [Dominik Herrmann](https://github.com/) · [MIT-licensed](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
 
 ![Example: title slide and a generated chart in the Bamberg theme](docs/preview.png)
+
+> **Slides for a talk you will actually deliver?** That is the sibling project,
+> [**psi-slides**](https://github.com/UBA-PSI/psi-slides): one Markdown source
+> producing a projection, a presenter cockpit, a reading document and a handout.
+> The line between the two is whether anyone is speaking — psi-slides is for the
+> lecture, psi-briefing for the document that has to work without you in the room.
 
 ---
 
@@ -23,8 +29,8 @@ The JavaScript runtime is deliberately small and dumb: it reads declarative mark
 ## Quickstart
 
 ```bash
-git clone <this-repo> psi-browserslides
-cd psi-browserslides
+git clone https://github.com/UBA-PSI/psi-briefing.git
+cd psi-briefing
 python3 -m http.server 8000
 # open http://localhost:8000/examples/example-deck.html
 ```
@@ -37,7 +43,7 @@ A minimal deck is three things – link the framework, add slides, add the chrom
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My deck</title>
-  <link rel="stylesheet" href="framework/browserslides.css">
+  <link rel="stylesheet" href="framework/briefing.css">
   <link rel="stylesheet" href="themes/bamberg.css">   <!-- swap to re-skin -->
 </head><body>
 
@@ -51,7 +57,7 @@ A minimal deck is three things – link the framework, add slides, add the chrom
 
   <nav class="dots" aria-label="Slide navigation"></nav>
   <div class="hint">↓ scroll · → next</div>
-  <script src="framework/browserslides.js"></script>
+  <script src="framework/briefing.js"></script>
 </body></html>
 ```
 
@@ -87,20 +93,20 @@ highlighted band at the bottom of the slide.
 node tools/md-to-deck.mjs deck.md -o deck.html
 ```
 
-The output is normal browserslides HTML, so you can hand-tune any slide
+The output is ordinary psi-briefing HTML, so you can hand-tune any slide
 afterwards. See [`docs/markdown.md`](docs/markdown.md).
 
 ## What's in the box
 
 | Path | What it is |
 |------|-----------|
-| `framework/browserslides.css` | The core: slide engine, type scale, ~25 layout components, deck chrome. Ships a neutral default theme. |
-| `framework/browserslides.js` | The runtime: navigation, page numbers, `Browserslides.barChart()`, detail layers, cross-reference previews, lightboxes, image stacks. |
+| `framework/briefing.css` | The core: slide engine, type scale, 33 layout components, deck chrome. Ships a neutral default theme. |
+| `framework/briefing.js` | The runtime: navigation, page numbers, `Briefing.barChart()`, detail layers, cross-reference previews, lightboxes, image stacks. |
 | `themes/bamberg.css` | The original University of Bamberg blue/yellow palette. |
 | `themes/midnight.css` | A dark theme – proof that flipping `--paper`/`--ink` re-skins everything. |
 | `examples/example-deck.html` | A 14-slide worked example exercising every major layout. |
 | `examples/example-deck.md` | The same idea written as a Markdown document, for `md-to-deck.mjs`. |
-| `tools/md-to-deck.mjs` | **Write a deck as Markdown.** Infers the component from the shape of the content: three `###` blocks become three columns, four become a bordered grid, a blockquote becomes the closing band. Outputs ordinary, hand-editable browserslides HTML. |
+| `tools/md-to-deck.mjs` | **Write a deck as Markdown.** Infers the component from the shape of the content: three `###` blocks become three columns, four become a bordered grid, a blockquote becomes the closing band. Outputs ordinary, hand-editable psi-briefing HTML. |
 | `docs/markdown.md` | The Markdown authoring reference: document structure, the shape→component table, directives, and what the converter will and will not correct. |
 | `docs/cookbook.md` | The component catalog – copy-paste snippets for every layout. |
 | `docs/tutorial.en.md` · `docs/tutorial.de.md` | Build-your-first-deck walkthrough, bilingual. |
@@ -108,7 +114,7 @@ afterwards. See [`docs/markdown.md`](docs/markdown.md).
 | `tools/optimise-images.mjs` | Re-encode a deck's images to WebP at the size the slides actually use, before inlining. Cut a real 20-image deck from 8.3 MB to 3.3 MB. |
 | `tools/build-deck.sh` | The whole pipeline in one command: optimise, inline, then verify that nothing external is left. |
 | `tools/sync-assets.sh` | Keeps the duplicated copies of the framework and the catalog in step; `--check` reports drift instead of fixing it. |
-| `skills/browserslides/` | A Claude Code / Agent **skill** so an AI assistant can build these decks for you. |
+| `skills/briefing/` | A Claude Code / Agent **skill** so an AI assistant can build these decks for you. |
 | `docs/handoff-autolayout.md` | What building a real deck taught us about the framework, and what an auto-layout pass has to survive. |
 
 ## Theming
@@ -129,9 +135,29 @@ Fonts default to the system stack (zero bytes, works offline). To match a specif
 
 See **[docs/cookbook.md](docs/cookbook.md)** for every component and **[docs/tutorial.en.md](docs/tutorial.en.md)** to build one step by step.
 
+## When *not* to use this
+
+The framework is built for content that is **already document-shaped** — a
+retrospective, project documentation, a research summary, lecture notes, a
+data-driven report. Those sources arrive with sections, comparisons and numbers
+to arrange densely, and arranging them densely is the whole job.
+
+It is a **poor fit for a sparse performance talk**: a short spoken keynote driven
+by timing, delivery and question→answer beats. This was tested on a real one and
+it resisted both treatments — forcing the talk into dense slides fought its
+dramaturgy, and making the slides sparse just produced empty frames. The
+dramaturgy lives in the speaking, and a deck built to be read cannot hold it. For
+that, use [psi-slides](https://github.com/UBA-PSI/psi-slides) or plain keynote
+slides with a script beside them.
+
+Two smaller limits worth knowing before you invest: there is **no animation
+model** beyond click-to-reveal panels and image stacks, and **no speaker view** —
+if you need presenter notes on a second screen, that is psi-slides' job, not this
+one.
+
 ## The Claude skill
 
-`skills/browserslides/` packages this framework as a skill so Claude can author decks for you: describe your talk, and it assembles slides from the catalog, picks or builds a theme, verifies the render, and (optionally) inlines everything into one file. See [skills/browserslides/README.md](skills/browserslides/README.md) for installation.
+`skills/briefing/` packages this framework as a skill so Claude can author decks for you: describe your talk, and it assembles slides from the catalog, picks or builds a theme, verifies the render, and (optionally) inlines everything into one file. See [skills/briefing/README.md](skills/briefing/README.md) for installation.
 
 ## License
 
@@ -143,7 +169,11 @@ See **[docs/cookbook.md](docs/cookbook.md)** for every component and **[docs/tut
 
 ## Deutsch
 
-**browserslides** ist ein abhängigkeitsfreies Framework für Präsentationsdecks, die als *eine* selbst-enthaltene HTML-Datei leben und pixelgenau auf jeden Bildschirm skalieren. Kein Framework, kein Build-Schritt, kein Server, keine zu installierenden Schriften – eine `.html`, die überall gleich aussieht: 13″-Laptop, 4K-Beamer oder Handy im Querformat.
+**psi-briefing** baut *Briefings*: textdichte 16:9-Folien in **einer** selbst-enthaltenen HTML-Datei. Ein Briefing ist das, was man denen schickt, die nicht dabei waren – das Deck muss sich also selbst tragen: dicht genug zum Lesen, und eine `.html`, die in eine E-Mail passt. Kein Framework, kein Build-Schritt, kein Server, keine zu installierenden Schriften. Sieht überall gleich aus: 13″-Laptop, 4K-Beamer oder Handy im Querformat – weil darin nichts in Pixeln gemessen ist.
+
+**Folien für einen Vortrag, den du tatsächlich hältst?** Das ist das Schwesterprojekt [**psi-slides**](https://github.com/UBA-PSI/psi-slides): eine Markdown-Quelle, daraus Projektion, Referentenpult, Lesedokument und Handout. Die Grenze zwischen beiden ist, ob jemand spricht – psi-slides für die Vorlesung, psi-briefing für das Dokument, das ohne dich im Raum funktionieren muss.
+
+**Wofür es nicht taugt:** einen sparsamen Bühnenvortrag, der von Timing und Dramaturgie lebt. Das wurde an einem echten ausprobiert und hat sich gegen beide Behandlungen gewehrt – dicht gesetzt kämpft es gegen die Dramaturgie, sparsam gesetzt bleiben leere Rahmen. Es gibt auch kein Animationsmodell über Klick-Vertiefungen hinaus und keine Referentenansicht.
 
 **Der Trick in zwei Ideen:**
 

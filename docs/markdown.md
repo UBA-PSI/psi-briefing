@@ -1,6 +1,6 @@
 # Writing a deck in Markdown
 
-`tools/md-to-deck.mjs` turns a Markdown document into a browserslides deck. You
+`tools/md-to-deck.mjs` turns a Markdown document into a psi-briefing deck. You
 write a document; it picks the components.
 
 ```bash
@@ -9,7 +9,7 @@ python3 -m http.server 8000          # then look at it
 tools/build-deck.sh deck.html        # when you want one shareable file
 ```
 
-The output is ordinary browserslides HTML — readable, and safe to edit by hand
+The output is ordinary psi-briefing HTML — readable, and safe to edit by hand
 afterwards. Re-running the converter overwrites it, so keep the `.md` as the
 source of truth and hand-edit only once you have stopped converting.
 
@@ -52,7 +52,7 @@ footer: Aufsicht E-Prüfung · psi-exam
 lang: de                 # a BCP-47 tag: de, de-CH, en-GB, fr …
 hyphenate: false         # hyphenate running text (default false)
 theme: bamberg           # themes/<name>.css
-assets: assets/          # a folder holding browserslides.css/js + the theme
+assets: assets/          # a folder holding briefing.css/js + the theme
 strip:                   # the numeric strip on the title slide
   - "17: Schritte am Prüfungstag"
   - "4: Rollen"
@@ -306,7 +306,7 @@ the gap falls from 64 % to 51 %. Under the old metric the same pair read 36 %
 and 49 %.
 
 **It is an estimate, not a measurement.** It is computed from the real geometry
-in `framework/browserslides.css` — the 88 cqw × 85.5 cqh content box, the type
+in `framework/briefing.css` — the 88 cqw × 85.5 cqh content box, the type
 scale, and the same average-glyph-width approximation the browser audit uses —
 but it cannot know font metrics or image aspect ratios. Checked against a
 browser on 18 content slides: mean error 7 points, 14 of 18 within 10, errors in

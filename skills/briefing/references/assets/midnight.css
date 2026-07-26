@@ -2,7 +2,7 @@
    Theme: Midnight — dark slides on a near-black stage. A worked example of a
    theme that flips the neutrals (--paper dark, --ink light), which the whole
    framework picks up because nothing is hard-coded to white/black.
-   Load AFTER framework/browserslides.css.
+   Load AFTER framework/briefing.css.
    ========================================================================== */
 /* Copse (OFL), embedded so this theme never silently falls back to a
    system serif. A theme that only *names* a font renders whatever the OS

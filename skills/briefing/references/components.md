@@ -1,6 +1,6 @@
-# browserslides Cookbook
+# psi-briefing Cookbook
 
-A copy-from reference catalog for building 16:9 HTML slide decks with browserslides. Every snippet below uses only classes that exist in `framework/browserslides.css`. Pick the component you need, copy its markup into a slide, and adjust the text.
+A copy-from reference catalog for building 16:9 HTML slide decks with psi-briefing. Every snippet below uses only classes that exist in `framework/briefing.css`. Pick the component you need, copy its markup into a slide, and adjust the text.
 
 ---
 
@@ -11,17 +11,17 @@ A copy-from reference catalog for building 16:9 HTML slide decks with browsersli
 **Theming.** Colours and fonts are semantic design tokens – CSS custom properties declared in `:root` in the core stylesheet (a neutral "slate" default). A theme file is nothing but a `:root { … }` block that overrides some of those tokens; it never restyles components. Load the core CSS first, then a theme:
 
 ```html
-<link rel="stylesheet" href="framework/browserslides.css">
+<link rel="stylesheet" href="framework/briefing.css">
 <link rel="stylesheet" href="themes/bamberg.css">
 ```
 
-Swap the second line for `themes/midnight.css` and the same deck goes dark – because nothing is hard-coded to white or black, only to tokens. Charts read these same tokens at runtime (via `Browserslides.token()`), so a generated chart automatically matches the active theme. For distribution, inline the two stylesheets and the script into the HTML to get one self-contained file.
+Swap the second line for `themes/midnight.css` and the same deck goes dark – because nothing is hard-coded to white or black, only to tokens. Charts read these same tokens at runtime (via `Briefing.token()`), so a generated chart automatically matches the active theme. For distribution, inline the two stylesheets and the script into the HTML to get one self-contained file.
 
 ---
 
 ## Design tokens
 
-Every custom property from `:root` in `browserslides.css`. Override any of these in a theme; leave the rest to inherit the default.
+Every custom property from `:root` in `briefing.css`. Override any of these in a theme; leave the rest to inherit the default.
 
 | Token | What it's for |
 | --- | --- |
@@ -90,7 +90,7 @@ Put this after the last slide, then the two includes:
   <button class="rh-btn">Show anyway</button>
 </div>
 
-<script src="framework/browserslides.js"></script>
+<script src="framework/briefing.js"></script>
 <script>
   /* your per-deck chart definitions go here */
 </script>
@@ -100,9 +100,9 @@ The `.dots` nav is populated at runtime (one dot per `.frame`); if you omit the 
 
 ---
 
-## Slidedoc utilities (start here for text-heavy slides)
+## Briefing utilities (start here for text-heavy slides)
 
-browserslides is at its best as a **slidedoc** (Duarte's term): text-dense slides meant to be read, filling the frame with well-arranged blocks – not sparse "one line per slide" presentation slides. These three utilities are the workhorses for that. Reach for them first; the named components below are specialisations.
+psi-briefing is at its best on **text-dense slides meant to be read**: slides that fill the frame with well-arranged blocks, rather than sparse "one line per slide" presentation slides. Nancy Duarte named this genre — she calls such documents Slidedocs®, and her [free book on them](https://www.duarte.com/resources/books/slidedocs/) is the best short introduction to why they work. These three utilities are the workhorses for that. Reach for them first; the named components below are specialisations.
 
 **`.prose` – scaling free text.** The framework styles paragraphs *per component*, so a bare `<p>` falls back to 16px and does **not** scale with the slide. Always wrap free text in `.prose` (modifiers: `.prose--lead` bigger, `.prose--dense` smaller). `<b>` inside `.prose` is accent-coloured; `.prose ul/li` gives a dotted list.
 
@@ -198,9 +198,9 @@ Off by default: a hyphenated ragged edge is busier than an un-hyphenated one, an
 
 | Class | Where |
 | --- | --- |
-| `.bs-hyphens` | on `<body>` for the whole deck, or on one `.slide` |
-| `.bs-nohyphens` | the same, to opt one slide back out of a deck-wide `.bs-hyphens` |
-| `.bs-hyphenate` | one element, when you do not want the switch deck-wide |
+| `.bf-hyphens` | on `<body>` for the whole deck, or on one `.slide` |
+| `.bf-nohyphens` | the same, to opt one slide back out of a deck-wide `.bf-hyphens` |
+| `.bf-hyphenate` | one element, when you do not want the switch deck-wide |
 
 The browser picks its dictionary from the nearest `lang` attribute, so `<html lang="de">` has to be right or nothing happens at all — and a *wrong* `lang` is worse than a missing one, because German gets broken at English break points. Put `lang` on a single `.slide` when it quotes another language. Display type (`h1`, `h2`, `.editorial-hero h3`) is excluded on purpose: those are balanced, not hyphenated. So are label atoms like `.tl time`, which carry `white-space: nowrap`.
 
@@ -223,7 +223,7 @@ The opening slide. Dark accent background, big headline, an optional numeric str
     <div class="title-grid">
       <div class="title-left">
         <h1>Project&nbsp;Aurora: shipping a portal in eleven weeks</h1>
-        <p class="title-sub">A worked example of the browserslides framework</p>
+        <p class="title-sub">A worked example of the psi-briefing framework</p>
         <div class="title-strip">
           <div><b>11</b><span>Weeks</span></div>
           <div><b>1&nbsp;280</b><span>Commits</span></div>
@@ -344,10 +344,10 @@ Markup – just an empty box with an id:
 <div class="chartbox" id="chart-weeks"></div>
 ```
 
-Definition – in the trailing `<script>`, after `browserslides.js`:
+Definition – in the trailing `<script>`, after `briefing.js`:
 
 ```js
-Browserslides.barChart('#chart-weeks', {
+Briefing.barChart('#chart-weeks', {
   ariaLabel: 'Commits per week, with three milestones', // accessible name on the <svg>
   max: 220,                        // y-axis maximum (default: 1.1 × largest, rounded up)
   gridlines: [0, 55, 110, 165, 220], // y values to draw (default: 5 evenly spaced)
@@ -898,7 +898,7 @@ Two solid edge bands with a middle band that gets "eaten" – a decide → execu
 
 ## Interactions & keyboard
 
-All wired up automatically by `browserslides.js` on load.
+All wired up automatically by `briefing.js` on load.
 
 - **Navigation:** `→` / `↓` / `PageDown` / `Space` go to the next slide; `←` / `↑` / `PageUp` go back; `Home` jumps to the first slide, `End` to the last. Keys are ignored while typing in an input/textarea. Navigation is smooth-scroll unless the user prefers reduced motion.
 - **Nav dots:** one dot per slide in the `.dots` rail; the active slide's dot is highlighted (tracked via `IntersectionObserver`). Click a dot to jump.

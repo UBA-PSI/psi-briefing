@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # sync-assets.sh – keep the copies of framework/ and themes/ in step.
 #
-# Part of the browserslides toolchain (MIT - see LICENSE).
+# Part of the psi-briefing toolchain (MIT - see LICENSE).
 #
 # WHY THIS EXISTS
-#   framework/browserslides.{css,js} and themes/*.css are the originals, but two
+#   framework/briefing.{css,js} and themes/*.css are the originals, but two
 #   places hold copies of them:
 #
-#     skills/browserslides/references/assets/   so the skill is self-contained
+#     skills/briefing/references/assets/   so the skill is self-contained
 #     test-aufsicht/assets/                     so the test decks link locally
 #
-#   docs/cookbook.md and skills/browserslides/references/components.md are the
+#   docs/cookbook.md and skills/briefing/references/components.md are the
 #   same pairing one level up: the skill carries its own copy of the catalog.
 #
 #   Copies drift silently, and the failure mode is nasty: you change the CSS,
@@ -30,12 +30,12 @@ CHECK=0
 
 # Copy targets that exist. test-aufsicht/ is gitignored, so it may be absent.
 TARGETS=()
-for d in "$ROOT/skills/browserslides/references/assets" "$ROOT/test-aufsicht/assets"; do
+for d in "$ROOT/skills/briefing/references/assets" "$ROOT/test-aufsicht/assets"; do
   [ -d "$d" ] && TARGETS+=("$d")
 done
 [ ${#TARGETS[@]} -gt 0 ] || { echo "sync-assets: no copies found, nothing to do"; exit 0; }
 
-SOURCES=("$ROOT/framework/browserslides.css" "$ROOT/framework/browserslides.js")
+SOURCES=("$ROOT/framework/briefing.css" "$ROOT/framework/briefing.js")
 for t in "$ROOT"/themes/*.css; do SOURCES+=("$t"); done
 
 drift=0
@@ -62,7 +62,7 @@ for src in "${SOURCES[@]}"; do
 done
 
 # The component catalog, kept twice under two different names.
-compare "$ROOT/docs/cookbook.md" "$ROOT/skills/browserslides/references/components.md"
+compare "$ROOT/docs/cookbook.md" "$ROOT/skills/briefing/references/components.md"
 
 if [ "$CHECK" -eq 1 ]; then
   [ "$drift" -eq 0 ] && { echo "assets in sync"; exit 0; }
