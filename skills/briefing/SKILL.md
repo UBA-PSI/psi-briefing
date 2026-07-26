@@ -9,7 +9,7 @@ A dependency-free framework for **briefings**: decks that live in one self-conta
 
 This file, and the reference catalog beside it, exist for you rather than for a human reader: they are the long, explicit version of the format so that you can choose components instead of guessing at them. If they are ever unavailable, `examples/example-deck.md`, `examples/tutorial.md` and the HTML they build are enough to reconstruct the format - the markup is plain and the class names say what they are.
 
-The name is the positioning. A briefing is what you send to someone who could not attend – so the deck has to carry itself, which is why the default style here is text-dense rather than sparse. For a talk you will actually *deliver*, see the sibling project [psi-slides](https://github.com/UBA-PSI/psi-slides).
+The name is the positioning. A briefing is what you send to someone who could not attend – so the deck has to carry itself, which is why the default style here is text-dense rather than sparse. For a talk you will actually *deliver*, see the sibling project [psi-slides](https://uba-psi.github.io/psi-slides/).
 
 ## The two ideas that make it work
 

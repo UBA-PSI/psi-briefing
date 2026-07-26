@@ -42,7 +42,7 @@ because they are siblings. The result is dense on purpose, where iA Presenter is
 sparse on purpose.
 
 So the honest placement is this: **iA Presenter is the closer relative of
-[psi-slides](https://github.com/UBA-PSI/psi-slides)**, our sibling project, which
+[psi-slides](https://uba-psi.github.io/psi-slides/)**, our sibling project, which
 also keeps script and slide in one document. If you want beautiful automatic
 layout for a talk you are going to give, iA Presenter is a mature, well-designed,
 actively developed product and this is not a serious competitor to it.

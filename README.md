@@ -18,7 +18,7 @@ HTML file each: save either and it still opens with the network unplugged.
 ![The example deck's title slide in the Bamberg theme](docs/preview.png)
 
 > **Slides for a talk you will actually deliver?** That is the sibling project,
-> [**psi-slides**](https://github.com/UBA-PSI/psi-slides): one Markdown source
+> [**psi-slides**](https://uba-psi.github.io/psi-slides/): one Markdown source
 > producing a projection, a presenter cockpit, a reading document and a handout.
 > The line between the two is whether anyone is speaking – psi-slides is for the
 > lecture, psi-briefing for the document that has to work without you in the room.
@@ -168,7 +168,7 @@ by timing, delivery and question→answer beats. This was tested on a real one a
 it resisted both treatments – forcing the talk into dense slides fought its
 dramaturgy, and making the slides sparse just produced empty frames. The
 dramaturgy lives in the speaking, and a deck built to be read cannot hold it. For
-that, use [psi-slides](https://github.com/UBA-PSI/psi-slides) or plain keynote
+that, use [psi-slides](https://uba-psi.github.io/psi-slides/) or plain keynote
 slides with a script beside them.
 
 Two smaller limits worth knowing before you invest: there is **no animation
@@ -229,7 +229,7 @@ node tools/md-to-deck.mjs deck.md -o deck.html
 
 Das Ergebnis ist dicht genug, um es ohne Vortragenden zu lesen – ein Briefing ist ja das, was man denen schickt, die nicht dabei waren. Keine Abhängigkeiten, kein Build-Schritt, kein Server, keine zu installierenden Schriften. Sieht überall gleich aus: 13″-Laptop, 4K-Beamer oder Handy im Querformat, weil darin nichts in Pixeln gemessen ist.
 
-**Folien für einen Vortrag, den du tatsächlich hältst?** Das ist das Schwesterprojekt [**psi-slides**](https://github.com/UBA-PSI/psi-slides): eine Markdown-Quelle, daraus Projektion, Referentenpult, Lesedokument und Handout. Die Grenze zwischen beiden ist, ob jemand spricht – psi-slides für die Vorlesung, psi-briefing für das Dokument, das ohne dich im Raum funktionieren muss.
+**Folien für einen Vortrag, den du tatsächlich hältst?** Das ist das Schwesterprojekt [**psi-slides**](https://uba-psi.github.io/psi-slides/): eine Markdown-Quelle, daraus Projektion, Referentenpult, Lesedokument und Handout. Die Grenze zwischen beiden ist, ob jemand spricht – psi-slides für die Vorlesung, psi-briefing für das Dokument, das ohne dich im Raum funktionieren muss.
 
 **Wofür es nicht taugt:** einen sparsamen Bühnenvortrag, der von Timing und Dramaturgie lebt. Das wurde an einem echten ausprobiert und hat sich gegen beide Behandlungen gewehrt – dicht gesetzt kämpft es gegen die Dramaturgie, sparsam gesetzt bleiben leere Rahmen. Es gibt auch kein Animationsmodell über Klick-Vertiefungen hinaus und keine Referentenansicht.
 

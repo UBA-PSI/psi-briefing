@@ -391,6 +391,6 @@ notes on a second screen, no `.pptx` export. Charts are bars and nothing else,
 and the only image effects are a lightbox and a fanned stack.
 :::
 
-> For a talk you will actually deliver, use [psi-slides](https://github.com/UBA-PSI/psi-slides) –
+> For a talk you will actually deliver, use [psi-slides](https://uba-psi.github.io/psi-slides/) –
 > the sibling project. The line between the two is whether anyone will be in the
 > room speaking.
