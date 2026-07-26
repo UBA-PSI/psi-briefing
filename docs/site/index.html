@@ -58,6 +58,13 @@
     --muted-soft: #E7E7E6;
     --rule:       #CFCFCE;
     --stage:      #c3d1dd;
+
+    /* The institutional bar. Not derived from the palette above: it is the grey
+       the university uses on its own sites, and it stays that grey in both
+       schemes so the strip reads the same as it does everywhere else. */
+    --bar:          #3D3C3B;
+    --bar-ink:      #ffffff;
+    --bar-ink-soft: #d6d4d2;
     --stage-ink:  #33506b;
 
     /* Copse is the theme's display face. Here we take its own declared fallback
@@ -94,6 +101,126 @@
       --stage:      #0d1a26;
       --stage-ink:  #cfe0ee;
     }
+  }
+
+  /* ---------- the institutional bar, sticky ----------
+     Modelled on the strip the university puts on its own sites (see
+     ki-policy.org): affiliation left, people right, dark grey.
+     The menu is a <details>, not a script. This page has no JavaScript at all,
+     and a disclosure widget is the one native control that does exactly this -
+     keyboard operation, Escape, and the correct semantics for free. Its contents
+     are also not in the tab order while it is closed, which is why the page needs
+     no skip link ahead of nine navigation items. */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bar);
+    color: var(--bar-ink);
+  }
+  .topbar-in {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: var(--s3) var(--s5);
+    display: flex;
+    align-items: center;
+    gap: var(--s4);
+  }
+  .topbar a { color: var(--bar-ink); text-decoration: none; }
+  .topbar a:hover { text-decoration: underline; }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    font-size: 0.86rem;
+    /* The wordmark is the one thing here that should not wrap. */
+    white-space: nowrap;
+  }
+  .topbar-brand svg { height: 22px; width: 22px; flex: none; }
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    font-size: 0.8rem;
+    min-width: 0;
+  }
+  /* Never wrap: a two-line right-hand block makes the bar grow taller, which is
+     the one thing a sticky strip must not do while the page is being read. It is
+     dropped in stages instead - see the queries below. */
+  .topbar-right { white-space: nowrap; }
+  .topbar-right a { color: var(--bar-ink-soft); }
+  .topbar-right a:hover { color: var(--bar-ink); }
+  .topbar-sep { color: #b0adab; }
+
+  /* The menu. position: relative on the <details> so the panel can hang off it. */
+  .topbar-menu { position: relative; flex: none; }
+  .topbar-menu > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    padding: var(--s1) var(--s2);
+    font-size: 0.8rem;
+    color: var(--bar-ink);
+    cursor: pointer;
+    list-style: none;            /* Firefox */
+    border: 1px solid transparent;
+  }
+  .topbar-menu > summary::-webkit-details-marker { display: none; }
+  .topbar-menu > summary:hover,
+  .topbar-menu[open] > summary { border-color: #6d6a68; }
+  .topbar-menu > summary:focus-visible { outline: 2px solid var(--bar-ink); outline-offset: 1px; }
+  .topbar-menu svg { width: 14px; height: 12px; }
+  .topbar-panel {
+    position: absolute;
+    top: calc(100% + var(--s2));
+    right: 0;
+    /* Wide enough that the two longest headings stay on one line. Wrapping a
+       menu entry makes the list read as a paragraph. */
+    /* min-width has to be viewport-bounded too. A plain min-width wins against
+       max-width in the cascade, so at 320px the floor of 21.5rem overrode the
+       ceiling and the panel hung 48px off the left edge. */
+    min-width: min(21.5rem, calc(100vw - 2rem));
+    max-width: min(24rem, calc(100vw - 2rem));
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    padding: var(--s3) 0;
+  }
+  .topbar-panel ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; }
+  .topbar-panel li { counter-increment: toc; }
+  .topbar-panel a {
+    display: flex;
+    gap: var(--s3);
+    padding: var(--s2) var(--s4);
+    color: var(--ink);
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+  .topbar-panel a::before {
+    content: counter(toc);
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    flex: none;
+  }
+  .topbar-panel a:hover { background: var(--muted-soft); text-decoration: none; }
+  /* Anchored headings have to clear the bar, or the browser scrolls them under it. */
+  .wrap > section { scroll-margin-top: 4.5rem; }
+  /* Stage one, below 56rem: the chair name is 51 characters and is the first
+     thing that stops fitting. The person stays, because that is the attribution
+     that matters, and the affiliation is still one click away on the left. */
+  @media (max-width: 56rem) {
+    .topbar-chair, .topbar-sep { display: none; }
+  }
+  @media (max-width: 46rem) {
+    /* The names go first: the affiliation and the menu are what a narrow screen
+       needs, and three links plus a wordmark do not fit on one line. */
+    .topbar-right { display: none; }
+    .topbar-in { padding: var(--s2) var(--s5); }
+    /* The right-hand block carried the margin-left: auto that pushed everything
+       over. With it hidden the menu sat next to the wordmark, and a panel
+       anchored to right: 0 then hung off the left of the viewport. */
+    .topbar-menu { margin-left: auto; }
   }
 
   * { box-sizing: border-box; }
@@ -585,6 +712,39 @@
 </head>
 <body>
 
+<nav class="topbar" aria-label="Universität Bamberg and page contents">
+  <div class="topbar-in">
+    <a class="topbar-brand" href="https://www.uni-bamberg.de/" target="_blank" rel="noopener">
+      <svg viewBox="0 0 183 183" aria-hidden="true" focusable="false" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:11.3386"><circle cx="76.6" cy="106" r="36" style="fill:none;stroke:currentColor;stroke-width:19.84px"/><path d="M26.7,25.2C65.4,1.3 115.6,8.2 146.4,41.6C177.2,75 180.1,125.6 153.1,162.2" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:19.84px"/><path d="M11.2,109.2C9.8,82.5 25,57.6 49.4,46.5C73.8,35.4 102.5,40.2 121.8,58.7C141.2,77.2 147.3,105.7 137.3,130.5C127.3,155.4 103.1,171.6 76.3,171.5" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:19.84px"/></svg>
+      <span>Universität Bamberg</span>
+    </a>
+    <div class="topbar-right">
+      <a class="topbar-chair" href="https://psi.uni-bamberg.de/" target="_blank" rel="noopener">Chair of Privacy and Security in Information Systems</a>
+      <span class="topbar-sep">·</span>
+      <a href="https://psi.uni-bamberg.de/de/ueberuns/" target="_blank" rel="noopener">Prof. Dr. Dominik Herrmann</a>
+    </div>
+    <details class="topbar-menu">
+      <summary>
+        <svg viewBox="0 0 14 12" aria-hidden="true" focusable="false"><path d="M0 1h14M0 6h14M0 11h14" style="stroke:currentColor;stroke-width:1.6px;fill:none"/></svg>
+        <span>Contents</span>
+      </summary>
+      <div class="topbar-panel">
+        <ol>
+        <li><a href="#why">Some readers would rather have slides</a></li>
+        <li><a href="#layout">You write a document; it picks the layout</a></li>
+        <li><a href="#see-it">See it</a></li>
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#writing">How you write one</a></li>
+        <li><a href="#ideas">Two ideas do the work</a></li>
+        <li><a href="#limits">When not to use it</a></li>
+        <li><a href="#compare">How it compares</a></li>
+        <li><a href="#further">Read further</a></li>
+        </ol>
+      </div>
+    </details>
+  </div>
+</nav>
+
 <header class="masthead">
   <div class="wrap">
     <div class="hero">
@@ -616,7 +776,7 @@
 </header>
 
 <div class="wrap">
-  <section>
+  <section id="why">
     <h2>Some readers would rather have slides</h2>
     <p class="tight sub">A report and a deck can carry the same argument, and
       which one lands better is <strong>a preference rather than a ranking</strong>. Some people
@@ -658,7 +818,7 @@
 </div>
 
 <div class="wrap">
-  <section>
+  <section id="layout">
     <h2>You write a document; it picks the layout</h2>
     <p class="tight sub">The converter reads how your Markdown is arranged and
       picks the component from that. Four headings at the same level become a
@@ -709,7 +869,7 @@ Knows the system.
 <!-- The screenshots take the full container width; the paragraphs around them
      keep the 38rem reading cap from .wrap > section > p. -->
 <div class="wrap">
-  <section>
+  <section id="see-it">
     <h2>See it</h2>
     <p class="tight sub">Two slides from the example deck, as they come out.</p>
 
@@ -742,7 +902,7 @@ Knows the system.
 </div>
 
 <div class="wrap">
-  <section>
+  <section id="start">
     <h2>Getting started</h2>
     <p class="tight sub">Clone the repository and run the converter. Node 18 or
       newer is the only thing it needs.</p>
@@ -773,7 +933,7 @@ is empty, and that no image is broken.</code></pre>
 
 <div class="wrap">
 
-  <section>
+  <section id="writing">
     <h2>How you write one</h2>
     <p class="tight sub">A Markdown file and one command. The output is ordinary
       readable HTML, so you can hand-tune any slide afterwards.</p>
@@ -820,7 +980,7 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
       of the write-up</a>).</p>
   </section>
 
-  <section>
+  <section id="ideas">
     <h2>Two ideas do the work</h2>
     <div class="pair">
       <div>
@@ -856,7 +1016,7 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
       values, and load it after <code>briefing.css</code>.</p>
   </section>
 
-  <section>
+  <section id="limits">
     <h2>When not to use it</h2>
     <p class="tight sub">It fits content that is already document-shaped: a
       retrospective, project documentation, a research summary, lecture notes, a
@@ -876,7 +1036,7 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
     </div>
   </section>
 
-  <section>
+  <section id="compare">
     <h2>How it compares</h2>
     <p class="tight sub">Auto-layout from Markdown was not invented here. Below is
       the short version; the <a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/comparison.md">full
@@ -913,7 +1073,7 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
       product and this is not a serious competitor to it.</p>
   </section>
 
-  <section>
+  <section id="further">
     <h2>Read further</h2>
     <ul class="links">
       <li><a href="https://github.com/UBA-PSI/psi-briefing">The repository</a>
