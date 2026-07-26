@@ -481,7 +481,7 @@ Zero hits across 50 slides in three finished decks, and it fires at 16 px where
 the overflow check is silent.
 
 Two lessons. **A fault that a bottom-pinned element can absorb needs its own
-check** — the band has now defeated three separate metrics in this project, and
+check** – the band has now defeated three separate metrics in this project, and
 each time the fix was to stop measuring the slide as a whole and measure the
 relationship between two named boxes instead. And this one surfaced because an
 agent reported the fault it had introduced mid-task rather than only the state it
@@ -491,7 +491,7 @@ permanent check.
 ## 6f. A known weakness in the estimator, left in place on purpose
 
 The tutorial's last slide is a `::: cols--3` of three text cards. The report flags
-it `!` — "will not fit" — while the browser measures 25 px of headroom at 1600 ×
+it `!` – "will not fit" – while the browser measures 25 px of headroom at 1600 ×
 900 and 16 px at 1024 × 768. The flag is wrong, and it is wrong every time the
 deck is built.
 
@@ -510,7 +510,7 @@ than slightly wrong.
 
 The lesson is about the flag rather than the arithmetic. `~` means "look at this",
 and being wrong occasionally costs nothing. `!` claims a slide is broken, and one
-that cries wolf on every build teaches the reader to ignore it — which is exactly
+that cries wolf on every build teaches the reader to ignore it – which is exactly
 what a detector must never do (§2). If this cannot be made accurate, `!` should
 become `~` for the layouts where the estimate is known to be unreliable.
 
