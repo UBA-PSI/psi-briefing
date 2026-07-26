@@ -75,18 +75,6 @@
     --s1: 0.25rem;  --s2: 0.5rem;   --s3: 0.75rem;  --s4: 1rem;
     --s5: 1.5rem;   --s6: 2rem;     --s7: 3rem;     --s8: 4.5rem;
 
-    /* How far a figure, a table or a transcript may reach past the reading
-       column. Bounded by the viewport so it never causes a scrollbar.
-       This is 60rem against a 50rem column, so the overhang is 80px a side. At
-       72rem against 46rem it was 232px a side, and that is not an outdent any
-       more but a staircase: every code block began 232px to the left of the
-       sentence introducing it, and the eye read the two as unrelated. The fix
-       runs from both ends - the column came out, the breakout came in - because
-       moving either one alone leaves the other wrong.
-       One value for all of it, including the banner. A separate, wider banner
-       width put three left edges on one page (1152, 960, 736) and the steps
-       between them read as carelessness. */
-    --breakout: min(60rem, calc(100vw - 3rem));
   }
 
   @media (prefers-color-scheme: dark) {
@@ -126,22 +114,39 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* One reading column, and the wide things break out of it.
-     Two earlier attempts were both wrong in opposite directions. A 37rem
-     container starved the figures and clipped the report transcript. A 60rem
-     container with a 38rem cap on the paragraphs fixed that and left a 350px
-     void down the right of every text section, because the text was capped but
-     still left-aligned inside a box twice its width.
-     So: the container IS the measure - 50rem is about 83 characters at 18px, so
-     paragraphs need no cap of their own - and the few things that genuinely want
-     more room widen symmetrically out of it with a negative inline margin.
-     No void, and the transcript still fits. */
+  /* One column, one left edge, and the measure applied as a cap inside it.
+     Three earlier attempts all failed the same way, and it took two rounds of
+     being told so to see why. A 37rem container starved the figures. Then a
+     46rem container with the figures breaking out symmetrically, then 50rem
+     against a 60rem breakout: both put the code block 232px, later 104px, to
+     the left of the sentence introducing it. Any symmetric outdent produces two
+     left edges by construction, and no value for it is small enough to stop the
+     eye reading them as a step - the step IS the artefact, not its size.
+     So the container is the widest thing on the page and everything shares its
+     left edge. Running text does not fill it: it is capped at the measure and
+     sits flush left, which puts the slack on the right where a ragged edge
+     already lives. The wide things - transcripts, screenshots, the table, the
+     section rules - lift the cap and run the full width.
+     A pleasant side effect: this is immune to the margin-shorthand trap that
+     the old breakout kept falling into, because max-width is not reset by a
+     a margin shorthand the way margin-inline is. */
   .wrap {
-    max-width: 50rem;
+    max-width: 60rem;
     margin: 0 auto;
     padding: 0 var(--s5) var(--s8);
   }
-  /* (the breakout rule itself lives at the end of this stylesheet - see there) */
+  /* The measure. 47rem at 18px is about 83 characters, and the container is
+     60rem, so a paragraph stops roughly 160px short of the right edge. */
+  .wrap > section > * { max-width: 47rem; }
+  /* The exceptions: things that are not running text and earn the full width.
+     h2 is here for its rule - the line above a heading marks how wide the
+     section is, so it has to reach the same edge as the widest thing in it. */
+  .wrap > section > h2,
+  .wrap > section > pre,
+  .wrap > section > figure,
+  .wrap > section > .shots-two,
+  .wrap > section > .compare,
+  .wrap > section > .pair { max-width: none; }
   /* A bordered box holding paragraphs is text, not a figure: widening the
      container ran these to 130 characters a line. Only the things that are
      genuinely wide - the demo, the screenshots, the tables, the code - keep the
@@ -183,7 +188,9 @@
     padding: var(--s7) var(--s5) var(--s6);
     margin-bottom: var(--s7);
   }
-  header.masthead .wrap { padding: 0; max-width: 50rem; }
+  /* The same horizontal padding as every other .wrap, so the banner text starts
+     on the one left edge the page has rather than 24px outside it. */
+  header.masthead .wrap { padding: 0 var(--s5); max-width: 60rem; }
 
   /* Text left, one real slide right. The slide is the argument: it shows Markdown
      on one side and the component it produced on the other, which states "this
@@ -571,17 +578,9 @@
   }
   footer p { margin: 0 0 var(--s2); }
 
-  /* ---------- the breakout, last on purpose ----------
-     Every one of these components declares a `margin` shorthand of its own
-     further up, and a shorthand resets margin-inline to 0. Placed with the
-     container rule, this was silently cancelled for all of them: they took the
-     wider width and kept the column left edge, so they overhung the right and
-     put a scrollbar on the page at 1100px. Last in the sheet, the vertical
-     margins they set survive and only the horizontal ones are replaced. */
-  .demo, .shots-two, .compare, .wrap > section > pre, .hero {
-    width: var(--breakout);
-    margin-inline: calc((100% - var(--breakout)) / 2);
-  }
+  /* The demo figure holds the wide .demo grid, so neither may be capped, and the
+     figure's own margin must not re-centre it. */
+  .demo { width: 100%; }
 </style>
 </head>
 <body>
