@@ -1,8 +1,12 @@
 # psi-briefing
 
-**Briefings you can read without a meeting – text-dense 16:9 slides in a single, self-contained HTML file.**
+**A generator for briefing decks. Write one Markdown file, run one command, and get text-dense 16:9 slides in a single self-contained HTML file.**
 
-A briefing is what you send to the people who could not attend, so the deck has to carry itself: dense enough to read alone, and one `.html` file you can put in an email. No framework, no build step, no server, no fonts to install. Open it on a 13″ laptop, a 4K projector or a phone in landscape and it looks identical everywhere, because nothing inside it is measured in pixels.
+```bash
+node tools/md-to-deck.mjs deck.md -o deck.html
+```
+
+The output is dense enough to read without anyone presenting it, because a briefing is what you send to the people who could not attend. No dependencies, no build step, no server, no fonts to install. Open the file on a 13″ laptop, a 4K projector or a phone in landscape and it looks the same everywhere, because nothing inside it is measured in pixels.
 
 *Made by [Dominik Herrmann](https://herdom.net) at the [Chair of Privacy and Security in Information Systems](https://psi.uni-bamberg.de/), University of Bamberg · [MIT-licensed](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
 
@@ -20,7 +24,7 @@ A briefing is what you send to the people who could not attend, so the deck has 
 
 Two ideas do all the work:
 
-1. **Container-query scaling.** Every slide is a `16:9` box with `container-type:size`. Everything inside it – text, spacing, charts, everything – is measured in container-query units (`cqw` = 1 % of slide width, `cqh` = 1 % of slide height), never in `px` or `rem`. So the whole layout scales *proportionally* with the slide. The alignment isn't pixel-*fixed*; it's proportion-perfect, which is what makes it hold together on any display.
+1. **Container-query scaling.** Every slide is a `16:9` box with `container-type:size`. Everything inside it – text, spacing, charts, everything – is measured in container-query units (`cqw` = 1 % of slide width, `cqh` = 1 % of slide height), never in `px` or `rem`. So the whole layout scales *proportionally* with the slide. Every gap and every type size keeps its proportion, which is what makes a deck hold together on a laptop and a 4K projector at once.
 
 2. **Semantic design tokens.** Every colour and font is a CSS custom property with a semantic name (`--accent`, `--ink`, `--highlight`, `--font-display`…). A *theme* is nothing but a `:root { … }` block that overrides those tokens. Re-skinning the entire deck – including the generated SVG charts, which read the tokens at draw time – is a one-file change.
 
@@ -106,7 +110,7 @@ afterwards. See [`docs/markdown.md`](docs/markdown.md).
 | `themes/midnight.css` | A dark theme – proof that flipping `--paper`/`--ink` re-skins everything. |
 | `examples/example-deck.html` | A 14-slide worked example exercising every major layout. |
 | `examples/example-deck.md` | The same idea written as a Markdown document, for `md-to-deck.mjs`. |
-| `examples/tutorial.md` | A tutorial deck that teaches the format by being written in it: eight slides show the Markdown beside the layout it produced. |
+| `examples/tutorial.md` | A tutorial deck that teaches the format by being written in it: eleven of its seventeen slides show the Markdown beside the layout it produced. |
 | `tools/md-to-deck.mjs` | **Write a deck as Markdown.** Infers the component from the shape of the content: three `###` blocks become three columns, four become a bordered grid, a blockquote becomes the closing band. Outputs the same deck HTML you would write by hand. |
 | `docs/markdown.md` | The Markdown authoring reference: document structure, the shape→component table, directives, and what the converter will and will not correct. |
 | `docs/cookbook.md` | The component catalog – copy-paste snippets for every layout. |
@@ -172,7 +176,13 @@ one.
 
 ## Deutsch
 
-**psi-briefing** baut *Briefings*: textdichte 16:9-Folien in **einer** selbst-enthaltenen HTML-Datei. Ein Briefing ist das, was man denen schickt, die nicht dabei waren – das Deck muss sich also selbst tragen: dicht genug zum Lesen, und eine `.html`, die in eine E-Mail passt. Kein Framework, kein Build-Schritt, kein Server, keine zu installierenden Schriften. Sieht überall gleich aus: 13″-Laptop, 4K-Beamer oder Handy im Querformat – weil darin nichts in Pixeln gemessen ist.
+**psi-briefing** ist ein Generator für Briefing-Decks: eine Markdown-Datei schreiben, einen Befehl ausführen, und heraus kommen textdichte 16:9-Folien in **einer** selbst-enthaltenen HTML-Datei.
+
+```bash
+node tools/md-to-deck.mjs deck.md -o deck.html
+```
+
+Das Ergebnis ist dicht genug, um es ohne Vortragenden zu lesen – ein Briefing ist ja das, was man denen schickt, die nicht dabei waren. Keine Abhängigkeiten, kein Build-Schritt, kein Server, keine zu installierenden Schriften. Sieht überall gleich aus: 13″-Laptop, 4K-Beamer oder Handy im Querformat, weil darin nichts in Pixeln gemessen ist.
 
 **Folien für einen Vortrag, den du tatsächlich hältst?** Das ist das Schwesterprojekt [**psi-slides**](https://github.com/UBA-PSI/psi-slides): eine Markdown-Quelle, daraus Projektion, Referentenpult, Lesedokument und Handout. Die Grenze zwischen beiden ist, ob jemand spricht – psi-slides für die Vorlesung, psi-briefing für das Dokument, das ohne dich im Raum funktionieren muss.
 
