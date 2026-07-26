@@ -62,11 +62,10 @@
     /* The institutional bar. Not derived from the palette above: it is the grey
        the university uses on its own sites, and it stays that grey in both
        schemes so the strip reads the same as it does everywhere else. */
-    /* How far the banner and the bar may reach past the column, to the RIGHT only.
+    /* How far the banner may reach past the column, to the RIGHT only.
        Growing them on both sides is what put three left edges on this page once
-       already; growing them rightwards keeps every left edge where it is and uses
-       margin that is empty anyway. Both use the same value, so their right edges
-       line up with each other.
+       already; growing it rightwards keeps every left edge where it is and uses
+       margin that is empty anyway.
        max(0px, ...) is load-bearing: below 60rem the inner term goes negative and
        an unclamped value would pull them NARROWER than the column. The -1.5rem
        keeps a gutter, so neither can cause a scrollbar. */
@@ -128,18 +127,27 @@
     background: var(--bar);
     color: var(--bar-ink);
   }
+  /* Full viewport width, contents flush to both edges. This is deliberately NOT
+     aligned to the reading column: the bar is a frame around the page rather than
+     part of it, and reading it as a frame is what makes the misalignment legible
+     instead of accidental. The inset is one step wider than the column's gutter
+     for the same reason - it reads as an edge, not as a failed alignment. */
   .topbar-in {
-    max-width: 60rem;
-    margin: 0 auto;
-    padding: var(--s3) var(--s5);
+    padding: var(--s3) var(--s6);
   }
-  /* Reaching right buys room for a few section links. Staying inside the column
-     left 162px free, which is two words - not enough to be worth the clutter. */
   .topbar-row {
-    margin-right: calc(-1 * var(--extra-right));
     display: flex;
     align-items: center;
-    gap: var(--s4);
+    gap: var(--s5);
+  }
+  /* Everything the reader navigates with, held together at the right end. The auto
+     margin lives here rather than on the links, so hiding the links at narrow
+     widths cannot move the menu back to the middle of the row. */
+  .topbar-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--s5);
   }
   .topbar a { color: var(--bar-ink); text-decoration: none; }
   .topbar a:hover { text-decoration: underline; }
@@ -152,8 +160,9 @@
     white-space: nowrap;
   }
   .topbar-brand svg { height: 22px; width: 22px; flex: none; }
+  /* Affiliation, then chair, then person: widest scope first, reading left to
+     right, immediately after the wordmark they belong to. */
   .topbar-right {
-    margin-left: auto;
     display: flex;
     align-items: center;
     gap: var(--s2);
@@ -172,7 +181,7 @@
      get to the part they came for. Shown only where they fit without pushing the
      names off the row; the menu carries all nine at every width. */
   .topbar-nav { display: none; }
-  @media (min-width: 84rem) {
+  @media (min-width: 72rem) {
     .topbar-nav {
       display: flex;
       gap: var(--s4);
@@ -245,10 +254,6 @@
        needs, and three links plus a wordmark do not fit on one line. */
     .topbar-right { display: none; }
     .topbar-in { padding: var(--s2) var(--s5); }
-    /* The right-hand block carried the margin-left: auto that pushed everything
-       over. With it hidden the menu sat next to the wordmark, and a panel
-       anchored to right: 0 then hung off the left of the viewport. */
-    .topbar-menu { margin-left: auto; }
   }
 
   * { box-sizing: border-box; }
@@ -397,7 +402,12 @@
     }
     .hero-head { grid-area: 1 / 1; }
     .hero-text { grid-area: 2 / 1; }
-    .hero-shot { grid-area: 2 / 2; }
+    /* Spanning both rows and centred, rather than starting on row 2. Starting at
+       the lede was right while the image was 496px and shorter than the text
+       beside it; at 597px it reaches past the bottom of the column and the whole
+       banner looks like it has slipped down. Centring is what the eye reads as
+       aligned once the two sides are close in height. */
+    .hero-shot { grid-area: 1 / 2 / span 2 / auto; align-self: center; }
   }
   /* ---------- click to enlarge, without a script ----------
      The figure itself becomes the overlay when it is the :target. The obvious
@@ -822,17 +832,18 @@
       <svg viewBox="0 0 183 183" aria-hidden="true" focusable="false" style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:11.3386"><circle cx="76.6" cy="106" r="36" style="fill:none;stroke:currentColor;stroke-width:19.84px"/><path d="M26.7,25.2C65.4,1.3 115.6,8.2 146.4,41.6C177.2,75 180.1,125.6 153.1,162.2" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:19.84px"/><path d="M11.2,109.2C9.8,82.5 25,57.6 49.4,46.5C73.8,35.4 102.5,40.2 121.8,58.7C141.2,77.2 147.3,105.7 137.3,130.5C127.3,155.4 103.1,171.6 76.3,171.5" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:19.84px"/></svg>
       <span>Universität Bamberg</span>
     </a>
-    <div class="topbar-nav">
-      <a href="#see-it">See it</a>
-      <a href="#start">Getting started</a>
-      <a href="#compare">Compare</a>
-    </div>
     <div class="topbar-right">
       <a class="topbar-chair" href="https://psi.uni-bamberg.de/" target="_blank" rel="noopener">Chair of Privacy and Security in Information Systems</a>
       <span class="topbar-sep">·</span>
       <a href="https://psi.uni-bamberg.de/de/ueberuns/" target="_blank" rel="noopener">Prof. Dr. Dominik Herrmann</a>
     </div>
-    <details class="topbar-menu">
+    <div class="topbar-actions">
+     <div class="topbar-nav">
+      <a href="#see-it">See it</a>
+      <a href="#start">Getting started</a>
+      <a href="#compare">Compare</a>
+     </div>
+     <details class="topbar-menu">
       <summary>
         <svg viewBox="0 0 14 12" aria-hidden="true" focusable="false"><path d="M0 1h14M0 6h14M0 11h14" style="stroke:currentColor;stroke-width:1.6px;fill:none"/></svg>
         <span>Contents</span>
@@ -850,7 +861,8 @@
         <li><a href="#further">Read further</a></li>
         </ol>
       </div>
-    </details>
+     </details>
+    </div>
    </div>
   </div>
 </nav>
