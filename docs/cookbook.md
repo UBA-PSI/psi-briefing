@@ -2,6 +2,21 @@
 
 A copy-from reference catalog for building 16:9 HTML slide decks with psi-briefing. Every snippet below uses only classes that exist in `framework/briefing.css`. Pick the component you need, copy its markup into a slide, and adjust the text.
 
+> **This catalog is written to be read by a language model as much as by a person.**
+> It is long, repetitive and exhaustive on purpose: every component appears with
+> complete markup and with the reasoning for when to use it, which is what an
+> assistant needs in order to choose correctly rather than guess. If you are working
+> with Claude, Copilot or similar, hand it this file (or install the skill in
+> [`skills/briefing/`](https://github.com/UBA-PSI/psi-briefing/tree/main/skills/briefing/), which carries its own copy) and ask for
+> the deck you want.
+>
+> You do not strictly need either. The output of this framework is plain HTML with
+> named classes, so pointing an assistant at
+> [`examples/example-deck.html`](https://github.com/UBA-PSI/psi-briefing/blob/main/examples/example-deck.html) and
+> [`examples/tutorial.md`](https://github.com/UBA-PSI/psi-briefing/blob/main/examples/tutorial.md) is usually enough for it to work
+> out the format and produce a correct deck. The decks are the specification; this
+> catalog just saves it the inference.
+
 ---
 
 ## How it works

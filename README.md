@@ -10,6 +10,11 @@ The output is dense enough to read without anyone presenting it, because a brief
 
 *Made by [Dominik Herrmann](https://herdom.net) at the [Chair of Privacy and Security in Information Systems](https://psi.uni-bamberg.de/), University of Bamberg · [MIT-licensed](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
 
+**[Look at it first →](https://uba-psi.github.io/psi-briefing/)** · open the
+[example deck](https://uba-psi.github.io/psi-briefing/example-deck.html) or the
+[tutorial deck](https://uba-psi.github.io/psi-briefing/tutorial.html). Both are one
+HTML file each: save either and it still opens with the network unplugged.
+
 ![The example deck's title slide in the Bamberg theme](docs/preview.png)
 
 > **Slides for a talk you will actually deliver?** That is the sibling project,
@@ -39,7 +44,11 @@ python3 -m http.server 8000
 # open http://localhost:8000/examples/example-deck.html
 ```
 
-A minimal deck is three things – link the framework, add slides, add the chrome:
+A minimal deck is three things – link the framework, add slides, add the chrome.
+The three `href`/`src` paths below are written for a deck sitting **at the root of
+the repository**; every deck in `examples/` is one level down and links
+`../framework/briefing.css` instead. Getting this wrong is the usual reason a new
+deck opens completely unstyled.
 
 ```html
 <!DOCTYPE html>
@@ -114,7 +123,7 @@ afterwards. See [`docs/markdown.md`](docs/markdown.md).
 | `tools/md-to-deck.mjs` | **Write a deck as Markdown.** Infers the component from the shape of the content: three `###` blocks become three columns, four become a bordered grid, a blockquote becomes the closing band. Outputs the same deck HTML you would write by hand. |
 | `docs/markdown.md` | The Markdown authoring reference: document structure, the shape→component table, directives, and what the converter will and will not correct. |
 | `docs/cookbook.md` | The component catalog – copy-paste snippets for every layout. |
-| `docs/comparison.md` | How it compares to iA Presenter, reveal.js, Marp, Beamer and PowerPoint – written in both directions, naming the case where each one is the better choice. |
+| `docs/comparison.md` | How it compares to iA Presenter, reveal.js, Marp, Slidev, Beamer and PowerPoint/Keynote, plus shorter notes on several others – written in both directions, naming the case where each one is the better choice. |
 | `CONTRIBUTING.md` | Conventions that are not obvious from the code: no px inside a slide, no hard-coded grid tracks, no dependencies, and why comments here explain the failure they prevent. |
 | `docs/tutorial.en.md` · `docs/tutorial.de.md` | Build-your-first-deck walkthrough, bilingual. |
 | `tools/embed-fonts.mjs` · `tools/inline-deck.mjs` | Turn a linked dev deck into one self-contained file with base64 fonts/images. |
@@ -123,6 +132,11 @@ afterwards. See [`docs/markdown.md`](docs/markdown.md).
 | `tools/sync-assets.sh` | Keeps the duplicated copies of the framework and the catalog in step; `--check` reports drift instead of fixing it. |
 | `skills/briefing/` | A Claude Code / Agent **skill** so an AI assistant can build these decks for you. |
 | `docs/handoff-autolayout.md` | What building a real deck taught us about the framework, and what an auto-layout pass has to survive. |
+| `tools/README.md` | The per-tool reference: every flag, every exit code, and the manifest format `embed-fonts.mjs` expects. Deeper than the one-line descriptions above. |
+| `docs/site/index.html` | The project's own page, published to [uba-psi.github.io/psi-briefing](https://uba-psi.github.io/psi-briefing/). One file, no scripts, no external requests – itself an argument for the format. |
+| `CHANGELOG.md` | What changed in each release, newest first. |
+| `package.json` | Metadata plus four script aliases: `npm run build:example`, `build:self-contained`, `sync:assets`, `check:assets`. There are no dependencies and no lockfile. |
+| `.github/workflows/` | CI builds both decks from their Markdown on every push and fails if anything external survives inlining; a second workflow publishes the page; a third cuts a release from a `v*` tag. |
 
 ## Theming
 
@@ -162,9 +176,30 @@ model** beyond click-to-reveal panels and image stacks, and **no speaker view** 
 if you need presenter notes on a second screen, that is psi-slides' job, not this
 one.
 
-## The Claude skill
+## Building a deck with an assistant
 
-`skills/briefing/` packages this framework as a skill so Claude can author decks for you: describe your talk, and it assembles slides from the catalog, picks or builds a theme, verifies the render, and (optionally) inlines everything into one file. See [skills/briefing/README.md](skills/briefing/README.md) for installation.
+Two documents here are written for a language model rather than for a person, and
+it is worth saying so plainly:
+
+- **[`docs/cookbook.md`](docs/cookbook.md), the component catalog.** Long,
+  repetitive and exhaustive on purpose. Every component appears with complete
+  markup and with the case it is for, because an assistant choosing between 33
+  components needs each one spelled out where a human reader would skim.
+- **[`skills/briefing/`](skills/briefing/), the Claude Code skill.** The catalog
+  plus the authoring rules plus an audit that opens the deck in a browser and
+  measures it. Describe your talk and it assembles the slides, picks or builds a
+  theme, checks the render against the same rules a person would, and inlines
+  everything into one file. Installation: [skills/briefing/README.md](skills/briefing/README.md).
+
+**Neither is required.** The input is Markdown and the output is plain HTML with
+named classes, so pointing an assistant at
+[`examples/example-deck.md`](examples/example-deck.md),
+[`examples/tutorial.md`](examples/tutorial.md) and the decks they build is usually
+enough for it to work the format out unaided. The decks are the specification. The
+catalog and the skill only save it the guessing.
+
+And because the output is ordinary HTML, the same is true afterwards: adjusting one
+slide by hand means editing one element, whether you do that or an assistant does.
 
 ## License
 

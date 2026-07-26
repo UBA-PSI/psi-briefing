@@ -1,0 +1,184 @@
+# Cuts a release when a v* tag is pushed.
+#
+# WHAT COMES OUT
+#   psi-briefing-<version>.zip / .tar.gz   the tagged tree plus the built decks
+#   example-deck.html                      one self-contained file, opens offline
+#   tutorial.html                          same, and it teaches the format
+#   SHA256SUMS                             checksums for all four
+#
+# The two single-file decks are attached separately as well as inside the
+# archives. They are the thing most people actually want from a release page:
+# something to open and look at before deciding whether to download anything.
+#
+# WHY git archive
+#   The archive body is `git archive` of the tag, so the source in the release is
+#   exactly the source at the tag - not the working tree of a runner that may have
+#   had files generated into it. The built decks are then added under the same
+#   prefix, which is the only content that is not in the tag.
+#
+# WHY gh instead of a release action
+#   This project has no dependencies anywhere else and it would be odd for the
+#   release path to be the exception. The GitHub CLI is preinstalled on the runner.
+#
+# HOW TO CUT ONE
+#   1. bump "version" in package.json
+#   2. add the matching section to CHANGELOG.md, headed "## <version> - <date>"
+#   3. git tag v<version> && git push origin v<version>
+#   The guards below fail the run if 1 and 2 disagree with the tag, because a
+#   release whose metadata contradicts its tag is worse than no release.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  # A dry run: builds and uploads the artefacts to the run, creates no release.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ---------------------------------------------------------------- guards
+      - name: Work out the version, and refuse to disagree with the tag
+        id: v
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            DRY=0
+          else
+            VERSION="$(node -p "require('./package.json').version")"
+            DRY=1
+          fi
+          PKG="$(node -p "require('./package.json').version")"
+
+          if [ "$DRY" -eq 0 ] && [ "$VERSION" != "$PKG" ]; then
+            echo "::error::tag is v$VERSION but package.json says $PKG" >&2
+            exit 1
+          fi
+          if ! grep -qE "^## +$(printf '%s' "$VERSION" | sed 's/\./\\./g')( |$)" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no section headed '## $VERSION'" >&2
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "dry=$DRY" >> "$GITHUB_OUTPUT"
+          echo "ref=${{ github.event_name == 'push' && github.ref_name || 'HEAD' }}" >> "$GITHUB_OUTPUT"
+          echo "releasing $VERSION (dry=$DRY)"
+
+      - name: Duplicated copies are in step with their originals
+        run: tools/sync-assets.sh --check
+
+      # ------------------------------------------------------------- the decks
+      # Built from the Markdown rather than copied, so a release can never ship a
+      # deck that has drifted from the source that is in the same archive.
+      - name: Build the decks
+        run: |
+          mkdir -p dist
+          node tools/md-to-deck.mjs examples/example-deck.md -o examples/example-deck-md.html
+          node tools/md-to-deck.mjs examples/tutorial.md     -o examples/tutorial.html
+          tools/build-deck.sh examples/example-deck-md.html -o dist/example-deck.html
+          tools/build-deck.sh examples/tutorial.html        -o dist/tutorial.html
+
+      # build-deck.sh exits non-zero if anything external survives inlining, so
+      # this is belt and braces - but a release asset that silently needs the
+      # network is the one failure nobody would notice until it mattered.
+      - name: The single-file decks really are self-contained
+        run: |
+          fail=0
+          for f in dist/example-deck.html dist/tutorial.html; do
+            if grep -qE '(src|href)="(https?:)?//' "$f"; then
+              echo "::error::$f still references something external" >&2
+              grep -nE '(src|href)="(https?:)?//' "$f" | head >&2
+              fail=1
+            fi
+            echo "  $f  $(du -h "$f" | cut -f1)"
+          done
+          exit $fail
+
+      # ------------------------------------------------------------ the bundle
+      - name: Assemble the archives
+        env:
+          V: ${{ steps.v.outputs.version }}
+          REF: ${{ steps.v.outputs.ref }}
+        run: |
+          set -euo pipefail
+          NAME="psi-briefing-$V"
+          mkdir -p stage/"$NAME"
+          # The tagged tree, verbatim.
+          git archive --format=tar "$REF" | tar -x -C stage/"$NAME"
+          # The built decks, which are the only thing not in the tag. They go in
+          # examples/ next to the sources they came from, and in dist/ as the
+          # ready-to-send files.
+          mkdir -p stage/"$NAME"/dist
+          cp dist/example-deck.html dist/tutorial.html stage/"$NAME"/dist/
+          cp examples/tutorial.html stage/"$NAME"/examples/tutorial.html
+          cp examples/example-deck-md.html stage/"$NAME"/examples/example-deck-md.html
+          # The website is the project's own page, not part of what you install.
+          rm -rf stage/"$NAME"/docs/site stage/"$NAME"/.github
+
+          ( cd stage && tar -czf "../$NAME.tar.gz" "$NAME" )
+          ( cd stage && zip -qr "../$NAME.zip" "$NAME" )
+          sha256sum "$NAME.tar.gz" "$NAME.zip" dist/example-deck.html dist/tutorial.html \
+            | sed 's| dist/| |' > SHA256SUMS
+          echo "--- release contents"
+          cat SHA256SUMS
+          echo "--- archive tree, two levels"
+          find stage/"$NAME" -maxdepth 2 -mindepth 1 | sed "s|stage/$NAME|.|" | sort
+
+      - name: Keep the artefacts on the run as well
+        uses: actions/upload-artifact@v4
+        with:
+          name: psi-briefing-${{ steps.v.outputs.version }}
+          path: |
+            psi-briefing-*.tar.gz
+            psi-briefing-*.zip
+            dist/*.html
+            SHA256SUMS
+
+      # ----------------------------------------------------------- the release
+      - name: Cut the release notes from the CHANGELOG
+        if: steps.v.outputs.dry == '0'
+        env:
+          V: ${{ steps.v.outputs.version }}
+        run: |
+          # The section for this version, up to the next "## " heading.
+          awk -v v="$V" '
+            $0 ~ "^## +" v "( |$)" { on = 1; next }
+            on && /^## / { exit }
+            on { print }
+          ' CHANGELOG.md > NOTES.md
+          {
+            echo
+            echo "---"
+            echo
+            echo "**example-deck.html** and **tutorial.html** below are complete decks in one file each."
+            echo "Download either and open it: no server, no network, no fonts to install."
+          } >> NOTES.md
+          test -s NOTES.md || { echo "::error::empty release notes" >&2; exit 1; }
+          head -5 NOTES.md
+
+      - name: Create the release
+        if: steps.v.outputs.dry == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          V: ${{ steps.v.outputs.version }}
+        run: |
+          gh release create "v$V" \
+            --title "psi-briefing $V" \
+            --notes-file NOTES.md \
+            "psi-briefing-$V.tar.gz" \
+            "psi-briefing-$V.zip" \
+            dist/example-deck.html \
+            dist/tutorial.html \
+            SHA256SUMS

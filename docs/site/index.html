@@ -816,7 +816,15 @@
     font-size: 0.88rem;
     color: var(--ink-soft);
   }
-  footer p { margin: 0 0 var(--s2); }
+  /* The measure applies here too. The cap lives on .wrap > section > *, and the
+     footer is neither, so these two paragraphs had been running at 130 characters
+     since the column was widened - the one place on the page where nothing sits
+     beside them to make the length obvious. */
+  /* 37rem, not the 47rem the body uses. The measure is a character count, and the
+     footer sets at 14px against the body 18px, so the same width holds 107
+     characters here instead of 83. A cap copied by its number rather than by what
+     it is for would have been wrong by a quarter. */
+  footer p { margin: 0 0 var(--s2); max-width: 37rem; }
 
   /* The demo figure holds the wide .demo grid, so neither may be capped, and the
      figure's own margin must not re-centre it. */
@@ -929,13 +937,24 @@
 
     <h3>An assistant can finish it, because the output is HTML</h3>
     <p>The file the converter writes is <strong>ordinary HTML with named
-      classes</strong>, so
-      adjusting one slide by hand means editing one element. That also makes it
-      something you can hand to an LLM directly, with nothing to export or
-      convert first. The repository ships a
+      classes</strong>, so adjusting one slide by hand means editing one element.
+      That also makes it something you can hand to an assistant directly, with
+      nothing to export or convert first.</p>
+    <p>Two of the documents here are written for machines rather than for people.
+      The <a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/cookbook.md">component
+      catalog</a> is long and repetitive on purpose, because an assistant choosing
+      between components needs every one of them spelled out; and the
       <a href="https://github.com/UBA-PSI/psi-briefing/tree/main/skills/briefing">Claude
-      Code skill</a> as well, so an assistant can build the deck from your notes
-      and then check it against the same rules a person would.</p>
+      Code skill</a> packages that plus the checks, so an assistant can build a deck
+      from your notes and then audit its own work against the same rules a person
+      would apply.</p>
+    <p><strong>Neither is required.</strong> Point an assistant at the
+      <a href="example-deck.html">example deck</a> and the
+      <a href="https://github.com/UBA-PSI/psi-briefing/blob/main/examples/tutorial.md">tutorial
+      source</a> and it can generally work the format out from those alone: the
+      input is Markdown, the output is readable HTML, and the class names say what
+      they are. The decks are the specification. The catalog and the skill only save
+      it the guessing.</p>
   </section>
 </div>
 

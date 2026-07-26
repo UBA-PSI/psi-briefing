@@ -4,7 +4,7 @@ Notable changes to psi-briefing, newest first. The shape of this file follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the version numbers
 follow [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.0 – first public release
+## 1.0.0 – 2026-07-26
 
 First release under the name `psi-briefing`. The project was developed under the
 working name `browserslides` and this is the same thing renamed, so if you have
@@ -107,3 +107,17 @@ prefix is `bf-`, and the framework files are `framework/briefing.css` and
   Each check was calibrated against decks with the fault present and absent
   before it shipped, because the first version of a detector reports false
   positives rather than faults.
+
+### Documentation written for assistants
+
+- The [component catalog](docs/cookbook.md) and the [Claude Code
+  skill](skills/briefing/) are aimed at a language model as much as at a person.
+  They are long, repetitive and exhaustive on purpose: an assistant choosing
+  between components needs each one spelled out with its markup and the case it
+  is for, where a human reader would skim.
+- Neither is required. The output is plain HTML with named class names and the
+  input is Markdown, so pointing an assistant at
+  [`examples/example-deck.md`](examples/example-deck.md),
+  [`examples/tutorial.md`](examples/tutorial.md) and the decks they build is
+  usually enough for it to infer the format. The decks are the specification; the
+  catalog and the skill only save it the guessing.

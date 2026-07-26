@@ -3,6 +3,11 @@
 `tools/md-to-deck.mjs` turns a Markdown document into a psi-briefing deck. You
 write a document; it picks the components.
 
+> Working with an assistant instead? Point it at `examples/tutorial.md` and the deck
+> that file builds. Both the input and the output are readable text, so it can infer
+> the directives from the pair without being taught them. This page is the precise
+> version, for when you want to know exactly which rule fires.
+
 ```bash
 node tools/md-to-deck.mjs deck.md -o deck.html
 python3 -m http.server 8000          # then look at it
