@@ -49,7 +49,8 @@ Frontmatter, if present, must start on line 1:
 title: Ablauf der Aufsicht einer E-Prüfung
 subtitle: Von der Absprache bis zum Abbau.
 footer: Aufsicht E-Prüfung · psi-exam
-lang: de                 # de (default) or en - picks the quotation marks
+lang: de                 # a BCP-47 tag: de, de-CH, en-GB, fr …
+hyphenate: false         # hyphenate running text (default false)
 theme: bamberg           # themes/<name>.css
 assets: assets/          # a folder holding browserslides.css/js + the theme
 strip:                   # the numeric strip on the title slide
@@ -63,6 +64,22 @@ punch: accent            # use the cool band tone throughout
 ```
 
 `css` and `js` take explicit paths if `assets` + `theme` do not fit your layout.
+
+`lang` does two jobs and they are not the same job. It is written through to
+`<html lang>` verbatim, because that attribute is what the browser reads to pick
+a hyphenation dictionary and what a screen reader reads to choose a voice — so
+`de-CH`, `en-GB` and `fr` all work and all mean something. Separately, a tag
+starting `en` switches the deck's own conventions to English: the quotation
+marks, and the handful of generated labels (`Part two`, `In one sentence`,
+`Turn your phone`). Anything else keeps the German ones.
+
+`hyphenate: true` turns hyphenation on for running text, using the dictionary
+`lang` selects. It is off by default: a hyphenated ragged edge is busier, and in
+a wide measure there is nothing to win. It earns its place in narrow German
+columns, where one `Prüfungsaufsicht` on a line leaves a hole nothing else can
+close. Display type and label atoms are excluded automatically. Per slide:
+`{hyphenate}` to turn it on for one, `{hyphenate=off}` to exempt one from a
+deck-wide setting, `{lang="en"}` for a slide that quotes another language.
 
 ### Attributes
 
@@ -81,6 +98,8 @@ One optional `{…}` line directly under a slide heading:
 | `{.center}` | centres the whole row in the slide (`cols--center`) |
 | `{.middle}` | centres each column's content against its neighbour (`cols--middle`) |
 | `{.statement}` | adds any other class to the `.slide` element |
+| `{hyphenate}` `{hyphenate=off}` | turns hyphenation on or off for this slide |
+| `{lang="en"}` | this slide is in another language (picks the hyphenation dictionary) |
 | `{keep}` | exempts the slide from layout corrections |
 
 Eyebrows are never generated. An eyebrow on nearly every slide is wallpaper;
@@ -174,9 +193,19 @@ Corrections are applied unless you pass `--no-fix` or mark a slide `{keep}`.
 Every one is printed in the report.
 
 It will: use fewer or more columns, add `.cols--middle` when one column hangs
-more than 20 % higher than its neighbour, move images off the narrow side of a
-row where they would render as postage stamps, split an overfull prose slide
-into two columns, and centre a short row with `.cols--center`.
+more than 20 % higher than its neighbour, widen the gutter with `.cols--figure`
+when one column is a figure and the other is text, move images off the narrow
+side of a row where they would render as postage stamps, split an overfull prose
+slide into two columns, and centre a short row with `.cols--center`.
+
+`.cols--figure` is the least visible of those and worth one sentence. Text
+against text is what the `4.8cqw` gutter is calibrated for — two ragged edges,
+nothing for the eye to catch on. A photograph or a bordered call-out puts a hard
+vertical rule down one side of that gutter, and then the last words of every line
+read as touching it. The class widens the gutter to `6.4cqw` for that pairing
+only, which is what the title slide has always done with its `9cqw` column gap.
+It is re-derived after the corrections run, so a correction that regroups the
+columns cannot leave the class describing a pairing that no longer exists.
 
 That last one is worth being precise about, because it is easy to mistake for a
 fullness fix. A short row hanging from the top leaves its slack in one lump

@@ -115,6 +115,31 @@ p, li, .prose, .lede, .punch, .msg, .change-strip, .gallery-note {
 figcaption, .fact span, .phases div, .tl-head, .eyebrow { hyphens: none; text-wrap: balance; }
 .bs-hyphenate { hyphens: auto; -webkit-hyphens: auto; }
 
+/* Deck-level opt-in, on <body> or a single .slide. German in a 20cqw column is
+   the case that earns it: one "Prüfungsaufsicht" in a narrow measure leaves a
+   hole no amount of `text-wrap: pretty` can close, and the alternative - a
+   wider column - is the thing the grid is not allowed to give.
+   The browser picks its dictionary from the nearest lang attribute, so the
+   <html lang> (or a lang on one slide) has to be right or nothing happens.
+   Display type is deliberately left out: h1/h2 are balanced, not hyphenated,
+   and .editorial-hero h3 is the one h3 set in the display serif, so it is
+   excluded below.
+   :is() rather than :where(), and that is the whole trick. Several components
+   turn hyphens off for their own cells (.net p, .cardcol p, .fstep p) at
+   specificity 0,1,1 - exactly the narrow German columns this switch exists for.
+   :is() raises the opt-in to 0,2,0 so it reaches them; :where() would have left
+   the switch silently doing nothing on half the deck. Atoms that must never
+   break (.tl time, .gallery-note a) are not in the list at all, so they are
+   unaffected either way - hyphens does inherit, but those rules target the
+   element directly. */
+.bs-hyphens :is(p, li, h3, .prose, .lede, .punch, .msg, .change-strip, .gallery-note) {
+  hyphens: auto; -webkit-hyphens: auto;
+}
+.bs-hyphens :is(.editorial-hero h3) { hyphens: none; }
+.bs-nohyphens :is(p, li, h3, .prose, .lede, .punch, .msg, .change-strip, .gallery-note) {
+  hyphens: none;
+}
+
 /* One full-viewport panel per slide; scroll-snaps to centre. */
 .frame {
   min-height: 100vh;
@@ -233,6 +258,16 @@ h2 {
    Combine them when a row is both short overall and uneven between columns.
    Note --middle stops the columns stretching, so panel levelling (bs-equalised)
    has nothing to level; use it for image/text rows, not for panel grids. */
+/* A wider gutter for the case where one side of it is not text.
+   4.8cqw is calibrated for text against text, where both edges of the gutter
+   are ragged and the eye has no line to catch on. Put a photograph or a
+   bordered panel opposite that text and one edge becomes a hard vertical rule
+   running the height of the row: at 4.8cqw the last few words of every line
+   appear to touch it, and the column reads as crowded rather than adjacent.
+   The title slide has always had this (.title-grid, column-gap: 9cqw) - the
+   same situation, a headline against a card. md-to-deck adds this class
+   automatically when it puts a gallery, a chart or a call-out opposite text. */
+.cols--figure { column-gap: 6.4cqw; }
 .cols--center { align-content: center; }
 /* Centres the CONTENT inside each column, without un-stretching the column
    itself. Doing this with `align-items: center` on the grid instead would drop

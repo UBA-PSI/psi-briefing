@@ -2,7 +2,7 @@
 // optimise-images.mjs – re-encode a deck's images to WebP at the size the
 // slides actually use, before inline-deck.mjs turns them into data: URIs.
 //
-// Part of the browserslides toolchain (CC BY 4.0). Node.js built-ins only for
+// Part of the browserslides toolchain (MIT - see LICENSE). Node.js built-ins only for
 // everything except the encode step, which shells out to `cwebp` or `magick`
 // (see ENCODERS). Requires Node 18+ (ESM).
 //
@@ -26,7 +26,7 @@
 // Default output is <input>.optimised.html next to the input; the .webp files
 // are written beside the originals, which are left untouched.
 
-import { readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, statSync, unlinkSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 
@@ -177,7 +177,8 @@ function main(argv) {
   const inputDir = path.dirname(inputPath);
   const html = readFileSync(inputPath, 'utf8');
   const seen = new Map();          // original ref -> new ref (or null = keep)
-  let before = 0, after = 0, converted = 0, skipped = 0, missing = 0;
+  const written = new Set();       // .webp paths this run created
+  let before = 0, after = 0, converted = 0, skipped = 0, missing = 0, kept = 0;
 
   const out = html.replace(/(<img\b[^>]*?\bsrc=)(["'])(.*?)\2/gi, (m, head, q, ref) => {
     if (isExternalOrInline(ref)) return m;
@@ -195,6 +196,16 @@ function main(argv) {
     }
     const destRef = ref.replace(/\.[^.]+$/, '.webp');
     const destPath = path.resolve(inputDir, destRef);
+    // "photo.png" and "photo.jpg" in the same folder both want to become
+    // "photo.webp": whichever came second used to overwrite the first, and the
+    // deck then showed one image twice with no warning anywhere.
+    // Only collisions WITHIN this run are refused. A .webp left over from an
+    // earlier run is fair game - refusing that too would make the second
+    // build-deck.sh run quietly skip every image and ship the originals.
+    if (written.has(destPath)) {
+      process.stderr.write(`warning: ${destRef} was already written from another source, left ${ref} as is\n`);
+      skipped++; seen.set(ref, null); return m;
+    }
     const srcBytes = statSync(srcPath).size;
     const width = readWidth(readFileSync(srcPath), ext);
     const resizeTo = width && width > opts.maxWidth ? opts.maxWidth : null;
@@ -206,7 +217,19 @@ function main(argv) {
         process.stderr.write(`warning: could not encode ${ref}, left as is\n`);
         missing++; seen.set(ref, null); return m;
       }
-      after += statSync(destPath).size;
+      // WebP is not always smaller. A flat-colour screenshot at q82 regularly
+      // comes out BIGGER than its source PNG, and switching to it would make
+      // the deck heavier while the summary claimed an optimisation. Keep
+      // whichever file actually wins.
+      const outBytes = statSync(destPath).size;
+      if (outBytes >= srcBytes) {
+        unlinkSync(destPath);
+        process.stderr.write(`note: ${destRef} would be bigger than ${ref} ` +
+          `(${Math.round(outBytes / 1e3)} kB vs ${Math.round(srcBytes / 1e3)} kB), kept the original\n`);
+        kept++; seen.set(ref, null); return m;
+      }
+      written.add(destPath);
+      after += outBytes;
     }
     before += srcBytes;
     converted++;
@@ -224,7 +247,7 @@ function main(argv) {
   process.stderr.write(
     `${opts.dryRun ? '[dry run] ' : ''}` +
     `${converted} image(s) via ${encoder || 'no encoder'}` +
-    `, ${skipped} skipped, ${missing} left as is\n`);
+    `, ${skipped} skipped, ${kept} already smaller as-is, ${missing} left as is\n`);
   if (!opts.dryRun) {
     process.stderr.write(
       `images ${(before / 1e6).toFixed(2)} MB -> ${(after / 1e6).toFixed(2)} MB (${pct}%)\n` +

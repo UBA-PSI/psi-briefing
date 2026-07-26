@@ -152,7 +152,16 @@
      DECK CHROME — auto-initialised on DOMContentLoaded
      ====================================================================== */
   function initDeck() {
-    if (!document.documentElement.lang) document.documentElement.lang = "en";
+    /* A missing lang used to be filled in with "en". That is a guess, and a
+       wrong guess is worse than none: the browser picks its hyphenation
+       dictionary from this attribute, so an undeclared German deck would get
+       English break points, and a screen reader would read it in English.
+       Left undeclared, hyphenation simply does not happen - the safe failure.
+       So: say something, but do not invent an answer. */
+    if (!document.documentElement.lang) {
+      console.warn("browserslides: <html> has no lang attribute. Set it - " +
+        "hyphenation and screen readers both depend on it.");
+    }
     const frames = [...document.querySelectorAll(".frame")];
     if (!frames.length) return;
 
@@ -194,6 +203,11 @@
     };
     document.addEventListener("keydown", (ev) => {
       if (ev.target.matches && ev.target.matches("input, textarea, [contenteditable]")) return;
+      /* Something nearer the target already claimed this key. Without the
+         check, Space on a focused .bottomline opened its detail layer AND
+         advanced the deck: that handler calls preventDefault, but preventDefault
+         does not stop the event bubbling here. */
+      if (ev.defaultPrevented) return;
       const cur = activeIndex();
       if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(ev.key) && cur < frames.length - 1) {
         ev.preventDefault(); frames[cur + 1].scrollIntoView({ behavior: smooth() });
@@ -230,9 +244,16 @@
     let prev = null, prevFor = null;
     const touchOnly = () => matchMedia("(hover: none)").matches;
     const clean = () => { if (prev) { prev.remove(); prev = null; prevFor = null; } };
+    /* The href is author-written, so it can be a fragment that is not a valid
+       CSS selector - "#3-rollen" throws in querySelector because an identifier
+       may not start with a digit. getElementById takes the id as a string. */
+    const byFragment = (a) => {
+      const href = a.getAttribute("href") || "";
+      return href.startsWith("#") ? document.getElementById(href.slice(1)) : null;
+    };
     const show = (a) => {
       clean();
-      const target = document.querySelector(a.getAttribute("href"));
+      const target = byFragment(a);
       const slide = target && target.querySelector(".slide");
       if (!slide) return;
       prev = document.createElement("div");
@@ -263,8 +284,10 @@
       e.preventDefault();
       if (touchOnly() && prevFor !== a) { show(a); return; }
       clean();
-      const t = document.querySelector(a.getAttribute("href"));
-      if (t) t.scrollIntoView({ behavior: "smooth" });
+      const t = byFragment(a);
+      // smooth() and not a literal: every other jump in the deck honours
+      // prefers-reduced-motion, and this one was the exception.
+      if (t) t.scrollIntoView({ behavior: smooth() });
     });
     addEventListener("scroll", clean, { passive: true });
   }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // inline-deck.mjs — fold a linked slide deck into ONE self-contained HTML file.
 //
-// Part of the browserslides toolchain (CC BY 4.0). Dependency-free: uses only
+// Part of the browserslides toolchain (MIT - see LICENSE). Dependency-free: uses only
 // Node.js built-ins (fs, path, url). Requires Node 18+ (ESM).
 //
 // What it does, for a deck that LINKS to its assets during development:
@@ -165,11 +165,13 @@ function inlineDeck(html, inputDir) {
 
   // 3) Inline <style> blocks may themselves contain url(...) references.
   //    Rewrite those against the input HTML's own directory.
-  out = out.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (whole, css) => {
+  out = out.replace(/(<style\b[^>]*>)([\s\S]*?)(<\/style>)/gi, (whole, open, css, close) => {
     // Skip blocks we just generated (already resolved against their css dir);
     // re-running inlineCssUrls on them is harmless (all url()s are data: now).
-    const rewritten = inlineCssUrls(css, inputDir);
-    return whole.replace(css, rewritten);
+    // Rebuilt from the captured parts rather than whole.replace(css, rewritten):
+    // with a string pattern, $&, $` and $1 in the REPLACEMENT are still special,
+    // so a stylesheet containing one of those would be silently corrupted.
+    return open + inlineCssUrls(css, inputDir) + close;
   });
 
   // 4) <img src="..."> -> base64 data: URI
@@ -182,7 +184,9 @@ function inlineDeck(html, inputDir) {
     const dataUri = imageDataUri(src, inputDir);
     if (!dataUri) return tag;
     stats.images++;
-    return tag.replace(srcMatch[0], `src="${dataUri}"`);
+    // Same reason as the <style> rewrite above: a function replacement, so that
+    // nothing in the data: URI is read as a $-pattern.
+    return tag.replace(srcMatch[0], () => `src="${dataUri}"`);
   });
 
   return out;

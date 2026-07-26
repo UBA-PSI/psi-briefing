@@ -117,6 +117,14 @@ Two vertical modifiers act on different axes and are easy to confuse:
 
 They combine. `--middle` centres the content *inside* the stretched column rather than shrinking the column, so components that size themselves to the space they are given (`.shots`, `.chartbox`) keep working; centring them by un-stretching the column makes those grow to their natural height and run off the slide.
 
+One horizontal modifier, for the case where the gutter has to work harder:
+
+| Modifier | Effect |
+| --- | --- |
+| `.cols--figure` | Widens the gutter to `6.4cqw`. Use it when one column holds a photograph, a chart or a call-out and the other holds running text. |
+
+The default `4.8cqw` is calibrated for text against text, where both edges of the gutter are ragged and the eye has nothing to catch on. Put a figure or a bordered panel opposite that text and one edge becomes a hard vertical rule the height of the row: at `4.8cqw` the last words of every line appear to touch it, and the column reads as crowded rather than adjacent. The title slide has always done this – `.title-grid` uses a `9cqw` column gap for the same pairing, a headline against a card. `md-to-deck.mjs` adds the class by itself whenever a rule puts a gallery, a chart or a call-out opposite text.
+
 **`.panel` – a grouped text card.** `--plain` (bordered, no fill), `--hl` (highlight fill). Pair with a `.tl-head` label and `.prose` body.
 
 **Attaching a call-out to its column.** A tinted `.panel--hl` dropped into a text column is indented by its own padding, so its text no longer lines up with the running text above it. Two modifiers fix that, and both are worth having:
@@ -183,6 +191,22 @@ Do **not** fix that by giving `.panel` / `.shots` / `.col` children a `flex:1` o
 - `cols--center` only as a last resort – it balances the whitespace rather than filling it.
 
 Also note: a `flex:1` component (`.cols`, `.flow`) will **overlap** a sibling placed after it instead of pushing it down, and that overlap does not show up as overflow – compare sibling bounding boxes when you verify.
+
+## Hyphenation
+
+Off by default: a hyphenated ragged edge is busier than an un-hyphenated one, and in a wide measure there is nothing to gain. In a **narrow** measure – a `.net` cell, a `.cardcol` card, a third of a `cols--3` row – German changes that calculation, because one `Prüfungsaufsicht` on a line leaves a hole no line-breaking algorithm can close.
+
+| Class | Where |
+| --- | --- |
+| `.bs-hyphens` | on `<body>` for the whole deck, or on one `.slide` |
+| `.bs-nohyphens` | the same, to opt one slide back out of a deck-wide `.bs-hyphens` |
+| `.bs-hyphenate` | one element, when you do not want the switch deck-wide |
+
+The browser picks its dictionary from the nearest `lang` attribute, so `<html lang="de">` has to be right or nothing happens at all — and a *wrong* `lang` is worse than a missing one, because German gets broken at English break points. Put `lang` on a single `.slide` when it quotes another language. Display type (`h1`, `h2`, `.editorial-hero h3`) is excluded on purpose: those are balanced, not hyphenated. So are label atoms like `.tl time`, which carry `white-space: nowrap`.
+
+From Markdown: `hyphenate: true` in the frontmatter, `{hyphenate}` / `{hyphenate=off}` on one slide.
+
+Measured on a 23-slide German deck, turning it on: average line shortfall 24.5 % → 22.0 %, and the three worst holes in the deck went from 77/75/67 % of the column width down to 71/59/56 %. It buys the worst lines the most, which is the point — the average was never the problem.
 
 ## Component catalog
 

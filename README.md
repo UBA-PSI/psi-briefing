@@ -107,6 +107,7 @@ afterwards. See [`docs/markdown.md`](docs/markdown.md).
 | `tools/embed-fonts.mjs` · `tools/inline-deck.mjs` | Turn a linked dev deck into one self-contained file with base64 fonts/images. |
 | `tools/optimise-images.mjs` | Re-encode a deck's images to WebP at the size the slides actually use, before inlining. Cut a real 20-image deck from 8.3 MB to 3.3 MB. |
 | `tools/build-deck.sh` | The whole pipeline in one command: optimise, inline, then verify that nothing external is left. |
+| `tools/sync-assets.sh` | Keeps the duplicated copies of the framework and the catalog in step; `--check` reports drift instead of fixing it. |
 | `skills/browserslides/` | A Claude Code / Agent **skill** so an AI assistant can build these decks for you. |
 | `docs/handoff-autolayout.md` | What building a real deck taught us about the framework, and what an auto-layout pass has to survive. |
 

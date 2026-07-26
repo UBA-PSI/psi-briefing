@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // embed-fonts.mjs — turn font files into base64 @font-face CSS rules.
 //
-// Part of the browserslides toolchain (CC BY 4.0). Dependency-free: uses only
+// Part of the browserslides toolchain (MIT - see LICENSE). Dependency-free: uses only
 // Node.js built-ins (fs, path). Requires Node 18+ (ESM).
 //
 // What it does

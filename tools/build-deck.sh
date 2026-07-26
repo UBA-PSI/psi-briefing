@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # build-deck.sh – turn a linked development deck into one shareable file.
 #
-# Part of the browserslides toolchain (CC BY 4.0).
+# Part of the browserslides toolchain (MIT - see LICENSE).
 #
 # The pipeline is short but the order matters, and the last step is the one
 # people skip: a deck can come out of the inliner looking finished and still
@@ -124,12 +124,18 @@ node "$SCRIPT_DIR/inline-deck.mjs" "$STAGE" -o "$OUTPUT" 2>&1 | sed 's/^/     /'
 # Static check, so it needs no browser. Style and script CONTENT is stripped
 # first: the framework's own CSS header quotes <link rel="stylesheet"> lines as
 # documentation, and a naive grep reports those as unresolved dependencies.
+#
+# Only the content, though - the OPENING TAG has to survive. Replacing the whole
+# element with "<script></script>" also destroyed the src attribute, so the
+# "external script" check below could never match and this step declared a deck
+# loading a remote <script src> to be free of external references. That is the
+# one promise the whole pipeline exists to keep, so the capturing form matters.
 echo "3/3  verify       checking for anything still external"
 VERDICT="$(node -e '
 const fs = require("node:fs");
 let html = fs.readFileSync(process.argv[1], "utf8");
-html = html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, "<style></style>")
-           .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "<script></script>")
+html = html.replace(/(<style\b[^>]*>)[\s\S]*?(<\/style>)/gi, "$1$2")
+           .replace(/(<script\b[^>]*>)[\s\S]*?(<\/script>)/gi, "$1$2")
            .replace(/<!--[\s\S]*?-->/g, "");
 const problems = [];
 const add = (re, label) => {

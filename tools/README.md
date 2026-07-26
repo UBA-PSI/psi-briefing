@@ -1,8 +1,16 @@
 # browserslides tools
 
-Two small, dependency-free helper scripts (Node.js 18+, ESM, built-ins only)
-for turning a *linked* browserslides deck into one self-contained `.html` file
-you can email, drop on a USB stick, or open offline.
+Small, dependency-free scripts (Node.js 18+, ESM, built-ins only — the one
+exception is the WebP encode step, which shells out to `cwebp` or `magick`).
+
+| Tool | What it is for |
+| --- | --- |
+| [`md-to-deck.mjs`](#md-to-deckmjs) | write a deck as Markdown; it infers the components |
+| [`build-deck.sh`](#build-decksh) | the release pipeline: optimise → inline → verify |
+| [`optimise-images.mjs`](#optimise-imagesmjs) | re-encode photographs to WebP at the size slides use |
+| [`inline-deck.mjs`](#inline-deckmjs) | fold CSS, JS and images into one `.html` |
+| [`embed-fonts.mjs`](#embed-fontsmjs) | fonts → base64 `@font-face` rules |
+| [`sync-assets.sh`](#sync-assetssh) | keep the duplicated copies of the framework in step |
 
 The development decks in `examples/` deliberately **link** to their assets:
 
@@ -13,24 +21,81 @@ The development decks in `examples/` deliberately **link** to their assets:
 ```
 
 That is convenient while you edit, but it needs a folder of files and a server.
-For distribution the author wants a single file with CSS, JS, fonts and images
-all embedded. These tools do that.
+For distribution you want a single file with CSS, JS, fonts and images all
+embedded. These tools do that.
 
 ## Recommended workflow
 
-1. **Develop** with linked files in `examples/` (edit CSS/JS/theme freely).
-2. *(optional)* **Embed fonts**: run `embed-fonts.mjs` and paste its output into
-   your theme (or a `<style>` block) so the fonts travel with the deck.
-3. **Inline everything**: run `inline-deck.mjs` to fold every local
-   stylesheet, script and image into one self-contained HTML file.
+1. **Write** the deck — as Markdown through `md-to-deck.mjs`, or by hand from
+   the catalog in `docs/cookbook.md`.
+2. **Look at it** over `python3 -m http.server`, and run the audit from
+   `skills/browserslides/SKILL.md`.
+3. *(once per theme)* **Embed fonts**: run `embed-fonts.mjs` and paste its
+   output into your theme, so the fonts travel with the deck.
+4. **Ship one file**: `tools/build-deck.sh deck.html`. That runs the image and
+   inline steps and then *verifies* that nothing external is left — the step
+   people skip, and the reason this is a script and not a note in a README.
 
 ```
-examples/my-deck.html  +  linked css/js/fonts/images
-        │
-        ├─ embed-fonts.mjs   (fonts -> @font-face base64, pasted into a theme)
-        │
-        └─ inline-deck.mjs   -> my-deck.inlined.html   (one distributable file)
+deck.md ── md-to-deck.mjs ──> deck.html  +  linked css/js/fonts/images
+                                  │
+                                  └─ build-deck.sh
+                                       ├─ optimise-images.mjs  (jpg/png -> webp)
+                                       ├─ inline-deck.mjs      (everything -> data:)
+                                       └─ verify               (assert nothing external)
+                                             │
+                                             └─> deck.self-contained.html
 ```
+
+---
+
+## `md-to-deck.mjs`
+
+Turns a Markdown document into a deck, choosing the component from the *shape*
+of the content: three equal `###` blocks become three columns, four become a
+bordered grid, a blockquote becomes the closing band. See
+[`docs/markdown.md`](../docs/markdown.md) for the authoring reference.
+
+```bash
+node tools/md-to-deck.mjs deck.md -o deck.html
+node tools/md-to-deck.mjs deck.md --no-fix     # report problems, change nothing
+node tools/md-to-deck.mjs --help
+```
+
+It prints a per-slide report: which rule fired, how full the content row is,
+which corrections it applied, and which slides are thin in a way no tool can fix.
+
+---
+
+## `build-deck.sh`
+
+```bash
+tools/build-deck.sh deck.html
+tools/build-deck.sh deck.html -o share/deck.html --max-width 2000
+```
+
+Exit `0` built and verified, `1` usage error, `2` built but still depending on
+something external (it tells you what). Without a WebP encoder installed it
+warns, skips that step, and still produces a valid file.
+
+---
+
+## `sync-assets.sh`
+
+`framework/` and `themes/` are the originals, but two directories hold copies —
+`skills/browserslides/references/assets/` so the skill is self-contained, and
+`test-aufsicht/assets/` so the local test decks link without a path prefix.
+`docs/cookbook.md` and `skills/browserslides/references/components.md` are the
+same arrangement for the catalog.
+
+```bash
+tools/sync-assets.sh            # copy the originals over the copies
+tools/sync-assets.sh --check    # report drift, exit 1, change nothing
+```
+
+Run it after any change to the framework CSS/JS or a theme. The failure it
+prevents is a bad one to debug: you change the CSS, open a deck, see the old
+behaviour, and start looking for the bug in your change.
 
 ---
 
@@ -119,3 +184,29 @@ Document order of styles and scripts is preserved. A one-line summary
 Because the browserslides framework CSS/JS is already dependency-free, an
 inlined example deck is a genuinely standalone file: no server, no build, works
 from `file://` and offline.
+
+Each image is embedded once per `<img>` tag, so a photograph reused on three
+slides is carried three times. If that ever matters, cut it at the source
+(one gallery instead of three) rather than in the inliner.
+
+---
+
+## `optimise-images.mjs`
+
+Re-encodes local `<img>` sources to WebP beside the originals and rewrites the
+HTML to point at them. Originals are never modified.
+
+```bash
+node tools/optimise-images.mjs deck.html -o deck.opt.html --max-width 1600 --quality 82
+node tools/optimise-images.mjs deck.html --dry-run
+```
+
+Two things it refuses to do quietly. If the `.webp` comes out **larger** than
+its source — routine for a flat-colour screenshot at q82 — it deletes it and
+keeps the original, because switching would make the deck heavier while
+reporting an optimisation. And if two sources in the same folder would produce
+the same `.webp` (`photo.png` and `photo.jpg`), the second is left alone rather
+than overwriting the first.
+
+Only `<img src>` is rewritten. A background image referenced from CSS `url()` is
+still inlined by `inline-deck.mjs`, but at its original size.

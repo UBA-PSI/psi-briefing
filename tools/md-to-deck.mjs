@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // md-to-deck.mjs — turn a Markdown document into a browserslides deck.
 //
-// Part of the browserslides toolchain (MIT). Dependency-free: Node built-ins
+// Part of the browserslides toolchain (MIT - see LICENSE). Dependency-free: Node built-ins
 // only (fs, path). Requires Node 18+ (ESM).
 //
 // WHY THIS EXISTS
@@ -86,14 +86,23 @@ ATTRIBUTES (one optional line directly under a slide heading)
   {eyebrow="Schritt 4"}     add a kicker (leave it out unless it earns its line)
   {footer="Custom footer"}  override the deck footer for this slide
   {.statement}              add a class to the .slide element
+  {hyphenate} {hyphenate=off}  turn hyphenation on or off for this slide
+  {lang="en"}               this slide is in another language (hyphenation)
   {keep}                    exempt this slide from layout corrections
 
 FRONTMATTER KEYS
-  title, subtitle, footer, lang (de|en), theme (bamberg|midnight|...),
+  title, subtitle, footer, theme (bamberg|midnight|...),
+  lang       a BCP-47 tag, written through to <html lang> - so de-CH, fr and
+             en-GB all work. Anything starting "en" also switches the quotation
+             marks and the deck's own labels to English.
+  hyphenate  true|false (default false). Hyphenates running text using the
+             browser's dictionary for the deck's lang. Worth turning on for
+             German in narrow columns; leave off for wide measures.
   assets (dir holding browserslides.css/js, default framework/ + themes/),
   css / js (explicit paths, override assets+theme), strip (title-slide
   numbers, "17: Schritte am Prüfungstag"), takeaway, typescale, hint,
-  rotatehint (true|false), fill (target ink fill in %, default 85)
+  rotatehint (true|false), fill (target row fill in %, default 85),
+  autocenter (true|false), punch (accent)
 
 WHAT IT CORRECTS BY ITSELF
   Fewer or more columns, .cols--middle for uneven rows, .cols--center for a
@@ -123,7 +132,8 @@ const G = {
   // .lede { font-size: calc(1.55cqw * scale); line-height: 1.55; margin-bottom: 2.2cqh; max-width: 58cqw }
   ledeSize: 1.55, ledeLine: 1.55, ledeMargin: 2.2, ledeMax: 58,
   // .cols { gap: 4.8cqw; margin-top: 3cqh }   .col { gap: 3.6cqh }
-  colsGap: 4.8, colsMarginTop: 3, colGap: 3.6,
+  // .cols--figure { column-gap: 6.4cqw } — text facing a photo/chart/call-out
+  colsGap: 4.8, colsGapFigure: 6.4, colsMarginTop: 3, colGap: 3.6,
   // .prose { font-size: calc(1.35cqw * scale); line-height: 1.6 }  > * { margin-bottom: 1.2cqh }
   proseSize: 1.35, proseLine: 1.6, proseGap: 1.2,
   proseDenseSize: 1.15, proseDenseLine: 1.5,
@@ -171,7 +181,10 @@ function textHeight(chars, size, lh, width) {
 // ---------------------------------------------------------------------------
 // Small utilities
 // ---------------------------------------------------------------------------
-const NUL = ' ';
+// Placeholder marker for the spans lifted out above. Written as an escape
+// rather than a literal control byte: a raw NUL in the source makes grep treat
+// this file as binary and skip it silently.
+const NUL = '\u0000';
 const textOf = (html) => html.replace(/<[^>]*>/g, '').replace(/&[a-z]+;|&#\d+;/gi, 'x');
 const len = (html) => textOf(html).trim().length;
 
@@ -521,7 +534,39 @@ function stepsFrom(list) {
 // 6. Layout inference. Each rule returns a plan naming itself, so the report
 //    can tell you which rule fired and you can predict the next one.
 // ---------------------------------------------------------------------------
+// A column holding a photograph, a chart or a call-out has a hard vertical edge
+// down the side facing the gutter; a column of running text has a ragged one.
+// Text against text is what .cols gap is calibrated for. Text against an edge
+// needs more room, or the last words of every line appear to touch it - the
+// same reason .title-grid has always used a 9cqw column gap. See .cols--figure.
+const OBJECT_DIRECTIVES = new Set(['shots', 'stack', 'chart', 'quote', 'statement', 'net', 'delta']);
+const TEXT_GROUPS = new Set(['prose', 'list', 'table', 'card']);
+const isObjectColumn = (c) => Boolean(c.callout) ||
+  (c.groups || []).some((g) => g.type === 'images' ||
+    (g.type === 'directive' && OBJECT_DIRECTIVES.has(g.block.name)));
+const wantsFigureGutter = (cols) => cols.length >= 2 &&
+  cols.some(isObjectColumn) &&
+  cols.some((c) => !isObjectColumn(c) && (c.groups || []).some((g) => TEXT_GROUPS.has(g.type)));
+
+// Add or remove the class to match the columns as they now stand. Called again
+// after corrections, because a correction can regroup the columns (an overfull
+// row of panels becomes two .cardcol columns) and leave the class describing a
+// pairing that no longer exists.
+function applyFigureGutter(layout) {
+  if (layout.kind !== 'cols') return;
+  const has = /\bcols--figure\b/.test(layout.mod);
+  const want = wantsFigureGutter(layout.columns);
+  if (want && !has) layout.mod += ' cols--figure';
+  else if (!want && has) layout.mod = layout.mod.replace(/\s*\bcols--figure\b/, '');
+}
+
 function planSlide(slide, ctx) {
+  const plan = planByShape(slide, ctx);
+  applyFigureGutter(plan.layout);
+  return plan;
+}
+
+function planByShape(slide, ctx) {
   const groups = groupBlocks(slide.blocks);
   const plan = { rule: null, lede: null, punch: null, note: null, body: [], groups };
 
@@ -882,7 +927,8 @@ function columnWidths(layout) {
     : /wide-right/.test(layout.mod) ? [1, 1.5]
     : new Array(n).fill(1);
   const total = shares.slice(0, n).reduce((a, b) => a + b, 0);
-  const free = contentWidth() - G.colsGap * (n - 1);
+  const gap = /\bcols--figure\b/.test(layout.mod || '') ? G.colsGapFigure : G.colsGap;
+  const free = contentWidth() - gap * (n - 1);
   return layout.columns.map((c, i) => ({ ...c, width: (free * (shares[i] ?? 1)) / total }));
 }
 
@@ -1041,7 +1087,10 @@ function correct(slide, plan, ctx) {
     est = estimate(plan, slide);
   }
 
-  return est;
+  // The corrections above can regroup the columns, so the gutter class is
+  // re-derived from what they left behind rather than from what was planned.
+  applyFigureGutter(plan.layout);
+  return estimate(plan, slide);
 }
 
 // ---------------------------------------------------------------------------
@@ -1342,7 +1391,16 @@ function emitSlide(slide, plan, ctx) {
   const cls = ['slide', ...slide.attrs.classes.map((c) => (c.startsWith('slide') ? c : `slide--${c}`))];
   if (slide.kind === 'divider') cls.push('slide--divider');
   if (slide.kind === 'title') cls.push('slide--title');
+  // Per-slide hyphenation, either way round: on for one slide in a deck that
+  // does not hyphenate, or off for the one slide whose short labels look wrong
+  // broken. `{hyphenate}` / `{hyphenate=off}`.
+  if (slide.attrs.hyphenate !== undefined) {
+    cls.push(truthy(slide.attrs.hyphenate) ? 'bs-hyphens' : 'bs-nohyphens');
+  }
 
+  // A slide quoting another language needs its own lang, or the browser
+  // hyphenates English with German patterns.
+  const langAttr = slide.attrs.lang ? ` lang="${escapeAttr(String(slide.attrs.lang))}"` : '';
   const id = slide.attrs.id ? ` id="${slide.attrs.id}"` : '';
   const foot = footer(slide, ctx);
   let inner;
@@ -1361,7 +1419,7 @@ function emitSlide(slide, plan, ctx) {
     inner = parts.join('\n');
   }
 
-  return `<section class="frame"${id}>\n  <div class="${cls.join(' ')}"><div class="slide-inner">\n` +
+  return `<section class="frame"${id}>\n  <div class="${cls.join(' ')}"${langAttr}><div class="slide-inner">\n` +
     `${indent(inner, 4)}\n${indent(foot, 4)}\n  </div></div>\n</section>`;
 }
 
@@ -1460,14 +1518,24 @@ function main(argv) {
 
   const src = readFileSync(opts.input, 'utf8');
   const { meta, body } = parseFrontmatter(src);
-  const lang = (meta.lang || 'de').toLowerCase().startsWith('en') ? 'en' : 'de';
+  // Two different things are being asked of `lang`, and running them together
+  // was a bug. The deck's typographic conventions (which pair of quotation
+  // marks) are a two-way choice. The <html lang> attribute is something else:
+  // it is what the browser reads to pick a hyphenation dictionary, and there
+  // the tag has to survive verbatim - `de-CH`, `de-AT`, `fr`, `en-GB`. So the
+  // tag is kept as written and only the typography key is derived from it.
+  const langTag = String(meta.lang || 'de').trim() || 'de';
+  const lang = langTag.toLowerCase().startsWith('en') ? 'en' : 'de';
 
   const { blocks } = parseBlocks(body.split(/\r?\n/));
   const slides = splitSlides(blocks);
   if (!slides.length) die('no slides found - the document has no headings and no content');
 
   const ctx = {
-    meta, lang, footer: meta.footer ?? meta.title ?? '',
+    meta, lang, langTag, footer: meta.footer ?? meta.title ?? '',
+    // Hyphenation is off unless asked for: the framework's default is the
+    // calmer ragged edge, and hyphenation only pays in narrow measures.
+    hyphens: truthy(meta.hyphenate ?? false),
     punchTone: /accent/.test(String(meta.punch || '')) ? ' punch--accent' : '',
     dividers: slides.filter((s) => s.kind === 'divider').map((s) => s.heading),
     gotoTargets: new Set(), charts: [], usedClasses: new Set(),
@@ -1554,7 +1622,11 @@ function document(slides, ctx) {
     if (c.args.max) cfg.max = Number(c.args.max);
     if (truthy(c.args.values)) cfg.valueLabels = true;
     if (c.args.label) cfg.ariaLabel = String(c.args.label);
-    return `  Browserslides.barChart('#${c.id}', ${JSON.stringify(cfg)});`;
+    // JSON is not safe inside <script> on its own: the parser looks for the
+    // literal "</script" before any JavaScript is read, so a chart label
+    // containing one ends the block early and dumps the rest as text. Escaping
+    // "<" as < keeps the JSON valid and the string identical.
+    return `  Browserslides.barChart('#${c.id}', ${JSON.stringify(cfg).replace(/</g, '\\u003c')});`;
   });
 
   const hint = ctx.meta.hint ?? (ctx.lang === 'en' ? '↓ scroll · → next' : '↓ scrollen · → weiter');
@@ -1568,7 +1640,7 @@ function document(slides, ctx) {
     : '';
 
   return `<!DOCTYPE html>
-<html lang="${ctx.lang}">
+<html lang="${escapeAttr(ctx.langTag)}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1577,7 +1649,7 @@ function document(slides, ctx) {
      converter overwrites this file, so keep the .md as the source of truth. -->
 ${css.map((h) => `<link rel="stylesheet" href="${h}">`).join('\n')}
 ${extra.length ? `<style>\n${extra.join('\n')}\n</style>\n` : ''}</head>
-<body>
+<body${ctx.hyphens ? ' class="bs-hyphens"' : ''}>
 
 ${slides.join('\n\n')}
 

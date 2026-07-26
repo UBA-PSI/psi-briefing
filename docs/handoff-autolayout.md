@@ -316,6 +316,76 @@ their measured ink sits higher than their content volume implies. An estimator
 that assumes a component fills is optimistic in exactly the direction that hides
 thin slides.
 
+## 6c. Findings from a full read of the project
+
+A review pass over every file. Ordered by how quietly each thing failed.
+
+**A check that could never fire.** `build-deck.sh`'s verify step blanked
+`<script>` elements with `"<script></script>"` — replacing the *opening tag* as
+well, so the `src` attribute it then went looking for had already been deleted.
+The "external script" check had therefore never matched anything, and the script
+printed **"no external references"** for a deck loading a remote `<script src>`.
+That is the one promise the whole pipeline exists to keep. The fix is a capturing
+replacement (`"$1$2"`), which preserves the reason the content was blanked at all
+(the framework CSS header quotes `<link>` lines as documentation) while leaving
+the tag itself intact. The general lesson: a sanitising step that runs *before* a
+detector can remove the evidence the detector was written to find, and a check
+that never fires looks exactly like a check that always passes.
+
+**A guess dressed as a default.** The runtime filled in a missing `<html lang>`
+with `"en"`. Harmless while nothing read it; now that hyphenation depends on
+`lang`, an undeclared German deck would have been broken at English break points
+and read aloud in English by a screen reader. Replaced with a console warning —
+with no `lang` at all, browsers simply do not hyphenate, which is the safe
+failure.
+
+**Two handlers, one keypress.** `.bottomline` handles Space to open its detail
+layer and calls `preventDefault()`. The document-level key handler then ran
+anyway — `preventDefault` stops the default action, not the propagation — so one
+press both opened the layer and advanced the deck. Guarded with
+`ev.defaultPrevented`.
+
+**Silent corruption paths.** Three places passed author-controlled text through
+APIs where a metacharacter is still special: `JSON.stringify` into an inline
+`<script>` (a chart label containing `</script` ends the block, because the HTML
+parser looks for that string before any JavaScript is read), and
+`String.replace(stringPattern, replacement)` twice in `inline-deck.mjs`, where
+`$&` and `$1` in the *replacement* remain live. None had triggered; all three are
+cheap to close and expensive to diagnose.
+
+**WebP is not always smaller.** `optimise-images.mjs` reported an optimisation
+whether or not it had achieved one. A flat-colour screenshot at q82 regularly
+encodes *larger* than its source PNG, and the deck got heavier. It now keeps
+whichever file wins and says so. Related: `photo.png` and `photo.jpg` in one
+folder both map to `photo.webp`, and the second used to overwrite the first —
+refused now, but only for collisions *within* a run, since refusing pre-existing
+files would make every second `build-deck.sh` run skip every image.
+
+**Duplicated files drift, and the drift is invisible.** Four copies of the
+framework CSS/JS (skill references, test decks) and two of the component catalog.
+Adding `.cols--figure` looked like it had no effect for two rounds of debugging,
+because the deck was linking a stale copy. `tools/sync-assets.sh` copies or, with
+`--check`, reports.
+
+**Documentation rot, found by reading it against the code.** `tools/README.md`
+opened with "Two small, dependency-free helper scripts" and documented two of six
+tools — `md-to-deck.mjs`, `build-deck.sh` and `optimise-images.mjs` were absent.
+All four tool headers claimed "CC BY 4.0" against an MIT `LICENSE`.
+
+**Not fixed, on purpose.** `inline-deck.mjs` embeds one data URI per `<img>` tag,
+so an image reused on three slides is carried three times; de-duplicating means a
+lookup table and a runtime, which costs more than it saves for a deck that should
+not be reusing photographs anyway. `optimise-images.mjs` rewrites only
+`<img src>`, not CSS `url()`. `.pipe--offset` translates by a hard-coded
+`10.7cqh` — the fault class of §3, in a place no detector looks.
+
+**One thing this review got wrong, worth recording.** An ad-hoc paraphrase of
+`crampedLabels` (element height vs line-height) reported three false positives on
+`.tl time`, because a grid item stretches to its row and its box height says
+nothing about how many lines it holds. The real check in `SKILL.md` uses
+`Range.getClientRects()` line tops and reported none. If you re-implement a
+detector from memory to run it quickly, you are testing your memory.
+
 ## 7. If you change one thing, check these
 
 Run the audit in `SKILL.md` after any framework change, on **both**
