@@ -109,16 +109,33 @@ jobs:
       # bs-nohyphens / bs-hyphenate / bs-equalised the old class prefix; both
       # are already gone, so any hit is a regression rather than leftover work.
       #
-      # One path is excluded, and only one: CHANGELOG.md has to name the old
-      # spelling, because its whole job is to tell a reader who knew the project
-      # as "browserslides" that this is the same thing. A migration note would
-      # earn the same exemption. Nothing else does - docs/handoff-autolayout.md,
-      # for instance, is NOT excluded: it mentions the framework by name in
-      # ordinary prose, which is exactly what should have been renamed.
+      # Two paths are excluded, and only two, because both have to spell the old
+      # name to do their job:
+      #
+      #   CHANGELOG.md   tells a reader who knew the project under the old name
+      #                  that this is the same thing.
+      #   this file      states the pattern it greps for, and explains it.
+      #
+      # The second exclusion was not in the first version, and the guard could
+      # therefore never pass: git grep searches tracked files, this workflow is
+      # tracked, and it names the old spelling five times. It appeared to pass
+      # only while it was still untracked - a check that has never once run
+      # against its own repository looks exactly like a check that passes.
+      #
+      # Excluding this file does blind the guard to the file most likely to gain
+      # a copy-pasted snippet. Accepted, because the alternative - assembling the
+      # pattern from fragments so it does not appear literally - would not help:
+      # the prose above would still contain the old name, and the guard would
+      # still match it. The honest options were "exclude it" or "never write the
+      # old name here", and vaguer comments are the worse trade in this codebase.
+      #
+      # Nothing else is excluded. docs/handoff-autolayout.md, for instance, is
+      # not: it named the framework in ordinary prose, which is exactly the thing
+      # that should have been renamed, and was.
       - name: No tracked file mentions the old name
         run: |
           if git grep -nE 'browserslides|window\.Browserslides|bs-hyphens|bs-nohyphens|bs-hyphenate|bs-equalised' \
-               -- ':!CHANGELOG.md'; then
+               -- ':!CHANGELOG.md' ':!.github/workflows/ci.yml'; then
             echo >&2
             echo "The lines above still carry the pre-rename name." >&2
             echo "Rename them to psi-briefing / briefing before merging." >&2

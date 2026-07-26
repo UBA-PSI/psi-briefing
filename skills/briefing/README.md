@@ -39,12 +39,12 @@ briefing/
     ├── starter.html            # minimal working deck to copy
     ├── components.md           # full component catalog (mirror of docs/cookbook.md)
     └── assets/
-        ├── briefing.css   # framework core
-        ├── briefing.js    # runtime
+        ├── briefing.css        # framework core
+        ├── briefing.js         # runtime
         ├── bamberg.css         # blue/yellow theme
         └── midnight.css        # dark theme
 ```
 
-Keep `references/assets/` in sync with the framework if you update it (`cp framework/* themes/* skills/briefing/references/assets/`).
+Keep `references/assets/` in sync with the framework: run `tools/sync-assets.sh` after changing the CSS, the runtime or a theme, or `tools/sync-assets.sh --check` to see whether a copy has drifted. CI runs the check, because a stale copy shows the OLD behaviour and sends you debugging your change instead of the copy.
 
 Licensed **MIT**, like the rest of the project (fonts excepted — see the root LICENSE).

@@ -198,7 +198,7 @@ Full control, and the only option for a slide that needs an unusual layout.
 skill's own files): write the deck as a document and let the converter pick the
 components from the shape of the content – three `###` blocks become three
 columns, four become a `.net` grid, a `> blockquote` becomes the closing
-`.punch`. It emits ordinary psi-briefing HTML that you then hand-tune, so the
+`.punch`. It emits the same deck HTML you would write by hand, so the
 two ways compose rather than compete.
 
 Prefer Markdown when the source is already document-shaped (a report, notes, a
@@ -534,4 +534,4 @@ Bar/marker `color` accepts a raw colour **or** a `--token` name (recommended, so
 - `references/assets/` – `briefing.css`, `briefing.js`, `bamberg.css`, `midnight.css`.
 - `references/components.md` – the full component catalog with copy-paste snippets.
 
-That is everything the skill needs; it does not depend on the repo or on any other skill. The [psi-briefing](https://github.com/) repo adds optional extras – `docs/tutorial.{en,de}.md`, and `tools/embed-fonts.mjs` / `tools/inline-deck.mjs`, which automate the font-embedding and inlining steps this file describes by hand.
+That is everything the skill needs; it does not depend on the repo or on any other skill. The [psi-briefing](https://github.com/UBA-PSI/psi-briefing) repo adds optional extras – `docs/tutorial.{en,de}.md`, and `tools/embed-fonts.mjs` / `tools/inline-deck.mjs`, which automate the font-embedding and inlining steps this file describes by hand.

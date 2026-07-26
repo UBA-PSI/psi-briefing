@@ -6,7 +6,7 @@ A briefing is what you send to the people who could not attend, so the deck has 
 
 *Made by [Dominik Herrmann](https://github.com/) · [MIT-licensed](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
 
-![Example: title slide and a generated chart in the Bamberg theme](docs/preview.png)
+![The example deck's title slide in the Bamberg theme](docs/preview.png)
 
 > **Slides for a talk you will actually deliver?** That is the sibling project,
 > [**psi-slides**](https://github.com/UBA-PSI/psi-slides): one Markdown source
@@ -93,7 +93,7 @@ highlighted band at the bottom of the slide.
 node tools/md-to-deck.mjs deck.md -o deck.html
 ```
 
-The output is ordinary psi-briefing HTML, so you can hand-tune any slide
+The output is the same deck HTML you would write by hand, so you can hand-tune any slide
 afterwards. See [`docs/markdown.md`](docs/markdown.md).
 
 ## What's in the box
@@ -106,7 +106,7 @@ afterwards. See [`docs/markdown.md`](docs/markdown.md).
 | `themes/midnight.css` | A dark theme – proof that flipping `--paper`/`--ink` re-skins everything. |
 | `examples/example-deck.html` | A 14-slide worked example exercising every major layout. |
 | `examples/example-deck.md` | The same idea written as a Markdown document, for `md-to-deck.mjs`. |
-| `tools/md-to-deck.mjs` | **Write a deck as Markdown.** Infers the component from the shape of the content: three `###` blocks become three columns, four become a bordered grid, a blockquote becomes the closing band. Outputs ordinary, hand-editable psi-briefing HTML. |
+| `tools/md-to-deck.mjs` | **Write a deck as Markdown.** Infers the component from the shape of the content: three `###` blocks become three columns, four become a bordered grid, a blockquote becomes the closing band. Outputs the same deck HTML you would write by hand. |
 | `docs/markdown.md` | The Markdown authoring reference: document structure, the shape→component table, directives, and what the converter will and will not correct. |
 | `docs/cookbook.md` | The component catalog – copy-paste snippets for every layout. |
 | `docs/tutorial.en.md` · `docs/tutorial.de.md` | Build-your-first-deck walkthrough, bilingual. |

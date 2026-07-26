@@ -46,13 +46,21 @@ jobs:
       - name: Convert the example Markdown to a deck
         run: node tools/md-to-deck.mjs examples/example-deck.md -o examples/example-deck-md.html
 
+      # The tutorial teaches the format by being written in it, showing the
+      # Markdown beside its result on every slide. Built from source for the same
+      # reason as the example: a tutorial that has drifted from the tool it
+      # documents is worse than no tutorial.
+      - name: Convert the tutorial
+        run: node tools/md-to-deck.mjs examples/tutorial.md -o examples/tutorial.html
+
       # Linked deck -> one self-contained file, then verified. The image step
       # needs cwebp or magick and is skipped gracefully when neither is on the
-      # runner; the example carries no bitmaps, so nothing is lost.
-      - name: Build the single-file demo
+      # runner; neither deck carries bitmaps, so nothing is lost.
+      - name: Build the single-file demos
         run: |
           mkdir -p _site
           tools/build-deck.sh examples/example-deck-md.html -o _site/example-deck.html
+          tools/build-deck.sh examples/tutorial.html -o _site/tutorial.html
 
       # The hand-built deck ships too. It is hand-maintained source, not build
       # output, so copying it cannot go stale - but it *links* its assets

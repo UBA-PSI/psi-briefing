@@ -8,6 +8,7 @@ test-aufsicht/
 
 # Konvertierte Decks (aus der .md erzeugt, kein Quellstand)
 examples/example-deck-md.html
+examples/tutorial.html
 *.self-contained.html
 
 # Build-Ausgaben der Workflows (CI und Pages bauen sie neu)

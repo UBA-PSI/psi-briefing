@@ -3,16 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>psi-briefing — briefings you can read without a meeting</title>
+<title>psi-briefing – briefings you can read without a meeting</title>
 <meta name="description" content="A dependency-free framework for text-dense 16:9 slides that live in a single self-contained HTML file.">
 <!-- Favicon as a data URI, so the page really makes zero requests: a 16:9 frame
      in the theme's accent blue with the highlight band along the bottom. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300457D'/%3E%3Crect x='5' y='7' width='22' height='18' fill='%23ffffff'/%3E%3Crect x='8' y='11' width='16' height='2' fill='%2300457D'/%3E%3Crect x='8' y='15' width='11' height='2' fill='%236690B1'/%3E%3Crect x='8' y='20' width='16' height='3' fill='%23FFD300'/%3E%3C/svg%3E">
 <!--
-  This page has no external requests of any kind: no CDN, no web fonts, no
-  analytics, no images. That is the whole thesis of the framework it advertises,
-  so the landing page had better hold to it too. Palette and type stack are the
-  real tokens from themes/bamberg.css.
+  This page makes no external requests of any kind: no CDN, no web fonts, no
+  analytics, no image files. That is the thesis of the framework it advertises,
+  so the page had better hold to it too. Palette and type stack are the real
+  tokens from themes/bamberg.css.
+
+  Some deliberate omissions, because each is a thing this kind of page usually
+  has and is better without:
+    - No coloured left-edge stripe on any box. One chromatic side border with a
+      radius is the single most recognisable tell of generated UI, and it was
+      here twice before this rewrite.
+    - No shadows anywhere. Elevation is stated once, with a border. A hairline
+      border and a wide diffuse shadow together is the "ghost card".
+    - No section numbers. Numbering a sequence is a claim that the order carries
+      information; on a landing page it carries only reading order.
+    - No opacity on text. Alpha makes contrast depend on whatever is behind it;
+      every text colour here is an explicit value that can be measured.
+    - Yellow appears in exactly one place, on the caveat. A highlight scattered
+      as six small accents is decoration; one that owns a region is a system.
 -->
 <style>
   :root {
@@ -31,12 +45,25 @@
     --rule:       #CFCFCE;
     --stage:      #c3d1dd;
     --stage-ink:  #33506b;
+    /* Secondary text on the stage. Derived from the stage's own hue rather than
+       being a grey: a low-chroma grey on a chromatic ground reads as washed out,
+       and it is the reason "muted text on a coloured panel" looks cheap. */
+    --stage-ink-soft: #4a6a84;
 
-    /* Copse is the theme's display face; on the web page we take its declared
-       fallback rather than shipping a font file. */
+    /* Copse is the theme's display face. Here we take its own declared fallback
+       rather than shipping a font file - the page may not fetch one.
+       The body stack deliberately ends at sans-serif: naming Roboto, Helvetica
+       or Arial would make one of them the resolved primary face, and those are
+       the faces every generated page already uses. A pure system stack has no
+       signature at all, which for a documentation surface is correct. */
     --font-display: Georgia, "Times New Roman", serif;
-    --font-body:    system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-body:    system-ui, -apple-system, "Segoe UI", sans-serif;
     --font-mono:    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    /* A 4px-based scale. Steps contrast rather than repeat: one value used
+       everywhere produces no rhythm, only regularity. */
+    --s1: 0.25rem;  --s2: 0.5rem;   --s3: 0.75rem;  --s4: 1rem;
+    --s5: 1.5rem;   --s6: 2rem;     --s7: 3rem;     --s8: 4.5rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -54,12 +81,12 @@
       --muted-soft: #232a30;
       --rule:       #333c44;
       --stage:      #0d1a26;
-      --stage-ink:  #8aa5bd;
+      --stage-ink:  #cfe0ee;
+      --stage-ink-soft: #9db6cc;
     }
   }
 
   * { box-sizing: border-box; }
-
   html { -webkit-text-size-adjust: 100%; }
 
   body {
@@ -72,11 +99,21 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* 37rem at 17px is roughly 74 characters a line - the top of the comfortable
+     measure. The previous 44rem came out at 88, past the point where the eye
+     starts losing the line it is returning to. Wide containers are the most
+     common typographic mistake on a documentation page. */
   .wrap {
-    max-width: 44rem;
+    max-width: 37rem;
     margin: 0 auto;
-    padding: 0 1.4rem 5rem;
+    padding: 0 var(--s5) var(--s8);
   }
+  /* One thing earns more width than the prose: the figure that shows Markdown
+     beside its result. The prose inside that section does NOT inherit the extra
+     width - measured at 52rem it ran to 96 characters a line. A wide container
+     is for the figure, not for the sentences around it. */
+  .wide { max-width: 52rem; }
+  .wide p, .wide figcaption { max-width: 37rem; }
 
   a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
   a:hover { color: var(--ink); }
@@ -94,85 +131,175 @@
     background: var(--stage);
     color: var(--stage-ink);
     border-bottom: 1px solid var(--rule);
-    padding: 3.2rem 1.4rem 2.6rem;
-    margin-bottom: 3rem;
+    padding: var(--s7) var(--s5) var(--s6);
+    margin-bottom: var(--s7);
   }
-  header.masthead .wrap { padding-bottom: 0; }
+  header.masthead .wrap { padding: 0 0 0; max-width: 37rem; }
 
   .eyebrow {
-    font-size: 0.72rem;
-    letter-spacing: 0.16em;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--stage-ink);
-    opacity: 0.8;
-    margin: 0 0 1rem;
+    color: var(--stage-ink-soft);
+    margin: 0 0 var(--s4);
   }
 
   h1 {
     font-size: clamp(2rem, 7vw, 3rem);
-    margin: 0 0 0.9rem;
+    margin: 0 0 var(--s3);
     color: var(--stage-ink);
   }
 
   .lede {
-    font-size: clamp(1.05rem, 3.6vw, 1.25rem);
+    font-size: clamp(1.05rem, 3.6vw, 1.22rem);
     line-height: 1.45;
     margin: 0;
-    max-width: 34rem;
     color: var(--stage-ink);
   }
-  .lede strong { font-weight: 600; }
 
   .aside-note {
-    margin: 1.4rem 0 0;
-    font-size: 0.86rem;
+    margin: var(--s5) 0 0;
+    font-size: 0.88rem;
     line-height: 1.5;
-    color: var(--stage-ink);
-    opacity: 0.85;
-    max-width: 34rem;
+    color: var(--stage-ink-soft);
   }
+  .aside-note a { color: var(--stage-ink); }
 
-  /* ---------- sections ---------- */
+  /* ---------- sections ----------
+     More space above a heading than below it. The other way round and every
+     section reads as a caption for the section before it, which is the most
+     common vertical-rhythm error and one of the easiest to see once named. */
 
-  section { margin: 0 0 3.2rem; }
+  section { margin: 0 0 var(--s8); }
 
   h2 {
-    font-size: 1.35rem;
-    margin: 0 0 0.2rem;
-    padding-top: 1.1rem;
+    font-size: 1.4rem;
+    margin: 0 0 var(--s2);
+    padding-top: var(--s4);
     border-top: 2px solid var(--accent);
-  }
-  h2 .num {
-    display: inline-block;
-    min-width: 1.6em;
-    color: var(--muted);
-    font-size: 0.8em;
   }
 
   h3 {
-    font-size: 1.02rem;
-    margin: 1.6rem 0 0.2rem;
+    font-size: 1.04rem;
+    margin: var(--s6) 0 var(--s1);
   }
 
-  p { margin: 0.7rem 0; }
-  p.tight { margin-top: 0.2rem; }
-
+  p { margin: var(--s3) 0; }
+  p.tight { margin-top: var(--s1); }
   .sub { color: var(--ink-soft); }
+
+  /* ---------- the figure that does the arguing ----------
+     A landing page for a layout framework should show the layout. Not as a
+     screenshot: the panel on the right is a real 16:9 container-query box,
+     sized in the same cqw/cqh units a real slide uses, so resizing this page
+     scales it exactly the way the framework scales a deck. */
+
+  .demo {
+    display: grid;
+    gap: 0;
+    border: 1px solid var(--rule);
+    margin: var(--s5) 0 var(--s2);
+  }
+  @media (min-width: 46rem) {
+    .demo { grid-template-columns: 0.92fr 1.08fr; }
+    .demo > * + * { border-left: 1px solid var(--rule); border-top: 0; }
+  }
+  .demo > * + * { border-top: 1px solid var(--rule); }
+  .demo-src { margin: 0; padding: var(--s4); background: var(--muted-soft); border: 0; }
+  .demo-out { padding: var(--s4); display: flex; align-items: center; }
+
+  .mini {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    container-type: size;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    overflow: hidden;
+  }
+  .mini-inner {
+    height: 100%;
+    padding: 6cqh 5cqw 5cqh;
+    display: flex;
+    flex-direction: column;
+  }
+  .mini h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 6.4cqw;
+    line-height: 1.15;
+    color: var(--accent);
+    margin: 0 0 3cqh;
+  }
+  .mini-net {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 1fr;
+    gap: 2.6cqw;
+  }
+  .mini-net > div {
+    border: 1px solid var(--rule);
+    padding: 2.4cqh 2.4cqw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  /* Two deviations from the real component, both deliberate.
+     First, these are a shade larger relatively: a real slide is ~1400px wide and
+     this box is ~390px, so cqw values that read fine at full size land under
+     11px here - measured at 10.5px, below the point where text stops being text
+     and becomes texture.
+     Second, `max()` puts an absolute floor under them. On a phone the box is
+     ~308px and pure cqw sizing reaches 9.6px. That is the mechanism working
+     exactly as designed, and it is the same reason the framework ships a
+     "turn your phone" hint for real decks: a 16:9 frame narrower than about
+     400px cannot hold readable text at any proportional size. Here the figure
+     has to stay readable, so the floor wins and the proportions bend. */
+  .mini-net b {
+    display: block;
+    font-size: max(11.5px, 3.8cqw);
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1.2;
+    margin-bottom: 1cqh;
+  }
+  .mini-net span {
+    font-size: max(11px, 3.15cqw);
+    line-height: 1.35;
+    color: var(--ink-soft);
+  }
+  .mini-band {
+    margin-top: 3cqh;
+    padding: 2.6cqh 2.6cqw;
+    background: var(--highlight-soft);
+    color: #2b2400;
+    font-size: max(11px, 3.1cqw);
+    line-height: 1.4;
+  }
+  .mini-band b { color: #2b2400; font-weight: 700; }
+
+  figcaption {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  figure { margin: 0; }
 
   /* ---------- the call to action ---------- */
 
   .cta {
-    margin: 1.4rem 0 0;
-    padding: 1.3rem 1.4rem;
+    margin: var(--s5) 0 0;
+    padding: var(--s4) var(--s4) var(--s3);
     border: 1px solid var(--rule);
-    border-left: 4px solid var(--highlight);
     background: var(--muted-soft);
   }
   .cta-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.7rem;
-    margin: 0 0 0.9rem;
+    gap: var(--s3);
+    margin: 0 0 var(--s3);
   }
   .btn {
     display: inline-block;
@@ -182,22 +309,21 @@
     text-decoration: none;
     font-size: 0.95rem;
     border: 1px solid var(--accent);
+    transition: background 140ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .btn:hover { background: var(--accent-80); color: var(--paper); border-color: var(--accent-80); }
-  .btn--ghost {
-    background: transparent;
-    color: var(--accent);
-  }
+  .btn--ghost { background: transparent; color: var(--accent); }
   .btn--ghost:hover { background: var(--accent-20); color: var(--ink); border-color: var(--accent-80); }
+  @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
   .cta p { margin: 0; font-size: 0.93rem; color: var(--ink-soft); }
-  .cta p + p { margin-top: 0.5rem; }
+  .cta p + p { margin-top: var(--s2); }
 
   /* ---------- code ---------- */
 
   pre, code { font-family: var(--font-mono); }
   pre {
-    margin: 1rem 0;
-    padding: 0.95rem 1.1rem;
+    margin: var(--s4) 0;
+    padding: var(--s3) var(--s4);
     background: var(--muted-soft);
     border: 1px solid var(--rule);
     overflow-x: auto;
@@ -210,18 +336,8 @@
     background: var(--muted-soft);
     padding: 0.1em 0.32em;
     font-size: 0.88em;
-    border-radius: 2px;
   }
-  .cmd {
-    background: var(--paper);
-    border-left: 3px solid var(--accent);
-  }
-  figcaption {
-    font-size: 0.85rem;
-    color: var(--ink-soft);
-    margin: 0.1rem 0 0;
-  }
-  figure { margin: 1.2rem 0; }
+  .cmd { background: var(--paper); }
 
   /* ---------- the two ideas ---------- */
 
@@ -229,54 +345,46 @@
     display: grid;
     gap: 0;
     border: 1px solid var(--rule);
-    margin: 1.2rem 0 0;
+    margin: var(--s5) 0 0;
   }
   @media (min-width: 40rem) {
     .pair { grid-template-columns: 1fr 1fr; }
     .pair > div + div { border-left: 1px solid var(--rule); border-top: 0; }
   }
-  .pair > div { padding: 1.1rem 1.15rem; }
+  .pair > div { padding: var(--s4); }
   .pair > div + div { border-top: 1px solid var(--rule); }
-  .pair h3 { margin: 0 0 0.35rem; font-size: 1rem; }
+  .pair h3 { margin: 0 0 var(--s2); font-size: 1rem; }
   .pair p { margin: 0; font-size: 0.93rem; color: var(--ink-soft); }
-  .pair p + p { margin-top: 0.5rem; }
+  .pair p + p { margin-top: var(--s2); }
 
-  /* ---------- the honest caveat ---------- */
+  /* ---------- the honest caveat: the one yellow region ---------- */
 
   .caveat {
-    padding: 1.2rem 1.3rem;
+    padding: var(--s4);
     background: var(--highlight-soft);
     border: 1px solid var(--highlight);
+    color: #2b2400;
   }
+  @media (prefers-color-scheme: dark) { .caveat { color: var(--ink); } }
   .caveat p { margin: 0; }
-  .caveat p + p { margin-top: 0.6rem; }
+  .caveat p + p { margin-top: var(--s3); }
+  .caveat a { color: inherit; }
 
   /* ---------- links out ---------- */
 
-  ul.links {
-    list-style: none;
-    padding: 0;
-    margin: 1rem 0 0;
-    border-top: 1px solid var(--rule);
-  }
-  ul.links li {
-    border-bottom: 1px solid var(--rule);
-    padding: 0.6rem 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.2rem 0.7rem;
-  }
-  ul.links a { font-weight: 600; text-decoration: none; }
-  ul.links a:hover { text-decoration: underline; }
-  ul.links span { color: var(--ink-soft); font-size: 0.9rem; }
+  ul.links { list-style: none; padding: 0; margin: var(--s4) 0 0; }
+  ul.links li { margin: 0 0 var(--s3); padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); }
+  ul.links li:last-child { border-bottom: 0; }
+  ul.links a { font-size: 1rem; }
+  ul.links span { display: block; font-size: 0.88rem; color: var(--ink-soft); }
 
-  footer.foot {
-    border-top: 2px solid var(--accent);
-    padding-top: 1rem;
-    font-size: 0.86rem;
-    color: var(--muted);
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: var(--s4);
+    font-size: 0.88rem;
+    color: var(--ink-soft);
   }
-  footer.foot p { margin: 0.3rem 0; }
+  footer p { margin: 0 0 var(--s2); }
 </style>
 </head>
 <body>
@@ -285,136 +393,170 @@
   <div class="wrap">
     <p class="eyebrow">psi-briefing</p>
     <h1>Briefings you can read without a meeting.</h1>
-    <p class="lede">A dependency-free framework for <strong>text-dense 16:9 slides meant to be read</strong> —
-      the whole deck is one self-contained HTML file that works offline, with no server,
-      no build step and nothing to install.</p>
-    <p class="aside-note">The genre is the one Nancy Duarte calls Slidedocs® — a document that
-      happens to be shaped like slides, and that carries its argument without a presenter
-      standing next to it.</p>
+    <p class="lede">Text-dense 16:9 slides in a single, self-contained HTML file.
+      A briefing is what you send to the people who could not attend, so the deck
+      has to carry itself.</p>
+    <p class="aside-note">Slides for a talk you will actually deliver are a
+      different problem, and a different tool:
+      <a href="https://github.com/UBA-PSI/psi-slides">psi-slides</a> turns one
+      Markdown source into a projection, a presenter cockpit, a reading document
+      and a handout. The line between the two is whether anyone is speaking.</p>
   </div>
 </header>
 
-<div class="wrap">
+<div class="wrap wide">
+  <section>
+    <h2>You write a document; it picks the layout</h2>
+    <p class="tight sub">The component is chosen from the shape of your text,
+      before anything is rendered. Four blocks of equal rank are four parallel
+      points, so they become a bordered grid; a quotation is the takeaway, so it
+      becomes the band at the bottom.</p>
 
-  <section id="see-it">
-    <h2><span class="num">1</span>See it</h2>
-    <p class="tight">The demo is not a screenshot of the artefact. It <em>is</em> the artefact.</p>
+    <figure>
+      <div class="demo">
+        <pre class="demo-src"><code>### Candidates
+They sit the exam at laptops.
+
+### Examiner
+Responsible for the exam.
+
+### Invigilators
+They invigilate, and help set up.
+
+### Technical lead
+Knows the system in detail.
+
+&gt; Who leads is settled **before**
+&gt; the exam day.</code></pre>
+        <div class="demo-out">
+          <div class="mini">
+            <div class="mini-inner">
+              <h4>Four roles on an exam</h4>
+              <div class="mini-net">
+                <div><b>Candidates</b><span>They sit the exam at laptops.</span></div>
+                <div><b>Examiner</b><span>Responsible for the exam.</span></div>
+                <div><b>Invigilators</b><span>They invigilate, and help set up.</span></div>
+                <div><b>Technical lead</b><span>Knows the system in detail.</span></div>
+              </div>
+              <div class="mini-band">Who leads is settled <b>before</b> the exam day.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption>The panel on the right is not a screenshot. It is a 16:9
+        container-query box sized in the same units a real slide uses, so it
+        rescales with this page exactly the way a deck rescales with its
+        window.</figcaption>
+    </figure>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <h2>See it</h2>
+    <p class="tight sub">Both links below are the artefact itself, not a preview
+      of it. Save either one and it still works with the network unplugged.</p>
 
     <div class="cta">
       <div class="cta-row">
-        <a class="btn" href="example-deck.html">Open the example deck →</a>
-        <a class="btn btn--ghost" href="example-deck.html" download="example-deck.html">Download the single file</a>
+        <a class="btn" href="example-deck.html">The example deck</a>
+        <a class="btn btn--ghost" href="tutorial.html">The tutorial deck</a>
       </div>
-      <p>One <code>.html</code> file, ~130 kB, fonts and styles and runtime all inside it.
-        Save it, pull the network cable, double-click it: same deck. Mail it to somebody and
-        they get the whole thing, not a link that rots.</p>
-      <p>Arrow keys or swipe to move; <code>?</code> for the keys. Built on this site from
-        <code>examples/example-deck.md</code> on every push, so what you are reading is never
-        older than the source.</p>
+      <p>The example is a project retrospective: figures, a generated chart, a
+        timeline, a reveal. The tutorial teaches the format by being written in
+        it, and shows the Markdown next to the result on every slide.</p>
+      <p>One HTML file each. No server, no fonts to install, no network.
+        <a href="examples/example-deck.html">The same example with its assets
+        linked</a> is how you work while writing.</p>
     </div>
-
-    <p class="sub" style="font-size:0.9rem">While you are authoring you would rather not re-inline on every
-      save, so a deck can link its assets instead — that mode is here too:
-      <a href="examples/example-deck.html">the hand-built deck with linked CSS and JS</a>.
-      One command folds it into the file above.</p>
   </section>
 
-  <section id="how">
-    <h2><span class="num">2</span>How you write one</h2>
-    <p class="tight">You write Markdown. The converter reads the <em>shape</em> of what you wrote and
-      infers the layout — because the shape already carries the meaning. Four <code>###</code> blocks
-      under a slide are four peers, so they become a bordered 2×2 grid. A <code>&gt;</code> blockquote
-      is the takeaway, so it becomes the highlighted band pinned to the bottom.</p>
+  <section>
+    <h2>How you write one</h2>
+    <p class="tight sub">A Markdown file and one command. The output is ordinary
+      readable HTML, so you can hand-tune any slide afterwards.</p>
+    <pre class="cmd"><code>node tools/md-to-deck.mjs deck.md -o deck.html
+python3 -m http.server 8000        # then look at it
 
-<figure>
-<pre><code>## Four areas of work
-
-### Frontend
-The guided flow and the component library. 620 commits,
-and the only part users ever see.
-
-### Backend
-Enrolment logic and the data model. 410 commits.
-
-### Content
-Copy, translations, and the weekly notes.
-
-### Infra
-Deploy scripts and the font-embedding pipeline.
-
-&gt; Nobody owned a layer exclusively — **everyone shipped end to end.**</code></pre>
-<figcaption>Four peers → a 2×2 grid. The blockquote → the closing band. No layout markup written by hand.</figcaption>
-</figure>
-
-    <p>Then one command:</p>
-<pre class="cmd"><code>node tools/md-to-deck.mjs deck.md -o deck.html</code></pre>
-    <p class="sub">It also reports, per slide, how much of the frame the content actually fills —
-      the failure mode of this genre is a thin slide, and a number is harder to argue with
-      than a feeling. When you want the shareable single file,
-      <code>tools/build-deck.sh deck.html</code> inlines everything and then <em>verifies</em>
-      that nothing external survived.</p>
+tools/build-deck.sh deck.html      # one file you can send</code></pre>
+    <p>The converter prints a report: which rule fired on each slide, how full
+      its content row is, what it corrected by itself, and which slides are thin
+      in a way no tool can fix. It will rearrange content and split a slide. It
+      will not stretch a container to close a gap, because that was measured and
+      it made the deck worse while improving the score.</p>
   </section>
 
-  <section id="ideas">
-    <h2><span class="num">3</span>The two ideas that do the work</h2>
+  <section>
+    <h2>Two ideas do the work</h2>
     <div class="pair">
       <div>
         <h3>Container-query scaling</h3>
-        <p>Every slide is a 16:9 box with <code>container-type: size</code>. Everything inside it —
-          type, spacing, rules, charts — is measured in <code>cqw</code> and <code>cqh</code>,
-          1% of the slide's width and height. Never <code>px</code>, never <code>rem</code>.</p>
-        <p>So the layout is not pixel-fixed, it is proportion-perfect: identical on a 13″ laptop,
-          a 4K projector, and a phone held sideways. There is no responsive breakpoint work to do,
-          because there is nothing to break.</p>
+        <p>Every slide is a 16:9 box with <code>container-type: size</code>.
+          Everything inside is measured in <code>cqw</code> and <code>cqh</code>
+          – never px, never rem.</p>
+        <p>So the layout scales proportionally with the slide. Not
+          pixel-perfect: proportion-perfect, which is what holds a deck together
+          on a laptop and a 4K projector alike.</p>
       </div>
       <div>
         <h3>Semantic design tokens</h3>
-        <p>Every colour and face is a custom property with a meaning rather than a value:
-          <code>--accent</code>, <code>--ink</code>, <code>--highlight</code>,
-          <code>--font-display</code>.</p>
-        <p>A theme is therefore nothing but a <code>:root { … }</code> override — one file, no
-          component touched. The SVG charts the runtime draws read the same tokens at draw time,
-          so they re-skin with everything else instead of drifting out of palette.</p>
+        <p>Every colour and face is a custom property with a meaning rather than
+          a value: <code>--accent</code>, <code>--ink</code>,
+          <code>--highlight</code>.</p>
+        <p>A theme is a <code>:root{}</code> override and nothing else. The
+          generated SVG charts read the same tokens as they draw, so re-skinning
+          a deck is one file.</p>
       </div>
     </div>
   </section>
 
-  <section id="not">
-    <h2><span class="num">4</span>When <em>not</em> to use it</h2>
+  <section>
+    <h2>When not to use it</h2>
+    <p class="tight sub">It fits content that is already document-shaped: a
+      retrospective, project documentation, a research summary, lecture notes, a
+      report with numbers in it. Those arrive with sections and comparisons to
+      arrange densely, and arranging them densely is the whole job.</p>
+
     <div class="caveat">
-      <p>This framework is a <strong>poor fit for a sparse performance talk</strong> — a short spoken
-        keynote driven by timing, delivery, and question→answer beats. Forcing that talk into dense
-        slides fights its dramaturgy; stripping the slides bare just yields empty ones. It shines
-        where the source is already document-shaped: retrospectives, project documentation, research
-        summaries, whitepapers, lecture notes, data-driven reports.</p>
-      <p>If you are giving a talk rather than sending a document, use the sibling project instead:
-        <a href="https://github.com/UBA-PSI/psi-slides"><strong>psi-slides</strong></a> is the spoken
-        medium — one Markdown source producing a projection, a presenter cockpit, a reading document
-        and a handout.</p>
+      <p>It is a <strong>poor fit for a sparse performance talk</strong> – a
+        keynote driven by timing, delivery and question-then-answer beats. This
+        was tried on a real one and it resisted both treatments: forced into
+        dense slides it fought the dramaturgy, made sparse it produced empty
+        frames. The dramaturgy lives in the speaking, and a deck built to be
+        read cannot hold it.</p>
+      <p>There is also no animation model beyond click-to-reveal panels, and no
+        speaker view. For either, use
+        <a href="https://github.com/UBA-PSI/psi-slides">psi-slides</a>.</p>
     </div>
   </section>
 
-  <section id="read">
-    <h2><span class="num">5</span>Read further</h2>
+  <section>
+    <h2>Read further</h2>
     <ul class="links">
       <li><a href="https://github.com/UBA-PSI/psi-briefing">The repository</a>
-        <span>source, themes, the authoring skill</span></li>
-      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/markdown.md">docs/markdown.md</a>
-        <span>every inference the converter makes, and how to override it</span></li>
-      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/cookbook.md">docs/cookbook.md</a>
-        <span>the component catalogue: grids, charts, timelines, reveals</span></li>
-      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/LICENSE">MIT licence</a>
-        <span>use it, fork it, re-theme it</span></li>
+        <span>MIT licensed. No dependencies, no build step, no lockfile.</span></li>
+      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/markdown.md">Writing a deck in Markdown</a>
+        <span>Which shape becomes which component, what the converter corrects,
+          and what the fill percentage in the report actually measures.</span></li>
+      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/cookbook.md">The component catalog</a>
+        <span>All 33 components with copy-paste markup, and the reasoning behind
+          the ones that are easy to misuse.</span></li>
+      <li><a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/handoff-autolayout.md">What building a real deck taught us</a>
+        <span>Every fault that actually occurred, with the measurement that
+          found it. Including the ones the measurements missed.</span></li>
     </ul>
   </section>
 
-  <footer class="foot">
-    <p>psi-briefing — by Dominik Herrmann, Privacy and Security in Information Systems,
-      University of Bamberg. MIT licensed.</p>
-    <p>Slidedocs® is a registered trademark of Duarte Press, LLC; this project is not
-      affiliated with or endorsed by Duarte.</p>
+  <footer>
+    <p>Made by Dominik Herrmann at the Chair of Privacy and Security in
+      Information Systems, University of Bamberg.
+      <a href="https://github.com/UBA-PSI/psi-briefing/blob/main/LICENSE">MIT licensed</a>.</p>
+    <p>The genre of a document made of slides was named by Nancy Duarte, who
+      calls such documents Slidedocs<sup>&reg;</sup> – a registered trademark of
+      Duarte Press, LLC. This project is not affiliated with Duarte;
+      <a href="https://www.duarte.com/resources/books/slidedocs/">her book on
+      them</a> is the best short introduction to why they work.</p>
   </footer>
-
 </div>
 
 </body>

@@ -9,7 +9,7 @@ python3 -m http.server 8000          # then look at it
 tools/build-deck.sh deck.html        # when you want one shareable file
 ```
 
-The output is ordinary psi-briefing HTML — readable, and safe to edit by hand
+The output is the same deck HTML you would write by hand — readable, and safe to edit
 afterwards. Re-running the converter overwrites it, so keep the `.md` as the
 source of truth and hand-edit only once you have stopped converting.
 

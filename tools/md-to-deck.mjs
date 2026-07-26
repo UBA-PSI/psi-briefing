@@ -23,7 +23,7 @@
 //   node tools/md-to-deck.mjs deck.md [-o deck.html] [--no-fix] [--quiet]
 //   node tools/md-to-deck.mjs --help
 //
-// The output is ordinary psi-briefing HTML, meant to be readable and
+// The output is the same deck HTML you would write by hand, meant to be readable and
 // hand-editable afterwards. Run tools/build-deck.sh on it to get a single
 // self-contained file.
 
@@ -395,10 +395,18 @@ function parseBlocks(lines, start = 0, stopAtFence = false) {
       continue;
     }
 
-    // Raw HTML block: from a line starting with a tag to the next blank line.
+    // Raw HTML block: from a line starting with a tag to the next blank line —
+    // or to a directive fence, which is the part that had to be added. A `:::`
+    // line is never HTML, and without stopping at it a raw block that ends
+    // flush against the fence swallowed the terminator: the directive then
+    // absorbed the whole rest of the document, and the deck silently lost half
+    // its slides. Requiring a blank line before `:::` would have been a rule
+    // nobody could infer from the error.
     if (/^</.test(trimmed)) {
       const body = [];
-      while (i < lines.length && lines[i].trim()) { body.push(lines[i]); i += 1; }
+      while (i < lines.length && lines[i].trim() && !/^:::/.test(lines[i].trim())) {
+        body.push(lines[i]); i += 1;
+      }
       blocks.push({ type: 'raw', text: body.join('\n') });
       continue;
     }
@@ -1422,9 +1430,29 @@ function renderDirective(d, ctx) {
         `${ctx.lang === 'en' ? 'Close' : 'Schließen'} &times;</button>\n` +
         `${indent(slideBody(layerSlide, plan, ctx), 2)}\n</div>`;
     }
+    // `::: cols--2`, `::: cols--wide-left`, `::: cols`. These have to be handled
+    // explicitly, and it is worth saying why, because the fault was invisible.
+    // `cols--2` is a MODIFIER, not a base class: it sets grid-template-columns
+    // and nothing else. Falling through to the default branch below emitted
+    // <div class="cols--2"> without `.cols`, so display stayed `block`, and the
+    // columns rendered as full-width blocks stacked vertically — measured:
+    // display:block, no gap, no flex, two panels at different `top`. This was
+    // the first directive example in --help, in docs/markdown.md and in the
+    // README, so the most-copied snippet in the documentation did not work.
+    // Each group also needs its own `.col`, which is where the vertical gap
+    // between stacked blocks inside a column comes from.
+    case 'cols': case 'cols--2': case 'cols--3':
+    case 'cols--wide-left': case 'cols--wide-right': {
+      const groups = groupBlocks(d.blocks);
+      const mod = name === 'cols' ? `cols--${Math.min(Math.max(groups.length, 2), 3)}` : name;
+      const cols = groups.map((g) =>
+        `  <div class="col">\n${indent(renderGroup(g, ctx), 4)}\n  </div>`).join('\n');
+      return `<div class="cols ${mod}">\n${cols}\n</div>`;
+    }
     default: {
       // Unknown name -> a div with that class. Covers the rest of the catalog
-      // for any component that takes ordinary content.
+      // for any component that takes ordinary content. Safe only for BASE
+      // classes (.twocol, .rhythm, .pipe); a bare modifier needs a case above.
       const body = groupBlocks(d.blocks).map((g) => renderGroup(g, ctx)).join('\n');
       ctx.usedClasses.add(name);
       return `<div class="${name}">\n${indent(body, 2)}\n</div>`;

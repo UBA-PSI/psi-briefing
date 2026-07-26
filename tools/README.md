@@ -181,7 +181,7 @@ stderr and the original tag is kept, so the run never fails on a missing asset.
 Document order of styles and scripts is preserved. A one-line summary
 (bytes in → bytes out) is printed to stderr.
 
-Because psi-briefing's CSS and runtime is already dependency-free, an
+Because psi-briefing's CSS and runtime are already dependency-free, an
 inlined example deck is a genuinely standalone file: no server, no build, works
 from `file://` and offline.
 
