@@ -75,15 +75,18 @@
     --s1: 0.25rem;  --s2: 0.5rem;   --s3: 0.75rem;  --s4: 1rem;
     --s5: 1.5rem;   --s6: 2rem;     --s7: 3rem;     --s8: 4.5rem;
 
-    /* How wide a figure, a table or a transcript may grow beyond the reading
-       column. Bounded by the viewport so the breakout never causes a scrollbar. */
-    /* One breakout width for everything that is not running text: the banner,
-       the figures, the screenshots, the comparison table and the transcripts.
-       Giving the banner its own wider value put three different left edges on
-       one page - 1152, 960 and 736 - and the steps between them read as
-       carelessness rather than as structure. Two edges is the most a page like
-       this should have. */
-    --breakout: min(72rem, calc(100vw - 3rem));
+    /* How far a figure, a table or a transcript may reach past the reading
+       column. Bounded by the viewport so it never causes a scrollbar.
+       This is 60rem against a 50rem column, so the overhang is 80px a side. At
+       72rem against 46rem it was 232px a side, and that is not an outdent any
+       more but a staircase: every code block began 232px to the left of the
+       sentence introducing it, and the eye read the two as unrelated. The fix
+       runs from both ends - the column came out, the breakout came in - because
+       moving either one alone leaves the other wrong.
+       One value for all of it, including the banner. A separate, wider banner
+       width put three left edges on one page (1152, 960, 736) and the steps
+       between them read as carelessness. */
+    --breakout: min(60rem, calc(100vw - 3rem));
   }
 
   @media (prefers-color-scheme: dark) {
@@ -113,7 +116,12 @@
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-body);
-    font-size: 17px;
+    /* 18px rather than 17px, because the reading column got wider. Character
+       count is what makes a line hard to read, not pixel width: 688px at 17px
+       was 81 characters, and simply stretching the column to 752px would have
+       pushed it to 88. Growing the type by the same 6% keeps the measure at 83
+       and the extra width is a gain instead of a cost. */
+    font-size: 18px;
     line-height: 1.6;
     text-rendering: optimizeLegibility;
   }
@@ -124,12 +132,12 @@
      container with a 38rem cap on the paragraphs fixed that and left a 350px
      void down the right of every text section, because the text was capped but
      still left-aligned inside a box twice its width.
-     So: the container IS the measure - 46rem is about 78 characters at 17px, so
-     paragraphs need no cap of their own - and the four things that genuinely
-     want more room widen symmetrically out of it with a negative inline margin.
+     So: the container IS the measure - 50rem is about 83 characters at 18px, so
+     paragraphs need no cap of their own - and the few things that genuinely want
+     more room widen symmetrically out of it with a negative inline margin.
      No void, and the transcript still fits. */
   .wrap {
-    max-width: 46rem;
+    max-width: 50rem;
     margin: 0 auto;
     padding: 0 var(--s5) var(--s8);
   }
@@ -175,7 +183,7 @@
     padding: var(--s7) var(--s5) var(--s6);
     margin-bottom: var(--s7);
   }
-  header.masthead .wrap { padding: 0; max-width: 46rem; }
+  header.masthead .wrap { padding: 0; max-width: 50rem; }
 
   /* Text left, one real slide right. The slide is the argument: it shows Markdown
      on one side and the component it produced on the other, which states "this
@@ -192,7 +200,7 @@
      a horizontal scrollbar at 390px. overflow-x on the <pre> cannot fix that on
      its own - the track has to be allowed to shrink first. */
   .hero-text, .hero-shot { min-width: 0; }
-  @media (min-width: 46rem) {
+  @media (min-width: 52rem) {
     /* A generous gutter, because one side is running text and the other is a
        bordered image: at var(--s6) the sentences ended flush against the frame.
        No order declarations here - the DOM is already text then figure, and the
@@ -201,7 +209,7 @@
        The image takes the larger share. It is showing Markdown small enough to
        read, so every pixel counts, and the text beside it still lands at about
        50 characters a line - inside the comfortable band even at the short end. */
-    .hero { grid-template-columns: 1fr 1.2fr; gap: var(--s8); align-items: center; }
+    .hero { grid-template-columns: 1fr 1.35fr; gap: var(--s7); align-items: center; }
   }
   .hero-shot { margin: 0; }
   .hero-shot img {
