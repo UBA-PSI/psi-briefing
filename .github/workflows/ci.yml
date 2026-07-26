@@ -6,10 +6,10 @@
 # Nothing here is defensive decoration; if a step looks cheap, that is because
 # the fault it catches was cheap to catch and expensive to miss.
 #
-# The framework has no npm dependencies and there is no package.json, so there
-# is deliberately no install step: `npm ci` would fail, and adding a lockfile
-# just to satisfy a CI convention would contradict the one property the project
-# is built on.
+# There is deliberately no install step. package.json exists, but only for
+# metadata and script aliases: the framework has no dependencies and no
+# lockfile, so `npm ci` would fail - and adding a lockfile purely to satisfy a
+# CI convention would contradict the one property the project is built on.
 
 name: CI
 
