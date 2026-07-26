@@ -130,14 +130,14 @@ is settled before the exam day.
 ## Numbers become numbers
 {eyebrow="Shape → component"}
 
-A short list whose every item reads `**value** — label`, with a digit in the
+A short list whose every item reads `**value** – label`, with a digit in the
 value, is not a list. It is a row of figures, and it is set as one.
 
 ::: cols--2
 ```markdown
-- **1 280** — commits across the project
-- **11** — weeks from kickoff to launch
-- **3** — people, none of them full time
+- **1 280** – commits across the project
+- **11** – weeks from kickoff to launch
+- **3** – people, none of them full time
 ```
 
 <div class="facts">

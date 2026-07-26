@@ -370,6 +370,39 @@
   .caveat p + p { margin-top: var(--s3); }
   .caveat a { color: inherit; }
 
+  /* ---------- the comparison table ----------
+     Scrolls inside its own container rather than widening the page: a table is
+     the one element that cannot be made to reflow honestly, and pushing the
+     whole document sideways to accommodate it is the wrong trade. */
+
+  .compare { overflow-x: auto; margin: var(--s5) 0 0; }
+  .compare table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 34rem;
+    font-size: 0.9rem;
+  }
+  .compare th, .compare td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--s3) var(--s4) var(--s3) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .compare thead th {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom-width: 2px;
+    border-bottom-color: var(--accent);
+  }
+  .compare tbody th { font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .compare tbody td { color: var(--ink-soft); }
+  .compare tbody tr:first-child th, .compare tbody tr:first-child td { background: var(--muted-soft); }
+  .compare tbody tr:last-child th, .compare tbody tr:last-child td { border-bottom: 0; }
+
   /* ---------- links out ---------- */
 
   ul.links { list-style: none; padding: 0; margin: var(--s4) 0 0; }
@@ -531,6 +564,45 @@ tools/build-deck.sh deck.html      # one file you can send</code></pre>
   </section>
 
   <section>
+    <h2>How it compares</h2>
+    <p class="tight sub">Auto-layout from Markdown is not a new idea, and it
+      would be dishonest to present it as one. What follows is the short version;
+      the <a href="https://github.com/UBA-PSI/psi-briefing/blob/main/docs/comparison.md">full
+      comparison</a> is written in both directions and names the case where each
+      alternative is the better choice.</p>
+
+    <div class="compare">
+      <table>
+        <thead>
+          <tr><th>Tool</th><th>Layout</th><th>The artefact</th><th>Speaker view</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">psi-briefing</th><td>inferred from content shape</td><td>one self-contained file</td><td>no</td></tr>
+          <tr><th scope="row">iA Presenter</th><td>analysed and chosen for you</td><td>HTML package, PDF, PPTX</td><td>yes</td></tr>
+          <tr><th scope="row">reveal.js</th><td>you specify it</td><td>a folder, or a server</td><td>yes</td></tr>
+          <tr><th scope="row">Marp</th><td>CSS themes</td><td>HTML, assets not bundled</td><td>via tooling</td></tr>
+          <tr><th scope="row">LaTeX Beamer</th><td>frames and templates</td><td>PDF</td><td>with a second file</td></tr>
+          <tr><th scope="row">PowerPoint / Keynote</th><td>you place things</td><td>.pptx / .key</td><td>yes</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>The one worth explaining</h3>
+    <p><strong>iA Presenter</strong> made this idea mainstream and does the same
+      kind of thing: it analyses a slide's content and picks a layout. The
+      difference is the default. There, the document is a script – an ordinary
+      paragraph is what you <em>say</em>, and you indent one to promote it onto
+      the slide, so what the audience sees is the exception you opt into. Here
+      there is no speaker, so there is nothing to demote: everything is on a
+      slide, and the engine asks what shape the content has rather than which
+      fragment to promote.</p>
+    <p>Which makes iA Presenter the closer relative of
+      <a href="https://github.com/UBA-PSI/psi-slides">psi-slides</a>, not of this.
+      If you are going to stand up and talk, it is a mature, well-designed
+      product and this is not a serious competitor to it.</p>
+  </section>
+
+  <section>
     <h2>Read further</h2>
     <ul class="links">
       <li><a href="https://github.com/UBA-PSI/psi-briefing">The repository</a>
@@ -548,8 +620,9 @@ tools/build-deck.sh deck.html      # one file you can send</code></pre>
   </section>
 
   <footer>
-    <p>Made by Dominik Herrmann at the Chair of Privacy and Security in
-      Information Systems, University of Bamberg.
+    <p>Made by <a href="https://herdom.net">Dominik Herrmann</a> at the
+      <a href="https://psi.uni-bamberg.de/">Chair of Privacy and Security in
+      Information Systems</a>, University of Bamberg.
       <a href="https://github.com/UBA-PSI/psi-briefing/blob/main/LICENSE">MIT licensed</a>.</p>
     <p>The genre of a document made of slides was named by Nancy Duarte, who
       calls such documents Slidedocs<sup>&reg;</sup> – a registered trademark of

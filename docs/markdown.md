@@ -123,7 +123,7 @@ like a step number inside a long numbered procedure.
 | `> blockquote` | the `.punch` band, pinned to the bottom |
 | `- bullets` | a `.kulissen` list, density picked from the item count |
 | `1.` items with `**bold leads**` | numbered `.flow` steps |
-| `- **12** — label` items | a `.facts` grid of big numbers |
+| `- **12** – label` items | a `.facts` grid of big numbers |
 | a two-column table | a `.tl` label/value list with content-sized tracks |
 | a wider table | a real table, with a small scoped style |
 | a fenced code block | `<pre class="md-code">`, sized in `cqw` like everything else |

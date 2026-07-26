@@ -1,17 +1,17 @@
 # psi-briefing
 
-**Briefings you can read without a meeting — text-dense 16:9 slides in a single, self-contained HTML file.**
+**Briefings you can read without a meeting – text-dense 16:9 slides in a single, self-contained HTML file.**
 
 A briefing is what you send to the people who could not attend, so the deck has to carry itself: dense enough to read alone, and one `.html` file you can put in an email. No framework, no build step, no server, no fonts to install. Open it on a 13″ laptop, a 4K projector or a phone in landscape and it looks identical everywhere, because nothing inside it is measured in pixels.
 
-*Made by [Dominik Herrmann](https://github.com/) · [MIT-licensed](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
+*Made by [Dominik Herrmann](https://herdom.net) at the [Chair of Privacy and Security in Information Systems](https://psi.uni-bamberg.de/), University of Bamberg · [MIT-licensed](LICENSE) · [Deutsche Kurzfassung unten ↓](#deutsch)*
 
 ![The example deck's title slide in the Bamberg theme](docs/preview.png)
 
 > **Slides for a talk you will actually deliver?** That is the sibling project,
 > [**psi-slides**](https://github.com/UBA-PSI/psi-slides): one Markdown source
 > producing a projection, a presenter cockpit, a reading document and a handout.
-> The line between the two is whether anyone is speaking — psi-slides is for the
+> The line between the two is whether anyone is speaking – psi-slides is for the
 > lecture, psi-briefing for the document that has to work without you in the room.
 
 ---
@@ -106,9 +106,12 @@ afterwards. See [`docs/markdown.md`](docs/markdown.md).
 | `themes/midnight.css` | A dark theme – proof that flipping `--paper`/`--ink` re-skins everything. |
 | `examples/example-deck.html` | A 14-slide worked example exercising every major layout. |
 | `examples/example-deck.md` | The same idea written as a Markdown document, for `md-to-deck.mjs`. |
+| `examples/tutorial.md` | A tutorial deck that teaches the format by being written in it: eight slides show the Markdown beside the layout it produced. |
 | `tools/md-to-deck.mjs` | **Write a deck as Markdown.** Infers the component from the shape of the content: three `###` blocks become three columns, four become a bordered grid, a blockquote becomes the closing band. Outputs the same deck HTML you would write by hand. |
 | `docs/markdown.md` | The Markdown authoring reference: document structure, the shape→component table, directives, and what the converter will and will not correct. |
 | `docs/cookbook.md` | The component catalog – copy-paste snippets for every layout. |
+| `docs/comparison.md` | How it compares to iA Presenter, reveal.js, Marp, Beamer and PowerPoint – written in both directions, naming the case where each one is the better choice. |
+| `CONTRIBUTING.md` | Conventions that are not obvious from the code: no px inside a slide, no hard-coded grid tracks, no dependencies, and why comments here explain the failure they prevent. |
 | `docs/tutorial.en.md` · `docs/tutorial.de.md` | Build-your-first-deck walkthrough, bilingual. |
 | `tools/embed-fonts.mjs` · `tools/inline-deck.mjs` | Turn a linked dev deck into one self-contained file with base64 fonts/images. |
 | `tools/optimise-images.mjs` | Re-encode a deck's images to WebP at the size the slides actually use, before inlining. Cut a real 20-image deck from 8.3 MB to 3.3 MB. |
@@ -137,21 +140,21 @@ See **[docs/cookbook.md](docs/cookbook.md)** for every component and **[docs/tut
 
 ## When *not* to use this
 
-The framework is built for content that is **already document-shaped** — a
+The framework is built for content that is **already document-shaped** – a
 retrospective, project documentation, a research summary, lecture notes, a
 data-driven report. Those sources arrive with sections, comparisons and numbers
 to arrange densely, and arranging them densely is the whole job.
 
 It is a **poor fit for a sparse performance talk**: a short spoken keynote driven
 by timing, delivery and question→answer beats. This was tested on a real one and
-it resisted both treatments — forcing the talk into dense slides fought its
+it resisted both treatments – forcing the talk into dense slides fought its
 dramaturgy, and making the slides sparse just produced empty frames. The
 dramaturgy lives in the speaking, and a deck built to be read cannot hold it. For
 that, use [psi-slides](https://github.com/UBA-PSI/psi-slides) or plain keynote
 slides with a script beside them.
 
 Two smaller limits worth knowing before you invest: there is **no animation
-model** beyond click-to-reveal panels and image stacks, and **no speaker view** —
+model** beyond click-to-reveal panels and image stacks, and **no speaker view** –
 if you need presenter notes on a second screen, that is psi-slides' job, not this
 one.
 
