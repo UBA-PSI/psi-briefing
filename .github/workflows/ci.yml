@@ -109,6 +109,28 @@ jobs:
           tools/build-deck.sh examples/example-deck-md.html -o build/example-deck-md.html
           tools/build-deck.sh examples/tutorial.html -o build/tutorial.html
 
+      # The two language versions of the landing page are separate files, not a
+      # template with two data files, so nothing stops a section being added to
+      # one and forgotten in the other. The failure is silent: both pages render,
+      # and the German reader simply never learns the thing. Anchors are checked
+      # rather than prose because they are the part that must match exactly: the
+      # language switch keeps the reader's position only if both pages carry the
+      # same ids, and every #link in either page resolves against both.
+      - name: Landing page translations have the same sections
+        run: |
+          ids() { grep -o 'id="[a-z-]*"' "$1" | sort -u; }
+          if ! diff <(ids docs/site/index.html) <(ids docs/site/index.de.html); then
+            echo "::error::docs/site/index.html and index.de.html have drifted apart."
+            echo "Lines with < are English only, lines with > are German only."
+            exit 1
+          fi
+          for f in docs/site/index.html docs/site/index.de.html; do
+            h2=$(grep -c '<h2>' "$f")
+            nav=$(sed -n '/topbar-panel/,/<\/ol>/p' "$f" | grep -c '<li>')
+            echo "$f: $h2 headings, $nav contents entries"
+            [ "$h2" = "$nav" ] || { echo "::error::$f: contents menu and headings disagree"; exit 1; }
+          done
+
   # ---------------------------------------------------------------------------
   # Separate job on purpose. A failing step aborts the rest of its job, and the
   # naming sweep must not be able to hide a broken build (or the reverse).

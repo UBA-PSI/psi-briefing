@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>psi-briefing – a generator for briefing decks</title>
 <meta name="description" content="Turn a Markdown file into text-dense 16:9 slides in one self-contained HTML file. Dependency-free, MIT licensed.">
+<link rel="alternate" hreflang="en" href="https://uba-psi.github.io/psi-briefing/">
+<link rel="alternate" hreflang="de" href="https://uba-psi.github.io/psi-briefing/de/">
+<link rel="alternate" hreflang="x-default" href="https://uba-psi.github.io/psi-briefing/">
 <!-- Favicon as a data URI, so the page really makes zero requests: a 16:9 frame
      in the theme's accent blue with the highlight band along the bottom. -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300457D'/%3E%3Crect x='5' y='7' width='22' height='18' fill='%23ffffff'/%3E%3Crect x='8' y='11' width='16' height='2' fill='%2300457D'/%3E%3Crect x='8' y='15' width='11' height='2' fill='%236690B1'/%3E%3Crect x='8' y='20' width='16' height='3' fill='%23FFD300'/%3E%3C/svg%3E">
@@ -190,6 +193,29 @@
     }
   }
 
+  .topbar-lang {
+    display: flex;
+    align-items: center;
+    gap: var(--s1);
+    font-size: 0.74rem;
+    flex: none;
+  }
+  .topbar-lang a {
+    padding: var(--s1) var(--s2);
+    color: var(--bar-ink-soft);
+    letter-spacing: 0.03em;
+    /* Transparent, not absent: adding a border on hover would otherwise shift
+       both links by a pixel, which is visible as a jitter in a sticky bar. */
+    border: 1px solid transparent;
+  }
+  .topbar-lang a:hover {
+    color: var(--bar-ink);
+    text-decoration: none;
+    border-color: #6d6a68;
+  }
+  /* The current language is a state, not a link to the page you are on. */
+  .topbar-lang a[aria-current] { color: var(--bar); background: var(--bar-ink); }
+
   /* The menu. position: relative on the <details> so the panel can hang off it. */
   .topbar-menu { position: relative; flex: none; }
   .topbar-menu > summary {
@@ -254,6 +280,19 @@
        needs, and three links plus a wordmark do not fit on one line. */
     .topbar-right { display: none; }
     .topbar-in { padding: var(--s2) var(--s5); }
+  }
+
+  /* Stage three, below 27rem: with the language switch in the bar, the wordmark,
+     the switch and the menu stop fitting on one line, and the menu button is cut
+     off at the right edge. Measured across widths, clipping runs out at 430px on
+     this page and at 410px on the German one, so 27rem (432px) is the first
+     breakpoint that clears both; the two files carry the same rule.
+     Viewport overflow alone is the wrong test here and reported clean at 400px
+     while the button was still cut by 23px: the bar clips its own children, so
+     the damage never reaches document.scrollWidth.
+     The mark keeps linking to the university, only its 19 characters of text go. */
+  @media (max-width: 27rem) {
+    .topbar-brand span { display: none; }
   }
 
   * { box-sizing: border-box; }
@@ -878,6 +917,10 @@
       <a href="#start">Getting started</a>
       <a href="#compare">Compare</a>
      </div>
+     <span class="topbar-lang" role="group" aria-label="Language">
+      <a href="index.html" hreflang="en" aria-current="true">EN</a>
+      <a href="de/index.html" hreflang="de">DE</a>
+     </span>
      <details class="topbar-menu">
       <summary>
         <svg viewBox="0 0 14 12" aria-hidden="true" focusable="false"><path d="M0 1h14M0 6h14M0 11h14" style="stroke:currentColor;stroke-width:1.6px;fill:none"/></svg>

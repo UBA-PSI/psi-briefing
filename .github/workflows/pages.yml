@@ -70,8 +70,11 @@ jobs:
       # artefact, and it fails loudly here if a referenced asset ever moves.
       - name: Assemble the site
         run: |
-          mkdir -p _site/examples _site/framework _site/themes
+          mkdir -p _site/examples _site/framework _site/themes _site/de
           cp docs/site/index.html _site/index.html
+          # The German page lives one directory down, which is what its ../
+          # links and its EN/DE switch assume. Moving it changes both.
+          cp docs/site/index.de.html _site/de/index.html
           cp examples/example-deck.html _site/examples/
           cp framework/briefing.css framework/briefing.js _site/framework/
           cp themes/bamberg.css themes/midnight.css _site/themes/
