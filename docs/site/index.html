@@ -78,6 +78,12 @@
     --bar-ink:      #ffffff;
     --bar-ink-soft: #d6d4d2;
     --stage-ink:  #33506b;
+    /* The language pointer above the headline. Tinted with the stage colour it
+       sits on rather than borrowed from the body greys: --muted is a warm grey and
+       measured only 2.32:1 against this band, which is below the 4.5:1 that text
+       this size needs. This mix mutes it against the headline and still measures
+       4.69:1. */
+    --stage-ink-soft: #3d5973;
 
     /* Copse is the theme's display face. Here we take its own declared fallback
        rather than shipping a font file - the page may not fetch one.
@@ -112,6 +118,7 @@
       --rule:       #333c44;
       --stage:      #0d1a26;
       --stage-ink:  #cfe0ee;
+      --stage-ink-soft: #99a9b6;   /* 7.30:1 on the dark stage */
     }
   }
 
@@ -409,7 +416,7 @@
   .lang-hint {
     margin: 0 0 var(--s4);
     font-size: 0.86rem;
-    color: var(--muted);
+    color: var(--stage-ink-soft);
   }
   .lang-hint a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 2px; }
   .lang-hint a:hover { color: var(--stage-ink); }

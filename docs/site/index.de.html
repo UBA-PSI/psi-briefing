@@ -78,6 +78,12 @@
     --bar-ink:      #ffffff;
     --bar-ink-soft: #d6d4d2;
     --stage-ink:  #33506b;
+    /* The language pointer above the headline. Tinted with the stage colour it
+       sits on rather than borrowed from the body greys: --muted is a warm grey and
+       measured only 2.32:1 against this band, which is below the 4.5:1 that text
+       this size needs. This mix mutes it against the headline and still measures
+       4.69:1. */
+    --stage-ink-soft: #3d5973;
 
     /* Copse is the theme's display face. Here we take its own declared fallback
        rather than shipping a font file - the page may not fetch one.
@@ -112,6 +118,7 @@
       --rule:       #333c44;
       --stage:      #0d1a26;
       --stage-ink:  #cfe0ee;
+      --stage-ink-soft: #99a9b6;   /* 7.30:1 on the dark stage */
     }
   }
 
@@ -419,7 +426,7 @@
   .lang-hint {
     margin: 0 0 var(--s4);
     font-size: 0.86rem;
-    color: var(--muted);
+    color: var(--stage-ink-soft);
   }
   .lang-hint a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 2px; }
   .lang-hint a:hover { color: var(--stage-ink); }
@@ -1014,15 +1021,15 @@
     <p class="tight sub">Ein Bericht und ein Foliensatz können dasselbe Argument
       tragen, und welche Form besser ankommt, ist <strong>eine Frage der Vorliebe
       und keine Rangfolge</strong>. Manche lesen einen durchlaufenden Text und
-      nehmen ihn so auf. Andere wollen denselben Inhalt in Rahmen, die sich
+      nehmen ihn so auf. Andere wollen denselben Inhalt in Folien, die sich
       überfliegen, durchklicken und noch einmal aufsuchen lassen. Es zählt nur,
       dass die Lesenden die Fassung bekommen, die sie tatsächlich lesen.</p>
     <p>psi-briefing gibt es, damit <strong>ein Foliensatz ungefähr so viel Zeit
       kostet wie der Bericht, den man sonst geschrieben hätte</strong>. Der
       Bericht ist der billigere von beiden, weil dafür nur die Sache selbst
       gesagt werden muss. Folien verlangen dasselbe und obendrein eine zweite
-      Arbeit: die Entscheidung, wie ein Gedanke auf mehrere Rahmen verteilt und
-      innerhalb eines Rahmens angeordnet wird.</p>
+      Arbeit: die Entscheidung, wie ein Gedanke auf mehrere Folien verteilt und
+      innerhalb einer Folie angeordnet wird.</p>
     <p>In dieser zweiten Arbeit steckt die Zeit, und sie geht dabei meist auf
       eine von zwei Weisen verloren. Entweder verschiebt man Kästen pixelweise, was einen
       Nachmittag pro Folie verschlingen kann, oder man hört früh auf und behält
@@ -1082,7 +1089,7 @@
     <h2>Man schreibt, der Konverter ordnet an</h2>
     <p class="tight sub">Der Konverter liest, wie der Markdown-Text aufgebaut
       ist, und wählt daraus das Layout der Folie. Vier Überschriften derselben
-      Ebene werden zu einem Raster mit Rahmen, weil sie vier gleich gewichtige
+      Ebene werden zu einem umrandeten Raster, weil sie vier gleich gewichtige
       Punkte sind. Ein Zitat wird zum hervorgehobenen Band am unteren Rand der
       Folie, weil dort das Fazit einer Folie steht.</p>
 
@@ -1435,7 +1442,7 @@ md-to-deck: 13 slides -&gt; /tmp/x.html
         Frage aufzubauen, bevor sie beantwortet wird. Eine Konferenz-Keynote
         wurde einmal so gebaut und sperrte sich gegen beide Behandlungen: dicht
         gesetzt stritten die Folien mit dem Vortrag, sparsam gesetzt waren sie
-        leere Rahmen mit einem Satz darauf. Das Argument lag in dem, was der
+        leere Folien mit einem Satz darauf. Das Argument lag in dem, was der
         Vortragende sagte, und Folien, die für sich allein gelesen werden sollen,
         konnten es nicht tragen.</p>
       <p>Es gibt außerdem kein Animationsmodell über aufklappbare Felder hinaus
