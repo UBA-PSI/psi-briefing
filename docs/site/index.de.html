@@ -790,6 +790,12 @@
     background: var(--muted-soft);
     padding: 0.1em 0.32em;
     font-size: 0.88em;
+    /* A path or a URL in running prose has no spaces to break at, so on a
+       phone it pushes the whole page sideways: measured at 66px of horizontal
+       scroll at 390px and 136px at 320px, with the walkthrough open. Breaks
+       only when it would otherwise overflow. `pre` is unaffected - it scrolls
+       inside its own box, and breaking a transcript would misquote it. */
+    overflow-wrap: break-word;
   }
   .cmd { background: var(--paper); }
 
