@@ -4,6 +4,25 @@ Notable changes to psi-briefing, newest first. The shape of this file follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); the version numbers
 follow [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.1.0 – 2026-07-27
+
+### Changed
+
+- **The build pipeline runs on Node alone.** `tools/build-deck.mjs` is the new
+  entry point and works identically on Windows, macOS and Linux.
+  `tools/build-deck.sh` still exists and still behaves exactly as before: it is
+  now a wrapper around the `.mjs`, with the same options, output and exit codes,
+  so every existing invocation in CI, in `package.json` and in the docs keeps
+  working. The reason for the move is that Windows has no shell for the wrapper,
+  and the whole pipeline was already Node apart from its orchestration.
+
+### Added
+
+- **A setup walkthrough on the landing page** for readers who have never
+  installed Node or opened a terminal, covering Windows and macOS from an empty
+  machine to a built copy of the example deck. It starts from the release ZIP
+  rather than from `git clone`, so no Git and no GitHub account is needed.
+
 ## 1.0.0 – 2026-07-26
 
 First release under the name `psi-briefing`. The project was developed under the

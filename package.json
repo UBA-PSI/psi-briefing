@@ -1,6 +1,6 @@
 {
   "name": "psi-briefing",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Self-contained 16:9 briefing decks: one HTML file, container-query scaling, no runtime dependencies.",
   "license": "MIT",

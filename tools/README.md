@@ -6,7 +6,8 @@ exception is the WebP encode step, which shells out to `cwebp` or `magick`).
 | Tool | What it is for |
 | --- | --- |
 | [`md-to-deck.mjs`](#md-to-deckmjs) | write a deck as Markdown; it infers the components |
-| [`build-deck.sh`](#build-decksh) | the release pipeline: optimise → inline → verify |
+| [`build-deck.mjs`](#build-deckmjs) | the release pipeline: optimise → inline → verify |
+| [`build-deck.sh`](#build-deckmjs) | the same pipeline under its older name, for shells |
 | [`optimise-images.mjs`](#optimise-imagesmjs) | re-encode photographs to WebP at the size slides use |
 | [`inline-deck.mjs`](#inline-deckmjs) | fold CSS, JS and images into one `.html` |
 | [`embed-fonts.mjs`](#embed-fontsmjs) | fonts → base64 `@font-face` rules |
@@ -32,14 +33,14 @@ embedded. These tools do that.
    `skills/briefing/SKILL.md`.
 3. *(once per theme)* **Embed fonts**: run `embed-fonts.mjs` and paste its
    output into your theme, so the fonts travel with the deck.
-4. **Ship one file**: `tools/build-deck.sh deck.html`. That runs the image and
-   inline steps and then *verifies* that nothing external is left – the step
+4. **Ship one file**: `node tools/build-deck.mjs deck.html`. That runs the image
+   and inline steps and then *verifies* that nothing external is left – the step
    people skip, and the reason this is a script and not a note in a README.
 
 ```
 deck.md ── md-to-deck.mjs ──> deck.html  +  linked css/js/fonts/images
                                   │
-                                  └─ build-deck.sh
+                                  └─ build-deck.mjs
                                        ├─ optimise-images.mjs  (jpg/png -> webp)
                                        ├─ inline-deck.mjs      (everything -> data:)
                                        └─ verify               (assert nothing external)
@@ -67,16 +68,26 @@ which corrections it applied, and which slides are thin in a way no tool can fix
 
 ---
 
-## `build-deck.sh`
+## `build-deck.mjs`
 
 ```bash
-tools/build-deck.sh deck.html
-tools/build-deck.sh deck.html -o share/deck.html --max-width 2000
+node tools/build-deck.mjs deck.html
+node tools/build-deck.mjs deck.html -o share/deck.html --max-width 2000
 ```
 
 Exit `0` built and verified, `1` usage error, `2` built but still depending on
 something external (it tells you what). Without a WebP encoder installed it
 warns, skips that step, and still produces a valid file.
+
+`build-deck.sh` is a wrapper around this file and nothing else: same options,
+same output, same exit codes. It exists because the shell name is in the README,
+in CI and in people's fingers. The pipeline moved to Node because a reader who
+has just installed Node on Windows has no shell to run the wrapper in, and
+asking them to install one in order to run two Node scripts is a bad trade.
+Everything the pipeline does was already Node; only the orchestration was bash.
+
+**Do not add behaviour to the wrapper.** A flag handled there would not exist
+for anyone calling the `.mjs` directly, which is what the website documents.
 
 ---
 
