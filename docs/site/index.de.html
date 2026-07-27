@@ -564,17 +564,15 @@
     line-height: 1.45;
     color: var(--stage-ink);
   }
-  .hero-cmd {
-    margin: var(--s4) 0 0;
-    padding: var(--s3);
-    background: var(--paper);
-    border: 1px solid var(--rule);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    line-height: 1.5;
-    color: var(--ink);
-    overflow-x: auto;
-  }
+  /* The hero used to carry the converter's command line here. It was the first
+     thing a reader met after the lede, and to anyone who does not live in a
+     terminal it reads as a warning about what using this will be like. The
+     command is not lost: it appears twice further down, where the reader has
+     already decided to build something. What belongs this high up is the two
+     things a newcomer actually wants, which is to see one and to find out how.
+     .cta-row and .btn are the pair already used in "Ansehen", reused rather than
+     restyled so the page has one button and not two that nearly match. */
+  .hero .cta-row { margin: var(--s4) 0 0; }
 
   /* The name is the h1 and the sentence about it is the tagline below. The other
      way round cost three stacked small lines above the headline (language hint,
@@ -1005,7 +1003,10 @@
           vorträgt. Heraus kommt eine einzige HTML-Datei, in der alles steckt,
           was die Folien brauchen. Diese Datei öffnet sich in jedem Browser,
           ohne Internetverbindung und ohne Installation.</p>
-        <pre class="hero-cmd"><code>node tools/md-to-deck.mjs deck.md -o deck.html</code></pre>
+        <div class="cta-row">
+          <a class="btn" href="../example-deck.html">Beispiel-Briefing ansehen</a>
+          <a class="btn btn--ghost" href="#start">Erste Schritte</a>
+        </div>
         <p class="aside-note">Für einen Vortrag, der wirklich gehalten wird, ist
           <a href="https://uba-psi.github.io/psi-slides/">psi-slides</a> das
           passende Werkzeug: eine Markdown-Quelle, und heraus kommen eine
