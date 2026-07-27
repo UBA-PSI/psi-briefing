@@ -411,8 +411,8 @@
      share of this project's readers are German.
      Deliberately not a coloured banner: it announces a translation, not a
      problem, and anything with a background above the headline reads as a
-     cookie notice. Sits above the eyebrow so it is out of the way of the
-     headline, and inherits the stage colours so it belongs to the band. */
+     cookie notice. Sits above the headline, out of its way, and inherits the
+     stage colours so it belongs to the band. */
   .lang-hint {
     margin: 0 0 var(--s4);
     font-size: 0.86rem;
@@ -446,7 +446,7 @@
        read, so every pixel counts, and the text beside it still lands at about
        50 characters a line - inside the comfortable band even at the short end.
        Two rows, so the figure can start level with the lede rather than level
-       with the heading: the eyebrow and the h1 own row 1 in the left column, and
+       with the heading: the h1 and the tagline own row 1 in the left column, and
        the lede, the command and the note share row 2 with the figure. Doing it
        by alignment instead would mean offsetting the figure by the height of a
        heading whose font-size is a clamp() - a number that changes with the
@@ -566,16 +566,26 @@
     overflow-x: auto;
   }
 
-  .eyebrow {
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  /* The name is the h1 and the sentence about it is the tagline below. The other
+     way round cost three stacked small lines above the headline (language hint,
+     eyebrow, then the title) none of which carried weight, and in German the
+     headline then broke across three lines with a hyphen. A short h1 also holds
+     its size in both languages, because the name does not translate. */
+  h1 {
+    font-size: clamp(2.4rem, 8vw, 3.9rem);
+    margin: 0 0 var(--s2);
     color: var(--stage-ink);
-    margin: 0 0 var(--s4);
+    /* The name is lowercase everywhere else in the project, including in the
+       commands, so it stays lowercase here rather than being title-cased. */
+    text-transform: none;
   }
 
-  h1 {
-    font-size: clamp(2rem, 7vw, 3.25rem);
+  /* Larger than the lede and smaller than the h1, in the body face: setting it
+     in the display face too made the two lines read as one broken headline. */
+  .tagline {
+    font-size: clamp(1.25rem, 4.2vw, 1.6rem);
+    line-height: 1.3;
+    font-weight: 600;
     margin: 0 0 var(--s3);
     color: var(--stage-ink);
   }
@@ -975,16 +985,15 @@
       <a href="de/index.html" hreflang="de">auf Deutsch</a>.</p>
     <div class="hero">
       <div class="hero-head">
-        <p class="eyebrow">psi-briefing</p>
-        <h1>A generator for briefing decks.</h1>
+        <h1>psi-briefing</h1>
+        <p class="tagline">A generator for briefing decks.</p>
       </div>
       <div class="hero-text">
-        <p class="lede">psi-briefing turns a Markdown file into a briefing: a
-          deck of 16:9 slides dense enough that the people who could not attend
-          can read them for themselves, with nobody there to present them.
-          What comes out is a single HTML file with everything the slides need
-          inside it, so that file opens in any browser with no internet
-          connection and nothing installed.</p>
+        <p class="lede">It turns a Markdown file into 16:9 slides dense enough
+          that the people who could not attend can read them for themselves,
+          with nobody there to present them. What comes out is a single HTML
+          file with everything the slides need inside it, so that file opens in
+          any browser with no internet connection and nothing installed.</p>
         <pre class="hero-cmd"><code>node tools/md-to-deck.mjs deck.md -o deck.html</code></pre>
         <p class="aside-note">For a talk you will actually deliver, use
           <a href="https://uba-psi.github.io/psi-slides/">psi-slides</a> instead:
