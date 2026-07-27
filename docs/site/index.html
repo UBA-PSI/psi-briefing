@@ -397,6 +397,23 @@
      on the one left edge the page has rather than 24px outside it. */
   header.masthead .wrap { padding: 0 var(--s5); max-width: 60rem; }
 
+  /* The pointer to the other language version. Written IN that language, which
+     is what makes it work: a German reader recognises it in the first glance and
+     everyone else skips it without having to read it. The EN/DE switch in the
+     bar does the same job but is two letters wide and gets missed, and a good
+     share of this project's readers are German.
+     Deliberately not a coloured banner: it announces a translation, not a
+     problem, and anything with a background above the headline reads as a
+     cookie notice. Sits above the eyebrow so it is out of the way of the
+     headline, and inherits the stage colours so it belongs to the band. */
+  .lang-hint {
+    margin: 0 0 var(--s4);
+    font-size: 0.86rem;
+    color: var(--muted);
+  }
+  .lang-hint a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  .lang-hint a:hover { color: var(--stage-ink); }
+
   /* Text left, one real slide right. The slide is the argument: it shows Markdown
      on one side and the component it produced on the other, which states "this
      is a generator" faster than a sentence can. Stacks under 46rem, image first
@@ -947,6 +964,8 @@
 
 <header class="masthead">
   <div class="wrap">
+    <p class="lang-hint" lang="de">Diese Seite gibt es auch
+      <a href="de/index.html" hreflang="de">auf Deutsch</a>.</p>
     <div class="hero">
       <div class="hero-head">
         <p class="eyebrow">psi-briefing</p>
