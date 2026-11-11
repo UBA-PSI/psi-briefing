@@ -31,12 +31,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 20 rather than "latest": the tools state node 18+ as their floor, and a
+      # 24 rather than "latest": the tools state node 18+ as their floor, and a
       # pinned LTS keeps a runner-side node upgrade from being indistinguishable
-      # from a real regression. No cache: there is nothing to install.
+      # from a real regression. The pin was 20 until that line went end-of-life
+      # and stopped receiving security fixes (Nov 2026); move it to the next
+      # maintained LTS when 24 reaches EOL. No cache: there is nothing to install.
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       # The repository keeps duplicate copies of framework/briefing.{css,js},
       # themes/*.css and docs/cookbook.md so that skills/briefing/ is

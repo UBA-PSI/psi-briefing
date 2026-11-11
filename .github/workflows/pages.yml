@@ -39,7 +39,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       # Markdown -> linked deck. The output is gitignored on purpose: the .md
       # is the source of truth, this file is a build product.
